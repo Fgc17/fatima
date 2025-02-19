@@ -39,6 +39,8 @@ export function parseEnvFile(src: string) {
 		const envValue = normalizeEnvValue(match[2]);
 
 		env[envKey] = envValue;
+
+		envLineRegex.lastIndex = 0;
 	}
 
 	return env;
