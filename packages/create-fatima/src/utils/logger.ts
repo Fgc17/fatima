@@ -16,7 +16,7 @@ export const summary = async (language: Language, modules: string[]) => {
 	const packageManager = getPackageManager();
 	const packageManagerInstall = getPackageManagerInstall(packageManager);
 
-	const configFile = `fatima.config.${ext}`;
+	const configFile = `env.config.${ext}`;
 	const envFile = `env.${ext}`;
 
 	const message = [
