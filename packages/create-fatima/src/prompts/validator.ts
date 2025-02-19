@@ -20,14 +20,14 @@ export const askValidator = async (language: Language) =>
 		message: "Select a validator",
 		choices: [
 			{
-				name: "I'll build my own validator",
-				value: "custom",
-				description: "It is also pretty easy.",
-			},
-			{
 				name: "zod",
 				value: "zod",
 			},
 			...getTsChoices(language),
+			{
+				name: "I'll build my own validator",
+				value: "custom",
+				description: "It is pretty easy.",
+			},
 		],
 	})) as string;

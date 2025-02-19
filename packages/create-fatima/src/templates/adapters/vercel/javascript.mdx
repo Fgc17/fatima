@@ -1,10 +1,10 @@
 ```js
 const { adapters } = require("fatima");
-const dotenv = require("dotenv");
+const { parse } = require("fatima/env");
 
 module.exports = config({
   load: {
-    development: [adapters.dotenv.load(dotenv)],
+    development: [adapters.vercel.load(parse)],
   },
 });
 ```

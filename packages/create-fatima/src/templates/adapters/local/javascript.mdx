@@ -1,10 +1,9 @@
 ```js
 const { adapters } = require("fatima");
-const dotenv = require("dotenv");
 
 module.exports = config({
   load: {
-    development: [adapters.dotenv.load(dotenv)],
+    development: [adapters.local.load(".env")],
   },
 });
 ```

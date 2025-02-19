@@ -1,12 +1,11 @@
 ```js
 const { adapters } = require("fatima");
-const dotenv = require("dotenv");
 const trigger = require("@trigger.dev/sdk/v3");
 
 module.exports = config({
   load: {
     development: [
-      adapters.dotenv.load(dotenv),
+      adapters.local.load(".env"),
       adapters.triggerDev.load(trigger),
     ],
   },

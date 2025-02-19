@@ -1,28 +1,18 @@
 import { select, Separator } from "@inquirer/prompts";
 import chalk from "chalk";
 
-const separator = (label: string) => new Separator(chalk.blue("↘ " + label));
-
 export const askAdapter = async () =>
 	await select({
 		message: "Select an adapter",
 		choices: [
-			separator("Common"),
 			{
-				name: "I'll build my own adapter",
-				value: "custom",
-				description: "It is pretty easy.",
+				name: "local (.env)",
+				value: "local",
 			},
-			{
-				name: "dotenv (local only)",
-				value: "dotenv",
-			},
-			separator("Secret Managers"),
 			{
 				name: "infisical",
 				value: "infisical",
 			},
-			separator("Hosting Platforms"),
 			{
 				name: "vercel",
 				value: "vercel",
@@ -30,6 +20,11 @@ export const askAdapter = async () =>
 			{
 				name: "trigger.dev",
 				value: "triggerdev",
+			},
+			{
+				name: "I'll build my own adapter",
+				value: "custom",
+				description: "It is pretty easy.",
 			},
 		],
 	});
