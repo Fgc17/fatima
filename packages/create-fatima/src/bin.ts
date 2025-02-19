@@ -8,8 +8,11 @@ import { createConfigFile } from "src/lib/create-config-file";
 import type { Adapter, Language, Validator } from "src/lib/types";
 import { applyUserConfigTweaks } from "./lib/tweaks";
 import { logger } from "./utils/logger";
+import { checkPackageJson } from "./utils/check-package-json";
 
 const form = async () => {
+	checkPackageJson();
+
 	await askMonorepo();
 
 	const language = (await askLanguage()) as Language;
