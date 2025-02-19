@@ -47,9 +47,9 @@ export function resolveConfigPath(configPath?: string): string {
 		for (const file of readdirSync(dir)) {
 			const fullPath = resolve(dir, file);
 
-			const rootRelativePath = fullPath.replace(baseDir, "");
+			const workspacePath = fullPath.replace(baseDir, "");
 
-			const pathCrumbs = rootRelativePath.split("/").map((c) => c.trim());
+			const pathCrumbs = workspacePath.split("/").map((c) => c.trim());
 
 			if (
 				searchBlacklist.some((blacklisted) => pathCrumbs.includes(blacklisted))
