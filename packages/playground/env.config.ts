@@ -1,34 +1,19 @@
 import { config } from "fatima";
-import type { FatimaValidationResult } from "fatima";
+import { adapters } from "fatima";
+import { validators } from "fatima";
+import { z, type ZodType } from "zod";
+import type { EnvRecord } from "env";
 
 type Environment = "development" | "staging" | "production";
+type Constraint = Partial<EnvRecord<ZodType>>;
+const constraint: Constraint = {
+  NODE_ENV: z.enum(["development"]),
+};
 
 export default config<Environment>({
   load: {
-    development: [
-      async () => {
-        const fetch = async () => {
-          return { NODE_ENV: "development" };
-        };
-        return await fetch();
-      },
-    ],
+    development: [adapters.local.load(".env")],
   },
-  validate: async (processEnv) => {
-    const validation = {
-      isValid: true,
-      errors: [],
-    } as FatimaValidationResult;
-    if (!processEnv.NODE_ENV) {
-      validation.errors.push({
-        key: "NODE_ENV",
-        message: "NODE_ENV is required",
-      });
-    }
-    if (validation.errors.length) {
-      validation.isValid = false;
-    }
-    return validation;
-  },
+  validate: validators.zod(z.object(constraint)),
   environment: (processEnv) => processEnv.NODE_ENV ?? "development",
 });
