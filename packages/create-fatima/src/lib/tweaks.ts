@@ -12,9 +12,14 @@ const tweakTypescript = () => {
 		return config;
 	});
 
-	tweakUserConfig(".gitignore", (content) => {
+	tweakUserConfig(".gitignore", (content: string) => {
+		const didIgnoreEnv = content.includes("env.ts");
+
+		if (didIgnoreEnv) return null;
+
 		const additions = ["\n", "# fatima", "\n", "env.ts"];
-		return additions.filter((item) => !content.includes(item)).join("");
+
+		return content + additions.join("");
 	});
 };
 
@@ -37,8 +42,13 @@ const tweakJavascript = () => {
 	});
 
 	tweakUserConfig(".gitignore", (content) => {
+		const didIgnoreEnv = content.includes("env.js");
+
+		if (didIgnoreEnv) return null;
+
 		const additions = ["\n", "# fatima", "\n", "env.js"];
-		return additions.filter((item) => !content.includes(item)).join("");
+
+		return content + additions.join("");
 	});
 };
 

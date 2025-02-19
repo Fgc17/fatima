@@ -27,40 +27,42 @@ export function tweakUserConfig(
 	modifier: (config: AnyType) => AnyType,
 ): AnyType {
 	const filePath = getConfigPath(fileName);
+	let updatedFile = "";
 
 	if (!filePath) return;
 
-	if (fileName === ".gitignore") {
-		const currentContent = readFileSync(filePath, "utf8");
-		const newContent = modifier(currentContent);
+	try {
+		if (fileName.endsWith(".json")) {
+			if (!existsSync(filePath)) {
+				writeFileSync(filePath, "{}");
+			}
 
-		if (newContent !== currentContent) {
-			appendFileSync(filePath, `\n${newContent}`);
+			const fileContent = readFileSync(filePath, "utf8");
+
+			const config = parse(fileContent, null, false);
+
+			const changed = assign(config, modifier(config));
+
+			const newContent = stringify(changed, null, 2);
+
+			updatedFile = newContent;
 		}
 
-		return;
-	}
+		if (!existsSync(filePath)) {
+			writeFileSync(filePath, "");
+		}
 
-	if (!existsSync(filePath)) {
-		const initialConfig = modifier({});
-		writeFileSync(filePath, stringify(initialConfig, null, 2));
-		return;
-	}
+		const currentContent = readFileSync(filePath, "utf8");
 
-	try {
-		const fileContent = readFileSync(filePath, "utf8");
+		const newContent = modifier(currentContent);
 
-		const config = parse(fileContent, null, false);
+		if (!newContent) return;
 
-		const changed = assign(config, modifier(config));
-
-		const newContent = stringify(changed, null, 2);
-
-		writeFileSync(filePath, newContent);
-
-		return config;
+		updatedFile = newContent;
 	} catch (e) {
 		console.error(`Error reading ${fileName}:`, e);
 		return;
 	}
+
+	writeFileSync(filePath, updatedFile);
 }
