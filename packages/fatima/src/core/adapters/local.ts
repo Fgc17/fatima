@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { parseEnvFile } from "src/lib/env/parse-env";
 
 const load =
 	(...files: string[]) =>
