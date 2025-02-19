@@ -5,7 +5,27 @@ description: Get started with fatima in minutes.
 
 import { File, Folder, Files } from "fumadocs-ui/components/files";
 
-## Installation
+## Init CLI (recommended)
+
+<Tabs groupId='package-manager' persist items={['npm', 'pnpm', 'yarn']}>
+
+```bash tab="npm"
+npm init fatima
+```
+
+```bash tab="pnpm"
+pnpm init fatima
+```
+
+```bash tab="yarn"
+yarn create fatima
+```
+
+</Tabs>
+
+## Manual Setup, takes 2 minutes.
+
+### Installation
 
 <Tabs groupId='package-manager' persist items={['npm', 'pnpm', 'yarn']}>
 
@@ -23,7 +43,7 @@ yarn add fatima
 
 </Tabs>
 
-## Configuration file
+### Configuration file
 
 Let's load some stuff from `.env`, declare a `publicPrefix` and then validate everything with `zod`.
 
@@ -32,7 +52,6 @@ First create your file `env.config.ts` file:
 <Tabs groupId='languages' persist items={['typescript', 'javascript']}>
 
 ```ts title="env.config.ts" tab="typescript"
-import dotenv from "dotenv";
 import { config, adapters } from "fatima";
 
 type Environment = "development" | "staging" | "production";
@@ -42,14 +61,13 @@ export default config<Environment>({
     publicPrefix: "NEXT_PUBLIC_",
   },
   load: {
-    development: [adapters.dotenv.load(dotenv)],
+    development: [adapters.local.load(".env")],
   },
   environment: () => process.env.NODE_ENV ?? "development",
 });
 ```
 
 ```js title="env.config.js" tab="javascript"
-const dotenv = require("dotenv");
 const { config, adapters, validators } = require("fatima");
 
 module.exports = config({
@@ -57,7 +75,7 @@ module.exports = config({
     publicPrefix: "NEXT_PUBLIC_",
   },
   load: {
-    development: [adapters.dotenv.load(dotenv)],
+    development: [adapters.local.load(".env")],
   },
   environment: () => process.env.NODE_ENV,
 });
@@ -67,13 +85,13 @@ module.exports = config({
 
 For more information about the `environment` function, check [Environment Mixing](/docs/security/environment-mixing).
 
-### Generate `env.ts`:
+### Generate
 
 ```bash
 pnpm fatima generate
 ```
 
-## import \* from "env";
+### Path Alias
 
 Make sure you can import `env` from anywhere in your project without big relative imports:
 
@@ -111,12 +129,11 @@ Make sure you can import `env` from anywhere in your project without big relativ
 
 </Tabs>
 
-## Add validation
+### Add validation
 
 <Tabs groupId='languages' persist items={['typescript', 'javascript']}>
 
 ```ts title="env.config.ts" tab="typescript"
-import dotenv from "dotenv";
 import { config, adapters, validators } from "fatima";
 import { z, ZodType } from "zod";
 import { EnvRecord } from "env";
@@ -132,14 +149,13 @@ const constraint = z.object<Constraint>({
 
 export default config({
   load: {
-    development: [adapters.dotenv.load(dotenv)],
+    development: [adapters.local.load(".env")],
   },
   validate: validators.zod(constraint),
 });
 ```
 
 ```js title="env.config.js" tab="javascript"
-const dotenv = require("dotenv");
 const { config, adapters, validators } = require("fatima");
 const { z } = require("zod");
 
@@ -155,7 +171,7 @@ const constraint = {
 
 module.exports = config({
   load: {
-    development: [adapters.dotenv.load(dotenv)],
+    development: [adapters.local.load(".env")],
   },
   validate: validators.zod(z.object(constraint)),
 });
@@ -169,7 +185,7 @@ module.exports = config({
 pnpm fatima validate
 ```
 
-## Go on and use it
+### Go on and use it
 
 <Tabs groupId='languages' persist items={['typescript', 'javascript']}>
 
@@ -199,7 +215,7 @@ export async function GET() {
 
 </Tabs>
 
-## Run your app with fatima
+### Run your app with fatima
 
 This will load, generate and inject the environment variables into your app.
 
@@ -211,7 +227,7 @@ This will load, generate and inject the environment variables into your app.
 }
 ```
 
-## Add env to your `.gitignore`
+### Add env to your `.gitignore`
 
 You should gitignore your `env` and always generate it before building/installing.
 
@@ -227,7 +243,7 @@ env.js
 
 </Tabs>
 
-## Overview
+### Overview
 
 At the end of the setup, your project should look like something around this:
 
