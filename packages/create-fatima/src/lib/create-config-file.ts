@@ -87,16 +87,20 @@ const buildMergedContent = async (
 	utils: string[],
 	defaultExports: string[],
 ) => {
-	const modules = Array.from(imports)
-		.map((line) => {
-			const pckg =
-				line.match(/from ['"](.*)['"]/)?.at(1) ||
-				line.match(/import ['"](.*)['"]/)?.at(1) ||
-				line.match(/require\(['"](.*)['"]\)/)?.at(1);
+	const unfilteredModules = Array.from(imports).map((line) => {
+		const pckg =
+			line.match(/from ['"](.*)['"]/)?.at(1) ||
+			line.match(/import ['"](.*)['"]/)?.at(1) ||
+			line.match(/require\(['"](.*)['"]\)/)?.at(1);
 
-			return pckg;
-		})
-		.filter((m) => m && !["fatima", "env"].includes(m)) as string[];
+		return pckg;
+	});
+
+	const filteredModules = unfilteredModules.filter(
+		(m) => m && !["fatima/env", "env"].includes(m),
+	) as string[];
+
+	const modules = Array.from(new Set(filteredModules));
 
 	let mergedContent = "";
 
