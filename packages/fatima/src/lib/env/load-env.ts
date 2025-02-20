@@ -1,8 +1,8 @@
+import type { FatimaConfig } from "../../core/config";
 import type {
 	FatimaLoadFunction,
 	UnsafeEnvironmentVariables,
 } from "src/core/types";
-import type { FatimaConfig } from "../../core/config";
 import { logger } from "../logger/logger";
 import { lifecycle } from "src/core/lifecycle";
 import { fatimaStore } from "src/lib/store/store";
