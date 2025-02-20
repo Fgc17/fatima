@@ -1,5 +1,11 @@
 # create-fatima
 
+## 0.0.4
+
+### Patch Changes
+
+- changed templates to use new local adapter
+
 ## 0.0.3
 
 ### Patch Changes
