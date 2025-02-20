@@ -12,7 +12,7 @@ initializeEnv();
 
 program
 	.name("fatima")
-	.version("0.0.8")
+	.version("0.0.17")
 	.description("typesafe environment variables for the js ecosystem");
 
 const command = (cmd: string) =>
