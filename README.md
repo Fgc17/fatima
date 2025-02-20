@@ -1,4 +1,4 @@
-[![Alt text](./assets/banner.png "Optional title")](https://fatimajs.vercel.app)
+[![Fatima](./assets/banner.png "Fatima")](https://fatimajs.vercel.app)
 
 ## Documentation
 
