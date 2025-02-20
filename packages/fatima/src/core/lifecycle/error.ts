@@ -121,7 +121,6 @@ export const error = {
 	invalidEnvironmentVariables,
 	missingBabelTransformClassProperties,
 	missingWatchPort,
-	reloadingPortAlreadyInUse,
 	heavenPortAlreadyInUse,
 	undefinedEnvironmentFunctionReturn,
 	undefinedEnvironment,
