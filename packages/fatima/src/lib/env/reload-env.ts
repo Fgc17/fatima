@@ -1,10 +1,10 @@
+import type { FatimaConfig } from "src/core/config";
 import { lifecycle } from "src/core/lifecycle";
 import { loadEnv } from "src/lib/env/load-env";
 import { createClient } from "src/lib/client/generate-client";
 import { parseValidationErrors } from "src/lib/utils/parse-validation";
 import { fatimaStore } from "src/lib/store/store";
 import { logger } from "src/lib/logger/logger";
-import type { FatimaConfig } from "src/core/config";
 import { compareArrays } from "src/lib/utils/compareArrays";
 
 export const reloadEnv = async (config: FatimaConfig) => {
