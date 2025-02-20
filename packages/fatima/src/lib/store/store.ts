@@ -28,7 +28,7 @@ export const fatimaStore = {
 
 export const initializeStore = (
 	config: FatimaConfig,
-	options: Record<string, string>,
+	options: Record<string, string | boolean>,
 ) => {
 	fatimaStore.set("fatimaEnvNames", "");
 
@@ -43,7 +43,7 @@ export const initializeStore = (
 
 	fatimaStore.set("fatimaHeavenPort", String(config.heaven));
 
-	fatimaStore.set("fatimaLiteMode", options.lite);
+	fatimaStore.set("fatimaLiteMode", String(options.lite));
 
-	fatimaStore.set("fatimaDebug", options.debug);
+	fatimaStore.set("fatimaDebug", String(options.debug));
 };
