@@ -10,41 +10,30 @@ import { reloadAction } from "./actions/reload";
 
 initializeEnv();
 
-const configOption = "-c, --config <config>, --config=<config>";
-
-const configOptionDescription = "Config file path";
-
 program
 	.name("fatima")
 	.version("0.0.8")
 	.description("typesafe environment variables for the js ecosystem");
 
-program
-	.command("generate")
-	.option(configOption, configOptionDescription)
-	.action(generateAction);
+const command = (cmd: string) =>
+	program
+		.command(cmd)
+		.option("-c, --config <config>, --config=<config>", "Config file path")
+		.option("-d, --debug", "Debug mode");
 
-program
-	.command("dev")
-	.option(configOption, configOptionDescription)
+command("generate").action(generateAction);
+
+command("validate").action(validateAction);
+
+command("run")
+	.argument("<script...>", "The script to execute after --")
+	.action(runAction);
+
+command("dev")
 	.option("-l, --lite", "Lite mode, won't generate client")
 	.argument("<command...>", "The command to execute after --")
 	.action(devAction);
 
-program
-	.command("run")
-	.option(configOption, configOptionDescription)
-	.argument("<command...>", "The command to execute after --")
-	.action(runAction);
-
-program
-	.command("validate")
-	.option(configOption, configOptionDescription)
-	.action(validateAction);
-
-program
-	.command("reload")
-	.option(configOption, configOptionDescription)
-	.action(reloadAction);
+command("reload").action(reloadAction);
 
 program.parse();
