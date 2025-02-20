@@ -34,11 +34,9 @@ export function parseEnvFile(src: string) {
 			continue;
 		}
 
-		const envKey = match[1];
+		const [_, envKey, envValue] = match;
 
-		const envValue = normalizeEnvValue(match[2]);
-
-		env[envKey] = envValue;
+		env[envKey] = normalizeEnvValue(envValue);
 
 		envLineRegex.lastIndex = 0;
 	}
