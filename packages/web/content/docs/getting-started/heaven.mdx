@@ -1,0 +1,97 @@
+---
+title: Heaven (reloading)
+description: Heaven powers up env runtime reloading.
+---
+
+Restarting a process is really annoying, especially when dealing with slow builds, fatima helps you with that by providing "Heaven", a runtime env reloading solution.
+
+## Heaven, runtime reloading
+
+To enable runtime reloading, we will use `fatima/heaven` with the `watch` method.
+
+<Tabs groupId='framework' persist items={['nextjs', 'nestjs']}>
+
+```typescript title="instrumentation.ts" tab="nextjs"
+// Here we are using the 'instrumentation' entry hook to watch for changes
+export async function register() {
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    const { heaven } = await import("fatima/heaven");
+
+    heaven.watch();
+  }
+}
+```
+
+```typescript title="main.ts" tab="nestjs"
+// Here we are directly tweaking the app entry file to watch for changes
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { heaven } from "fatima/heaven";
+
+async function bootstrap() {
+  heaven.watch();
+
+  const app = await NestFactory.create(AppModule);
+
+  await app.listen(3000);
+}
+bootstrap();
+```
+
+</Tabs>
+
+<Callout type="info" title="Only during development">
+  `heaven.watch()` only runs listens for changes if you execute your app with
+  `fatima dev`, otherwise it will be ignored.
+</Callout>
+
+<Callout type="warn" title="Needs to be executed">
+  If your framework does not support hooks, or for some reason you can't tweak
+  the app entry file, you can't use Heaven runtime reloading.
+</Callout>
+
+## Watching local changes
+
+Local changes are automatically detected by Heaven, you don't need to do anything.
+
+<Callout type="warn" title=".env.example">
+  `.env.example` is ignored by Heaven watch feature, you can use it to document
+  your environment variables.
+</Callout>
+
+## Watching cloud changes
+
+For watching cloud changes, you need to setup a webhook in your secret manager.
+
+Heaven natively runs on port `15781`, but you can explicitly set the `heaven` option in your `fatima.config.ts`.
+
+```typescript title="fatima.config.ts"
+export default config({
+  heaven: 15781,
+});
+```
+
+This will spin up an endpoint at `http://localhost:15781/fatima` accepting any HTTP method to trigger a reload.
+
+It is your job to provide the tunneling service, here's a list of services you can use:
+
+- [zrok](https://zrok.io/)
+- [ngrok](https://ngrok.com/)
+- [localtunnel](https://localtunnel.github.io/www/)
+- [localhost.run](https://localhost.run/)
+
+For much more, check the [Awesome Tunneling repo](https://github.com/anderspitman/awesome-tunneling)
+
+After setting up the tunneling you just need to set the webhook URL in your secret manager to the endpoint URL.
+
+## My secret manager does not support webhooks
+
+This usually happens with tools that _have_ a secret manager but aren't secret managers themselves: vercel, railway, trigger.dev, etc.
+
+In this case, you can use the `fatima reload` command to trigger a reload.
+
+```bash
+fatima reload
+```
+
+You can run this command on a second terminal without stopping your process.
