@@ -1,11 +1,10 @@
 import { spawn } from "node:child_process";
 import { logger } from "src/lib/logger/logger";
 import { createClient } from "src/lib/client/generate-client";
-import { createInjectableEnv, updateChildEnv } from "src/lib/env/patch-env";
+import { createInjectableEnv } from "src/lib/env/patch-env";
 import { fatimaStore } from "src/lib/store/store";
 import { createAction, type ActionContext } from "../utils/create-action";
-import { listenLocalEnv } from "src/lib/listeners/local-env";
-import { listenRemoteEnv } from "src/lib/listeners/remote-env";
+import { createHeaven } from "src/lib/heaven/heaven";
 
 const environmentBlacklist = [
 	"production",
@@ -51,22 +50,18 @@ export const devService = async ({
 		stdio: ["inherit", "inherit", "inherit", "ipc"],
 	});
 
-	const localEnvListener = listenLocalEnv(config, updateChildEnv);
-
-	const remoteEnvListener = listenRemoteEnv(config, updateChildEnv);
+	const { closeHeaven } = createHeaven(config);
 
 	child.on("error", (error) => {
 		console.error(`Error: ${error.message}`);
-		localEnvListener.close();
-		remoteEnvListener?.close();
+		closeHeaven();
 		process.exit(1);
 	});
 
 	child.on("close", (code) => {
 		if (code !== 0) {
 			console.error(`Command exited with code ${code}`);
-			localEnvListener.close();
-			remoteEnvListener?.close();
+			closeHeaven();
 			process.exit(code);
 		}
 	});

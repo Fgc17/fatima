@@ -51,18 +51,3 @@ export interface FatimaClientOptions {
 	 */
 	isServer?: () => boolean;
 }
-
-export interface FatimaPortOptions {
-	/**
-	 * @description This is a port number.
-	 * @default 12485
-	 *
-	 * It will power the 'instrumentation.watch()' method, allowing secret reloading inside your application.
-	 */
-	instrumentation?: number;
-	/**
-	 * @description This is a port number.
-	 *
-	 * It will power the /fatima endpoint, allowing secret reloading based on cloud changes  */
-	reload?: number;
-}

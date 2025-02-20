@@ -1,15 +1,15 @@
 import { lifecycle } from "src/core/lifecycle";
-import { listenParentEnv } from "src/lib/listeners/parent-env";
+import { createHeavenClient } from "src/lib/heaven/heaven-client";
 import { fatimaStore } from "src/lib/store/store";
 
-export function watch() {
+export function watch(host = "localhost") {
 	const isDevMode = fatimaStore.get("fatimaDevMode");
 
 	if (!isDevMode) return;
 
-	const port = Number(fatimaStore.get("fatimaInstrumentationPort"));
+	const port = Number(fatimaStore.get("fatimaHeavenPort"));
 
 	if (!port) return lifecycle.error.missingWatchPort();
 
-	listenParentEnv(port);
+	createHeavenClient(host, port);
 }

@@ -20,26 +20,3 @@ export function initializeEnv(env: UnsafeEnvironmentVariables = {}) {
 		FORCE_COLOR: "1",
 	};
 }
-
-export async function updateChildEnv(env: UnsafeEnvironmentVariables) {
-	const instrumentationPort = fatimaStore.get("fatimaInstrumentationPort");
-
-	if (!instrumentationPort) return;
-
-	try {
-		const net = await import("node:net");
-
-		const client = net
-			.createConnection({
-				port: Number(instrumentationPort),
-			})
-			.on("error", debug.error);
-
-		client.write(
-			JSON.stringify({
-				type: "update-env",
-				env,
-			}),
-		);
-	} catch {}
-}

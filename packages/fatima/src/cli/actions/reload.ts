@@ -1,8 +1,9 @@
 import { logger } from "src/lib/logger/logger";
 import { createAction, type ActionContext } from "../utils/create-action";
+import { debug } from "src/lib/logger/debugger";
 
 export const reloadService = async ({ config }: ActionContext) => {
-	const port = config.ports?.reload;
+	const port = config.heaven;
 
 	if (!port) {
 		logger.error(
@@ -11,7 +12,7 @@ export const reloadService = async ({ config }: ActionContext) => {
 		process.exit(1);
 	}
 
-	await fetch(`http://localhost:${config.ports?.reload}/fatima`, {
+	await fetch(`http://localhost:${port}/fatima`, {
 		method: "POST",
 	})
 		.then((res) => {
@@ -21,10 +22,13 @@ export const reloadService = async ({ config }: ActionContext) => {
 
 			logger.success("Successfully reloaded environment variables");
 		})
-		.catch(() => {
+		.catch((e) => {
+			debug.error(e);
+
 			logger.error(
 				`Failed to reload environment variables, did you run 'fatima dev'?`,
 			);
+
 			process.exit(1);
 		});
 };

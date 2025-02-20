@@ -6,7 +6,7 @@ type FatimaStore = {
 	fatimaConfigPath: string;
 	fatimaLogs: string;
 	fatimaTransformedConfigPath: string;
-	fatimaInstrumentationPort: string;
+	fatimaHeavenPort: string;
 	fatimaStoreMarker: string;
 	fatimaEnvNames: string;
 	fatimaLiteMode: string | undefined;
@@ -41,10 +41,7 @@ export const initializeStore = (
 
 	fatimaStore.set("fatimaConfigPath", config.file.path);
 
-	fatimaStore.set(
-		"fatimaInstrumentationPort",
-		String(config.ports?.instrumentation ?? "12485"),
-	);
+	fatimaStore.set("fatimaHeavenPort", String(config.heaven));
 
 	fatimaStore.set("fatimaLiteMode", options.lite);
 

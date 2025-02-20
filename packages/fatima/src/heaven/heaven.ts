@@ -1,5 +1,5 @@
 import { watch } from "./watch";
 
-export const instrumentation = {
+export const heaven = {
 	watch,
 };

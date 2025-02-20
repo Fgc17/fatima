@@ -4,11 +4,11 @@ import type {
 	FatimaEnvironment,
 	FatimaEnvironmentFunction,
 	FatimaLoadObject,
-	FatimaPortOptions,
 	FatimaValidator,
 } from "./types";
 import { getCallerLocation } from "src/lib/utils/get-caller-location";
 import { lifecycle } from "./lifecycle";
+import { FATIMA_DEFAULT_HEAVEN_PORT } from "src/lib/constants/port";
 
 export type FatimaOptions<
 	Environments extends FatimaEnvironment = FatimaEnvironment,
@@ -30,9 +30,9 @@ export type FatimaOptions<
 	 */
 	validate?: FatimaValidator;
 	/**
-	 * Port options
+	 * A port number or 'false' to disable heaven
 	 */
-	ports?: FatimaPortOptions;
+	heaven?: number | false;
 };
 
 export type FatimaConfig = ReturnType<typeof config>;
@@ -42,7 +42,7 @@ export function config<Environments extends FatimaEnvironment>({
 	environment,
 	validate,
 	client,
-	ports,
+	heaven,
 }: FatimaOptions<Environments>) {
 	if (!environment) {
 		return lifecycle.error.missingEnvironmentConfig();
@@ -53,19 +53,16 @@ export function config<Environments extends FatimaEnvironment>({
 
 	const configExtension = path.extname(configFilePath);
 
-	const defaultPortOptions: FatimaPortOptions = {
-		instrumentation: 15781,
-	};
+	if (typeof heaven === "undefined") {
+		heaven = FATIMA_DEFAULT_HEAVEN_PORT;
+	}
 
 	return markConfig({
 		validate,
 		environment,
 		client,
 		load,
-		ports: {
-			...defaultPortOptions,
-			...ports,
-		},
+		heaven,
 		file: {
 			extension: configExtension,
 			path: configFilePath,

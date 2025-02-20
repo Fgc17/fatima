@@ -87,21 +87,10 @@ const missingWatchPort = () => {
 	process.exit(1);
 };
 
-const reloadingPortAlreadyInUse = (port: number) => {
+const heavenPortAlreadyInUse = (port: number | string) => {
 	logger.error(
-		`Couldn't run the env reloading server, port ${port} is already in use.`,
-		`Please specify a different one under 'config.ports.instrumentation' or kill the current process.`,
-	);
-
-	console.log("");
-
-	process.exit(1);
-};
-
-const instrumentationPortAlreadyInUse = (port: number) => {
-	logger.error(
-		`Couldn't run 'instrumentation.watch()', port ${port} is already in use. `,
-		`Please specify a different one under 'config.ports.instrumentation' or kill the current process.`,
+		`Couldn't run Heaven, port ${port} is already in use.`,
+		`Please specify a different one under config option 'heaven' or kill the current process.`,
 	);
 
 	console.log("");
@@ -133,7 +122,7 @@ export const error = {
 	missingBabelTransformClassProperties,
 	missingWatchPort,
 	reloadingPortAlreadyInUse,
-	instrumentationPortAlreadyInUse,
+	heavenPortAlreadyInUse,
 	undefinedEnvironmentFunctionReturn,
 	undefinedEnvironment,
 	undefinedEnvironmentAndStore,
