@@ -12,6 +12,10 @@ export default defineConfig((opts) => {
 		treeshake: true,
 	};
 
+	const watch: Options = {
+		watch: true,
+	};
+
 	const config: Options = {
 		entry: createEntries("core", "cli", "env", "heaven"),
 		dts: true,
@@ -20,8 +24,12 @@ export default defineConfig((opts) => {
 		removeNodeProtocol: false,
 	};
 
-	if (!opts.watch) {
+	if (opts.env?.mode === "bundle") {
 		Object.assign(config, minify);
+	}
+
+	if (opts.env?.mode === "dev") {
+		Object.assign(config, watch);
 	}
 
 	return config;
