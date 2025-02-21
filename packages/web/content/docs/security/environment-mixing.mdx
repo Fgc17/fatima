@@ -14,8 +14,6 @@ Fatima will require you to explicitly define a `environment` function in your `e
 
 ```ts title="env.config.ts"
 export default config({
-  // This can be useful to avoid using process.env directly,
-  // which can cause issues with the ESLint no-process-env rule.
   environment: (processEnv) => processEnv.NODE_ENV,
 });
 ```
@@ -27,6 +25,12 @@ However, right after all secrets are loaded, Fatima injects them into `process.e
 If for some reason the `environment` function returns a different environment than the one loaded, Fatima will throw an error.
 
 By doing so we can add a double layer of security to make sure that the loaded secrets are from the same environment as the one we're asking them for, or vice-versa.
+
+<Callout type="info" title="Why 'processEnv' instead of 'process.env'?">
+  The callback argument "processEnv" is useful to avoid using 'process.env'
+  directly, which depending on your setup can cause some problems with types and
+  ESLint.
+</Callout>
 
 <Callout type="info" title="Don't worry about 'fatima generate'">
   Although `fatima generate` temporarily loads secrets names and values to generate types,
