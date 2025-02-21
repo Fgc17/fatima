@@ -50,6 +50,7 @@ import { parse } from "dotenv";
 export default config({
   load: {
     development: [
+      adapters.local.load(".env"),
       adapters.vercel.load(parse, {
         // Check out here with intellisense
       }),

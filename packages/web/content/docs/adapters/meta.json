@@ -2,7 +2,7 @@
 	"title": "Adapters",
 	"pages": [
 		"index",
-		"./(adapters)/dotenv",
+		"./(adapters)/local",
 		"./(adapters)/infisical",
 		"./(adapters)/vercel",
 		"./(adapters)/trigger"
