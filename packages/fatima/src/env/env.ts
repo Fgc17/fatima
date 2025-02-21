@@ -3,7 +3,7 @@ import type { AnyType } from "src/lib/types";
 import { lifecycle } from "src/core/lifecycle";
 import { logger } from "src/lib/logger/logger";
 import { fatimaStore } from "src/lib/store/store";
-import { parseEnvFile } from "src/lib/env/parse-env";
+import { parseEnvLines } from "src/lib/env/parse-env";
 
 interface CreateEnvOptions {
 	isServer?: () => boolean;
@@ -106,4 +106,4 @@ export const createPublicEnv = (options: CreatePublicEnvOptions) => {
 	return fatimaPublicEnv as UnsafeEnvironmentVariables;
 };
 
-export const parse = parseEnvFile;
+export const parse = parseEnvLines;

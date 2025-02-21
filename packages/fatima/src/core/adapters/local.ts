@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { parseEnvFile } from "src/lib/env/parse-env";
+import { parseEnvLines } from "src/lib/env/parse-env";
 
 const load =
 	(...files: string[]) =>
@@ -16,7 +16,7 @@ const load =
 
 					const content = file.toString("utf-8");
 
-					const env = parseEnvFile(content);
+					const env = parseEnvLines(content);
 
 					return env;
 				} catch (error) {

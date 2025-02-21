@@ -22,12 +22,12 @@ const normalizeEnvValue = (value = "") => {
 	return normalizedValue;
 };
 
-export function parseEnvFile(src: string) {
+export function parseEnvLines(lines: string) {
 	const env = {} as Record<string, string>;
 
-	const lines = src.replace(/\r\n?/gm, "\n").split("\n");
+	const lineList = lines.replace(/\r\n?/gm, "\n").split("\n");
 
-	for (const line of lines) {
+	for (const line of lineList) {
 		const match = envLineRegex.exec(line);
 
 		if (!match) {
