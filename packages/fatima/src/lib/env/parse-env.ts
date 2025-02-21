@@ -1,9 +1,6 @@
-// Special thanks to motdotla and the 'dotenv' package for:
-// - regex pattern
-// - how to parse env files
+// Special thanks to motdotla (dotenv) for the regex pattern and how to parse env lines.
 
-const envLineRegex =
-	/(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/gm;
+import { ENVLINE } from "../constants/envline";
 
 const normalizeEnvValue = (value = "") => {
 	let normalizedValue = value;
@@ -28,7 +25,7 @@ export function parseEnvLines(lines: string) {
 	const lineList = lines.replace(/\r\n?/gm, "\n").split("\n");
 
 	for (const line of lineList) {
-		const match = envLineRegex.exec(line);
+		const match = ENVLINE.exec(line);
 
 		if (!match) {
 			continue;
@@ -38,7 +35,7 @@ export function parseEnvLines(lines: string) {
 
 		env[envKey] = normalizeEnvValue(envValue);
 
-		envLineRegex.lastIndex = 0;
+		ENVLINE.lastIndex = 0;
 	}
 
 	return env;
