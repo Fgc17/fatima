@@ -1,0 +1,32 @@
+---
+title: local
+description: Let's remove the dotenv dependency.
+---
+
+This adapter will load environment variables from `.env` files, with no dependencies.
+
+## Dependencies
+
+Zero.
+
+## Importing the loader
+
+```ts title="env.config.ts"
+import { config, adapters } from "fatima";
+
+export default config({
+  load: {
+    development: [adapters.load.load(".env", ".env.development")],
+  },
+});
+```
+
+## Special thanks
+
+Special thanks to [dotenv](https://github.com/motdotla/dotenv) for the regex that reads `.env` lines:
+
+```regex
+(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*\"(?:\\\"|[^\"])*\"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)
+```
+
+[Source code can be found here.](https://github.com/motdotla/dotenv/blob/master/lib/main.js)
