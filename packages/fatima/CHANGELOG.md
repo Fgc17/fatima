@@ -1,5 +1,11 @@
 # fatima
 
+## 0.0.18
+
+### Patch Changes
+
+- reduced 40kb on bundlesize by implementing terser
+
 ## 0.0.17
 
 ### Patch Changes
