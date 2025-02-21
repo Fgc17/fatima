@@ -10,16 +10,8 @@
 		"type": "git",
 		"url": "git+https://github.com/Fgc17/fatima.git"
 	},
-	"files": [
-		"dist"
-	],
-	"keywords": [
-		"env",
-		"typesafe",
-		"typescript",
-		"environment",
-		"variable"
-	],
+	"files": ["dist"],
+	"keywords": ["env", "typesafe", "typescript", "environment", "variable"],
 	"type": "module",
 	"main": "./dist/core/core.cjs",
 	"types": "./dist/core/core.d.cts",
@@ -30,28 +22,24 @@
 	},
 	"typesVersions": {
 		"*": {
-			".": [
-				"./dist/core/core.d.cts"
-			],
-			"env": [
-				"./dist/env/env.d.cts"
-			],
-			"heaven": [
-				"./dist/heaven/heaven.d.cts"
-			]
+			".": ["./dist/core/core.d.cts"],
+			"env": ["./dist/env/env.d.cts"],
+			"heaven": ["./dist/heaven/heaven.d.cts"]
 		}
 	},
 	"bin": {
 		"fatima": "./dist/cli/cli.cjs"
 	},
 	"scripts": {
+		"dev": "pnpm tsup --watch",
 		"typecheck": "tsc --noEmit",
 		"build": "rm -rf dist && pnpm tsup",
-		"dev": "pnpm run build --watch",
+		"bundlesize": "npm pack --dry-run",
 		"release": "pnpm typecheck && pnpm publish --no-git-checks"
 	},
 	"devDependencies": {
 		"@types/node": "^22.9.1",
+		"terser": "^5.39.0",
 		"tsup": "^8.3.5",
 		"typescript": "5.6.3"
 	},
