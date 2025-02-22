@@ -21,21 +21,22 @@ const command = (cmd: string) =>
 		.option("-c, --config <config>, --config=<config>", "Config file path")
 		.option("-d, --debug", "Debug mode");
 
-command("generate").action(generateAction);
+command("generate").alias("g").action(generateAction);
 
-command("validate").action(validateAction);
+command("validate").alias("v").action(validateAction);
 
 command("run")
 	.argument("<script...>", "The script to execute after --")
 	.action(runAction);
 
 command("dev")
+	.alias("d")
 	.option("-l, --lite", "Lite mode, won't generate client")
 	.argument("<command...>", "The command to execute after --")
 	.action(devAction);
 
 command("reload").action(reloadAction);
 
-command("install").action(installAction);
+command("install").alias("i").alias("add").action(installAction);
 
 program.parse();
