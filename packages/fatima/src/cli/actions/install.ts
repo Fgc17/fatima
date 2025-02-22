@@ -120,7 +120,7 @@ const installService = () => {
 	}
 
 	const installDevDependencies = () =>
-		installDependency("fatima@latest", "dev", "fatima (as dev)");
+		installDependency(devDependencies, "dev", "fatima (as dev)");
 
 	const installRuntimeDependencies = () =>
 		installDependency(
