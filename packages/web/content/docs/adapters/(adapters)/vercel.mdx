@@ -54,6 +54,8 @@ export default config({
       adapters.vercel.load(parse, {
         // Check out here with intellisense
       }),
+      // You may want to overwrite some values from vercel
+      adapters.local.load(".env.local"),
     ],
   },
 });

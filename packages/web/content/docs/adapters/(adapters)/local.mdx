@@ -16,7 +16,7 @@ import { config, adapters } from "fatima";
 
 export default config({
   load: {
-    development: [adapters.load.load(".env", ".env.development")],
+    development: [adapters.load.load(".env", ".env.local")],
   },
 });
 ```
