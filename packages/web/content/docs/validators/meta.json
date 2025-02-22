@@ -1,7 +1,7 @@
 {
 	"title": "Validators",
 	"pages": [
-		"index",
+		"own",
 		"./(validators)/zod",
 		"./(validators)/class-validator",
 		"./(validators)/typia"
