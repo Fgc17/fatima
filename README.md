@@ -8,18 +8,32 @@ Visit https://fatimajs.vercel.app to see the documentation.
 
 Visit [https://npmjs.com/package/fatima](https://www.npmjs.com/package/fatima) to see the registry.
 
-## Installation
+# Init CLI
 
 ```bash
-npm install fatima
+npx init fatima@latest
 ```
 
 ```bash
-pnpm install fatima
+pnpm init fatima@latest
 ```
 
 ```bash
-yarn add fatima
+yarn create fatima@latest
+```
+
+## Manual Setup
+
+```bash
+npx fatima@latest install
+```
+
+```bash
+pnpm dlx fatima@latest add
+```
+
+```bash
+yarn dlx fatima@latest add
 ```
 
 ## License
