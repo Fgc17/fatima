@@ -6,6 +6,7 @@ import { validateAction } from "./actions/validate";
 import { runAction } from "./actions/run";
 import { initializeEnv } from "@fatimajs/tools/lib";
 import { reloadAction } from "./actions/reload";
+import { installAction } from "./actions/install";
 
 initializeEnv();
 
@@ -34,5 +35,7 @@ command("dev")
 	.action(devAction);
 
 command("reload").action(reloadAction);
+
+program.command("install").action(installAction);
 
 program.parse();
