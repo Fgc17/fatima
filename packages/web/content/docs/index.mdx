@@ -4,9 +4,7 @@ description: In case you're wondering, the name refers to "Our Lady of Fátima".
 icon: QuestionMarkCircle
 ---
 
-Fatima brings end-to-end type safety, completely agnostic validation, and a better development experience to your environment variables.
-
-## Comparison with other libraries
+## Comparison
 
 |                           | Fatima | [t3-env][t3env] | [typedotenv][typedotenv] | [dotenvx][dotenvx] |
 | ------------------------- | ------ | --------------- | ------------------------ | ------------------ |
@@ -18,11 +16,13 @@ Fatima brings end-to-end type safety, completely agnostic validation, and a bett
 | Load from cloud to local  | <V />  | <X />           | <X />                    | <X />              |
 | Validate with any library | <V />  | <X />           | <X />                    | <X />              |
 | Public and server secrets | <V />  | <V />           | <X />                    | <X />              |
-| Files to setup            | 1      | 1 -> 2          | 0                        | 0                  |
 | ESlint helper plugin      | <V />  | <X />           | <X />                    | <X />              |
 | Development reloading     | <V />  | <X />           | <X />                    | <X />              |
 | Native .env loading       | <V />  | <X />           | <V />                    | <V />              |
 | Zero Codegen              | <X />  | <V />           | <X />                    | <V />              |
+| Files to setup            | 1      | 1 -> 2          | 0                        | 0                  |
+| Unpacked (production)     | 9kb    | 45kb            | 0kb                      | 0kb                |
+| Unpacked (dev)            | 40kb   | 45kb            | 129kb                    | 264kb              |
 
 [t3env]: https://github.com/t3-oss/t3-env
 [typedotenv]: https://github.com/ssssota/typedotenv
