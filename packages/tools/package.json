@@ -5,13 +5,15 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Fgc17/fatima.git"
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"exports": {
 		"./env": "./dist/env/env.cjs",
@@ -20,9 +22,15 @@
 	},
 	"typesVersions": {
 		"*": {
-			"env": ["./dist/env/env.d.cts"],
-			"heaven": ["./dist/heaven/heaven.d.cts"],
-			"lib": ["./dist/lib/lib.d.cts"]
+			"env": [
+				"./dist/env/env.d.cts"
+			],
+			"heaven": [
+				"./dist/heaven/heaven.d.cts"
+			],
+			"lib": [
+				"./dist/lib/lib.d.cts"
+			]
 		}
 	},
 	"scripts": {
