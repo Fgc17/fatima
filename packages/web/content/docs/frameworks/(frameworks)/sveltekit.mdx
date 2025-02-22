@@ -9,7 +9,7 @@ Here's a list of things you should know before starting with SvelteKit:
 
 - SvelteKit natively supports environments type safety (no need for Fatima's client).
 - SvelteKit natively deals with private and public secrets (again no need for Fatima's client)
-- SvelteKit natively deals with [environment mixing](/docs/security/environment-mixing) (no need for Fatima's ESLint rule).
+- SvelteKit natively deals with [secret leaking](/docs/security/secret-leaking) (no need for Fatima's ESLint rule).
 
 ## How to integrate with Fatima
 
@@ -33,7 +33,7 @@ The `--lite` flag will disable the client generation.
 
 ```ts
 import { env } from "$env/dynamic/private";
-import { EnvRecord } from "fatima/env";
+import { EnvRecord } from "@fatimajs/tools/env";
 import { validate, config, adapters } from "fatima";
 import { z, ZodType } from "zod";
 import dotenv from "dotenv";

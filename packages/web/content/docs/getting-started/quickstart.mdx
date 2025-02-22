@@ -10,15 +10,15 @@ import { File, Folder, Files } from "fumadocs-ui/components/files";
 <Tabs groupId='package-manager' persist items={['npm', 'pnpm', 'yarn']}>
 
 ```bash tab="npm"
-npm init fatima
+npm init fatima@latest
 ```
 
 ```bash tab="pnpm"
-pnpm init fatima
+pnpm init fatima@latest
 ```
 
 ```bash tab="yarn"
-yarn create fatima
+yarn create fatima@latest
 ```
 
 </Tabs>
@@ -27,21 +27,14 @@ yarn create fatima
 
 ### Installation
 
-<Tabs groupId='package-manager' persist items={['npm', 'pnpm', 'yarn']}>
-
-```bash tab="npm"
-npm install fatima
+```bash
+npx fatima@latest install
 ```
 
-```bash tab="pnpm"
-pnpm add fatima
-```
+This will install:
 
-```bash tab="yarn"
-yarn add fatima
-```
-
-</Tabs>
+- `@fatimajs/tools` as a **runtime** dependency (unpacked: 9kb).
+- `fatima` and maybe `jiti` as **development** dependencies.
 
 ### Configuration file
 
