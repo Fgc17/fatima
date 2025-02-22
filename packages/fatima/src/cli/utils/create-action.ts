@@ -6,8 +6,8 @@ import type {
 } from "@fatimajs/tools/lib";
 import { readConfig } from "lib/config/read-config";
 import { resolveConfigPath } from "lib/config/resolve-config-path";
-import { loadEnv } from "lib/env/load-env";
 import { initializeFatimaStore } from "lib/store";
+import { loadEnv } from "lib/env/load-env";
 
 export interface ActionContext {
 	config: FatimaConfig;
@@ -19,6 +19,7 @@ export interface ActionContext {
 
 export const createAction = (
 	action: (ctx: ActionContext) => Promisable<void>,
+	load = true,
 ) => {
 	return async (param1: AnyType, param2: AnyType) => {
 		const isParam1Array = Array.isArray(param1);
@@ -33,9 +34,13 @@ export const createAction = (
 
 		initializeFatimaStore(config, options);
 
-		const { env, envCount } = await loadEnv(config);
+		if (load) {
+			const { env, envCount } = await loadEnv(config);
 
-		await action({ config, env, envCount, args, options });
+			await action({ config, env, envCount, args, options });
+		} else {
+			await action({ config, env: {}, envCount: 0, args, options });
+		}
 
 		if (!process.env.npm_package_version) {
 			console.log("");
