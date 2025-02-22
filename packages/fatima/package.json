@@ -5,7 +5,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.0.19-rc.2",
+	"version": "0.0.19",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -30,12 +30,16 @@
 		"fatima": "./dist/cli/cli.cjs"
 	},
 	"scripts": {
-		"typecheck": "tsc --noEmit",
-		"bundlesize": "pnpm tsup --metafile && npm pack --dry-run",
+		"------------- dev -------------": "-------------",
 		"dev": "pnpm tsup --env.mode dev",
-		"build": "pnpm tsup --env.mode release && npm pack --dry-run",
-		"release": "pnpm typecheck && pnpm publish --no-git-checks",
-		"prerelease": "pnpm typecheck && pnpm build && pnpm version prerelease --preid=rc"
+		"dev:bundlesize": "pnpm tsup --metafile && npm pack --dry-run",
+		"------------- build -------------": "-------------",
+		"typecheck": "tsc --noEmit",
+		"build": "pnpm tsup --env.mode release",
+		"bundlesize": "pnpm build --metafile && npm pack --dry-run",
+		"------------- publishing -------------": "-------------",
+		"release": "pnpm typecheck && pnpm build && pnpm publish --no-git-checks",
+		"release:rc": "pnpm typecheck && pnpm build && pnpm version prerelease --preid=rc"
 	},
 	"devDependencies": {
 		"@types/node": "^22.9.1",
