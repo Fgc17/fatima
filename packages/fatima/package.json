@@ -5,14 +5,22 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.0.19",
+	"version": "0.0.20",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Fgc17/fatima.git"
 	},
-	"files": ["dist"],
-	"keywords": ["env", "typesafe", "typescript", "environment", "variable"],
+	"files": [
+		"dist"
+	],
+	"keywords": [
+		"env",
+		"typesafe",
+		"typescript",
+		"environment",
+		"variable"
+	],
 	"type": "module",
 	"main": "./dist/core/core.cjs",
 	"types": "./dist/core/core.d.cts",
@@ -22,8 +30,12 @@
 	},
 	"typesVersions": {
 		"*": {
-			".": ["./dist/core/core.d.cts"],
-			"lib": ["./dist/lib/lib.d.cts"]
+			".": [
+				"./dist/core/core.d.cts"
+			],
+			"lib": [
+				"./dist/lib/lib.d.cts"
+			]
 		}
 	},
 	"bin": {

@@ -1,5 +1,12 @@
 # fatima
 
+## 0.0.20
+
+### Patch Changes (02/22/2025)
+
+- added command aliases
+- added jiti as automatically installed dependency
+
 ## 0.0.19
 
 ### Patch Changes (02/22/2025)
