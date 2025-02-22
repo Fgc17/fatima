@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
-import { createInjectableEnv } from "src/lib/env/patch-env";
 import { createAction, type ActionContext } from "../utils/create-action";
+import { createInjectableEnv } from "@fatimajs/tools/lib";
 
 export const runService = async ({ env, args }: ActionContext) => {
 	const cmd = args.shift();

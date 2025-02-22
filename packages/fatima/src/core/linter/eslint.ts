@@ -1,4 +1,4 @@
-import type { AnyType } from "src/lib/types";
+import type { AnyType } from "@fatimajs/tools/lib";
 
 const noEnvRuleObject = {
 	meta: {

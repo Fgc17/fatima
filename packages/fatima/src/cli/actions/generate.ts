@@ -1,7 +1,7 @@
-import { logger } from "src/lib/logger/logger";
 import { createAction, type ActionContext } from "../utils/create-action";
-import { createClient } from "src/lib/client/generate-client";
+import { createClient } from "lib/client/create-client";
 import { validateService } from "./validate";
+import { logger } from "@fatimajs/tools/lib";
 
 export const generateService = async (ctx: ActionContext) => {
 	const { env, config, envCount } = ctx;

@@ -1,14 +1,15 @@
-import path from "node:path";
 import type {
 	FatimaClientOptions,
 	FatimaEnvironment,
 	FatimaEnvironmentFunction,
 	FatimaLoadObject,
 	FatimaValidator,
-} from "./types";
-import { getCallerLocation } from "src/lib/utils/get-caller-location";
-import { lifecycle } from "./lifecycle";
-import { FATIMA_DEFAULT_HEAVEN_PORT } from "src/lib/constants/port";
+} from "lib/types";
+import { FATIMA_DEFAULT_HEAVEN_PORT } from "../constants/port";
+import { lifecycle } from "../lifecycle";
+import { extname } from "node:path";
+import { getCallerLocation } from "lib/utils/get-caller-location";
+import { markConfig } from "./utils";
 
 export type FatimaOptions<
 	Environments extends FatimaEnvironment = FatimaEnvironment,
@@ -51,7 +52,7 @@ export function config<Environments extends FatimaEnvironment>({
 	const { filePath: configFilePath, folderPath: configFolderPath } =
 		getCallerLocation();
 
-	const configExtension = path.extname(configFilePath);
+	const configExtension = extname(configFilePath);
 
 	if (typeof heaven === "undefined") {
 		heaven = FATIMA_DEFAULT_HEAVEN_PORT;
@@ -70,16 +71,3 @@ export function config<Environments extends FatimaEnvironment>({
 		},
 	});
 }
-
-export const markConfig = <T>(config: T) => {
-	return {
-		...config,
-		fatimaConfigMarker: true,
-	};
-};
-
-export const isFatimaConfig = (
-	config: FatimaConfig,
-): config is FatimaConfig => {
-	return config.fatimaConfigMarker ?? false;
-};

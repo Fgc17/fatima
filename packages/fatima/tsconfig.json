@@ -16,7 +16,10 @@
 		"baseUrl": "./",
 		"outDir": "./dist",
 		"rootDir": "./",
-		"noEmit": true
+		"noEmit": true,
+		"paths": {
+			"lib/*": ["./src/lib/*"]
+		}
 	},
 	"include": ["./src/**/*.ts"],
 	"exclude": ["node_modules", "dist"]

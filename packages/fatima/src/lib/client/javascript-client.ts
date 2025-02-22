@@ -1,5 +1,5 @@
-import type { FatimaClientOptions } from "src/core/types";
-import { txt } from "src/lib/utils/txt";
+import type { FatimaClientOptions } from "lib/types";
+import { txt } from "../utils/txt";
 
 const client = (strings: {
 	envKeys: string;
@@ -8,7 +8,7 @@ const client = (strings: {
 	createPublicEnvArg?: string;
 	publicPrefix?: string;
 }) => [
-	'const { createEnv } = require("fatima/env");',
+	'const { createEnv } = require("@fatimajs/tools/env");',
 	"",
 
 	"/** @typedef {Object} EnvKeys",

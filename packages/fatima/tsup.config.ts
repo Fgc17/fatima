@@ -7,29 +7,36 @@ const createEntries = (...entries: string[]) => {
 };
 
 export default defineConfig((opts) => {
-	const minify: Options = {
-		minify: "terser",
-		treeshake: true,
-	};
-
-	const watch: Options = {
-		watch: true,
-	};
-
 	const config: Options = {
-		entry: createEntries("core", "cli", "env", "heaven"),
+		entry: createEntries("core", "cli"),
 		dts: true,
 		shims: true,
 		clean: true,
+		platform: "node",
 		removeNodeProtocol: false,
 	};
 
-	if (opts.env?.mode === "bundle") {
-		Object.assign(config, minify);
+	const release: Options = {
+		minify: "terser",
+		treeshake: true,
+		terserOptions: {
+			compress: {
+				passes: 3,
+			},
+		},
+	};
+
+	const dev: Options = {
+		watch: true,
+		sourcemap: true,
+	};
+
+	if (opts.env?.mode === "release") {
+		Object.assign(config, release);
 	}
 
 	if (opts.env?.mode === "dev") {
-		Object.assign(config, watch);
+		Object.assign(config, dev);
 	}
 
 	return config;

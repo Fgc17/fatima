@@ -1,6 +1,6 @@
+import { logger } from "@fatimajs/tools/lib";
 import { resolve, parse } from "node:path";
 import { existsSync, readdirSync, statSync } from "node:fs";
-import { logger } from "src/lib/logger/logger";
 
 const searchBlacklist = [
 	"node_modules",

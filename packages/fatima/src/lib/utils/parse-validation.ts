@@ -1,4 +1,4 @@
-import type { FatimaValidatorError } from "src/core/types";
+import type { FatimaValidatorError } from "../types";
 
 export function parseValidationErrors(errors: FatimaValidatorError[]) {
 	const groupedErrors = errors.reduce(

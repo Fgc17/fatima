@@ -1,15 +1,15 @@
-import type { FatimaConfig } from "../../core/config";
-import type {
-	FatimaLoadFunction,
-	UnsafeEnvironmentVariables,
-} from "src/core/types";
-import { logger } from "../logger/logger";
-import { lifecycle } from "src/core/lifecycle";
-import { fatimaStore } from "src/lib/store/store";
+import {
+	fatimaStore,
+	logger,
+	type UnsafeEnvironmentVariables,
+} from "@fatimajs/tools/lib";
+import type { FatimaLoadFunction } from "lib/types";
+import type { FatimaConfig } from "../config";
+import { lifecycle } from "../lifecycle";
 
 export async function loadEnv(config: FatimaConfig) {
 	try {
-		const initialNodeEnv = fatimaStore.get("fatimaEnvironment");
+		const initialNodeEnv = fatimaStore.get("environment");
 
 		if (!initialNodeEnv || initialNodeEnv === "") {
 			return lifecycle.error.undefinedEnvironmentFunctionReturn();
@@ -54,7 +54,7 @@ export async function loadEnv(config: FatimaConfig) {
 			return lifecycle.error.environmentMixing(initialNodeEnv, finalEnv);
 		}
 
-		fatimaStore.set("fatimaEnvNames", Object.keys(env).join("#"));
+		fatimaStore.set("envNames", Object.keys(env).join("#"));
 
 		return {
 			env,

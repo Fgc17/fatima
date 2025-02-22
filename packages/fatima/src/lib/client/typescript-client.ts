@@ -1,5 +1,5 @@
-import type { FatimaClientOptions } from "src/core/types";
-import { txt } from "src/lib/utils/txt";
+import type { FatimaClientOptions } from "../types";
+import { txt } from "../utils/txt";
 
 type ClientStrings = {
 	envObject: string;
@@ -15,7 +15,7 @@ const client = (strings: ClientStrings) => [
 	"  type EnvType as FatimaEnvType,",
 	"  type EnvRecord as FatimaEnvRecord,",
 	"  type PrimitiveEnvType as FatimaPrimitiveEnvType,",
-	"} from 'fatima/env';",
+	"} from '@fatimajs/tools/env';",
 	"",
 
 	"export interface EnvObject {",

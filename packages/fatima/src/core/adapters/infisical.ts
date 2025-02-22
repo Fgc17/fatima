@@ -1,9 +1,10 @@
-import { lifecycle } from "../lifecycle";
+import type { FatimaBuiltInLoadFunction } from "lib/types";
 import type {
-	FatimaBuiltInLoadFunction,
+	GenericClass,
+	AnyType,
 	UnsafeEnvironmentVariables,
-} from "../types";
-import type { AnyType, GenericClass } from "src/lib/types";
+} from "@fatimajs/tools/lib";
+import { lifecycle } from "lib/lifecycle";
 
 type InfisicalClientMock = GenericClass<{
 	auth: () => {

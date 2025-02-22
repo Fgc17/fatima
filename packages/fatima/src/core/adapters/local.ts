@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { parseEnvLines } from "src/lib/env/parse-env";
+import { parseEnvLines } from "lib/env/parse-env";
+
+const parse = parseEnvLines;
 
 const load =
 	(...files: string[]) =>
@@ -36,4 +38,5 @@ const load =
 
 export const local = {
 	load,
+	parse,
 };

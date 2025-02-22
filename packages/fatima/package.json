@@ -1,10 +1,11 @@
 {
 	"name": "fatima",
 	"description": "typesafe secrets for the javascript ecosystem",
+	"author": "Fernando Coelho",
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.0.18",
+	"version": "0.0.19-rc.2",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -17,14 +18,12 @@
 	"types": "./dist/core/core.d.cts",
 	"exports": {
 		".": "./dist/core/core.cjs",
-		"./env": "./dist/env/env.cjs",
-		"./heaven": "./dist/heaven/heaven.cjs"
+		"./lib": "./dist/lib/lib.cjs"
 	},
 	"typesVersions": {
 		"*": {
 			".": ["./dist/core/core.d.cts"],
-			"env": ["./dist/env/env.d.cts"],
-			"heaven": ["./dist/heaven/heaven.d.cts"]
+			"lib": ["./dist/lib/lib.d.cts"]
 		}
 	},
 	"bin": {
@@ -32,19 +31,23 @@
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
-		"bundlesize": "pnpm tsup && npm pack --dry-run",
+		"bundlesize": "pnpm tsup --metafile && npm pack --dry-run",
 		"dev": "pnpm tsup --env.mode dev",
-		"build": "pnpm tsup --env.mode bundle",
-		"release": "pnpm typecheck && pnpm publish --no-git-checks"
+		"build": "pnpm tsup --env.mode release && npm pack --dry-run",
+		"release": "pnpm typecheck && pnpm publish --no-git-checks",
+		"prerelease": "pnpm typecheck && pnpm build && pnpm version prerelease --preid=rc"
 	},
 	"devDependencies": {
 		"@types/node": "^22.9.1",
 		"terser": "^5.39.0",
 		"tsup": "^8.3.5",
-		"typescript": "5.6.3"
+		"typescript": "5.6.3",
+		"jiti": "2.4.2"
 	},
 	"dependencies": {
-		"commander": "13.0.0",
-		"jiti": "2.4.2"
+		"commander": "13.1.0"
+	},
+	"peerDependencies": {
+		"@fatimajs/tools": "workspace:*"
 	}
 }

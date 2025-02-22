@@ -1,7 +1,7 @@
-import { logger } from "src/lib/logger/logger";
-import { parseValidationErrors } from "src/lib/utils/parse-validation";
+import { parseValidationErrors } from "lib/utils/parse-validation";
 import { createAction, type ActionContext } from "../utils/create-action";
-import { lifecycle } from "src/core/lifecycle";
+import { lifecycle } from "lib/lifecycle";
+import { logger } from "@fatimajs/tools/lib";
 
 export const validateService = async ({
 	env,

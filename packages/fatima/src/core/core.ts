@@ -1,7 +1,8 @@
-import { config } from "./config";
 import { adapters } from "./adapters";
-import { validators } from "./validators";
 import { linter } from "./linter";
-export * from "./types";
+import { validators } from "./validators";
 
-export { config, validators, adapters, linter };
+export { validators, linter, adapters };
+
+export * from "lib/config";
+export * from "lib/types";

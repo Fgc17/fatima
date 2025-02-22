@@ -1,4 +1,4 @@
-import type { AnyType } from "../../lib/types";
+import type { AnyType } from "@fatimajs/tools/lib";
 
 declare const Bun: AnyType;
 declare const Deno: AnyType;

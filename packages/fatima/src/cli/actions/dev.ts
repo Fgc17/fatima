@@ -1,10 +1,8 @@
 import { spawn } from "node:child_process";
-import { logger } from "src/lib/logger/logger";
-import { createClient } from "src/lib/client/generate-client";
-import { createInjectableEnv } from "src/lib/env/patch-env";
-import { fatimaStore } from "src/lib/store/store";
 import { createAction, type ActionContext } from "../utils/create-action";
-import { createHeaven } from "src/lib/heaven/heaven";
+import { createInjectableEnv, fatimaStore, logger } from "@fatimajs/tools/lib";
+import { createClient } from "lib/client/create-client";
+import { createHeaven } from "lib/env/create-heaven";
 
 const environmentBlacklist = [
 	"production",
@@ -23,9 +21,9 @@ export const devService = async ({
 	envCount,
 	args,
 }: ActionContext) => {
-	fatimaStore.set("fatimaDevMode", "true");
+	fatimaStore.set("devMode", "true");
 
-	const environment = fatimaStore.get("fatimaEnvironment") as string;
+	const environment = fatimaStore.get("environment") as string;
 
 	if (environmentBlacklist.includes(environment)) {
 		logger.error(
@@ -34,7 +32,7 @@ export const devService = async ({
 		process.exit(1);
 	}
 
-	if (!fatimaStore.get("fatimaLiteMode")) {
+	if (!fatimaStore.get("liteMode")) {
 		createClient(config, env);
 	}
 

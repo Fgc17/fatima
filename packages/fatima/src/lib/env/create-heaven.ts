@@ -1,7 +1,7 @@
-import type { FatimaConfig } from "src/core/config";
-import { reloadEnv } from "../env/reload-env";
-import { createFileWatcher } from "./file-watcher";
-import { createHeavenServer } from "./heaven-server";
+import type { FatimaConfig } from "../config";
+import { createFileWatcher } from "lib/heaven/file-watcher";
+import { createHeavenServer } from "lib/heaven/heaven-server";
+import { reloadEnv } from "./reload-env";
 
 export function createHeaven(config: FatimaConfig) {
 	let closeHeaven = () => {};

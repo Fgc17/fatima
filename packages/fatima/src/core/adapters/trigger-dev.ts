@@ -1,11 +1,9 @@
-import type {
-	FatimaBuiltInLoadFunction,
-	UnsafeEnvironmentVariables,
-} from "../types";
+import type { UnsafeEnvironmentVariables } from "@fatimajs/tools/lib";
+import type { FatimaBuiltInLoadFunction } from "lib/types";
 import { resolve } from "node:path";
 import { spawn } from "node:child_process";
-import { lifecycle } from "../lifecycle";
-import { getRuntime } from "src/lib/utils/get-runtime";
+import { lifecycle } from "lib/lifecycle";
+import { getRuntime } from "lib/utils/get-runtime";
 
 type TriggerDevClientMock = {
 	envvars: {

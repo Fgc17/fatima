@@ -8,10 +8,15 @@
 			"outputs": [".next/**", "!.next/cache/**", "dist"]
 		},
 		"release": {
-			"dependsOn": ["fatima#build", "create-fatima#build"]
+			"dependsOn": [
+				"@fatimajs/tools#release",
+				"@fatimajs/tools#build",
+				"fatima#build",
+				"create-fatima#build"
+			]
 		},
 		"typecheck": {
-			"dependsOn": ["^check-types"]
+			"dependsOn": ["^typecheck"]
 		},
 		"dev": {
 			"cache": false,

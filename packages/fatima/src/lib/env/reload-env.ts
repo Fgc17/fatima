@@ -1,16 +1,15 @@
-import type { FatimaConfig } from "src/core/config";
-import { lifecycle } from "src/core/lifecycle";
-import { loadEnv } from "src/lib/env/load-env";
-import { createClient } from "src/lib/client/generate-client";
-import { parseValidationErrors } from "src/lib/utils/parse-validation";
-import { fatimaStore } from "src/lib/store/store";
-import { logger } from "src/lib/logger/logger";
-import { compareArrays } from "src/lib/utils/compareArrays";
+import type { FatimaConfig } from "../config";
+import { fatimaStore, logger } from "@fatimajs/tools/lib";
+import { createClient } from "../client/create-client";
+import { lifecycle } from "../lifecycle";
+import { compareArrays } from "../utils/compare-arrays";
+import { parseValidationErrors } from "../utils/parse-validation";
+import { loadEnv } from "./load-env";
 
 export const reloadEnv = async (config: FatimaConfig) => {
-	const isClientGenerationEnabled = !fatimaStore.get("fatimaLiteMode");
+	const isClientGenerationEnabled = !fatimaStore.get("liteMode");
 
-	const previousEnvNames = fatimaStore.get("fatimaEnvNames").split("#");
+	const previousEnvNames = fatimaStore.get("envNames").split("#");
 
 	const { env, envCount } = await loadEnv(config);
 

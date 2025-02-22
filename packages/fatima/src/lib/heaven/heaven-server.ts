@@ -1,6 +1,6 @@
+import type { Promisable } from "@fatimajs/tools/lib";
+import { lifecycle } from "../lifecycle";
 import net from "node:net";
-import type { Promisable } from "../types";
-import { lifecycle } from "src/core/lifecycle";
 
 export const createHeavenServer = <T>(
 	port: number | string,

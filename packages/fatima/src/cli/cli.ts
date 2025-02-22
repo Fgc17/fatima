@@ -1,11 +1,10 @@
 #!/usr/bin/env node
-
 import { program } from "commander";
 import { generateAction } from "./actions/generate";
 import { devAction } from "./actions/dev";
 import { validateAction } from "./actions/validate";
 import { runAction } from "./actions/run";
-import { initializeEnv } from "src/lib/env/patch-env";
+import { initializeEnv } from "@fatimajs/tools/lib";
 import { reloadAction } from "./actions/reload";
 
 initializeEnv();

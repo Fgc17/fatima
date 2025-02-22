@@ -1,5 +1,5 @@
+import { logger } from "@fatimajs/tools/lib";
 import type { FatimaParsedValidationErrors } from "../types";
-import { logger } from "src/lib/logger/logger";
 
 const missingEnvironmentVariable = (env: string): never => {
 	logger.error(`Missing environment variable: ${env}`);
@@ -77,6 +77,17 @@ const missingBabelTransformClassProperties = () => {
 	process.exit(1);
 };
 
+const missinJitiModule = () => {
+	logger.error(
+		"You need to install 'jiti' as a dev dependency to use typescript config with Fatima.",
+		'Run: "pnpm i -D jiti", "yarn add -D jiti", "npm i -D jiti"',
+	);
+
+	console.log("");
+
+	process.exit(1);
+};
+
 const missingWatchPort = () => {
 	logger.error(
 		"You need to set 'config.reload.watch' to use the watch feature.",
@@ -120,6 +131,7 @@ export const error = {
 	environmentMixing,
 	invalidEnvironmentVariables,
 	missingBabelTransformClassProperties,
+	missinJitiModule,
 	missingWatchPort,
 	heavenPortAlreadyInUse,
 	undefinedEnvironmentFunctionReturn,
