@@ -1,12 +1,13 @@
+import type { FatimaBuiltInLoadFunction } from "lib/types";
 import {
 	type UnsafeEnvironmentVariables,
 	createInjectableEnv,
 	logger,
 } from "@fatimajs/tools/lib";
-import type { FatimaBuiltInLoadFunction } from "lib/types";
 import { spawn } from "node:child_process";
 import { existsSync, promises as fs } from "node:fs";
 import { lifecycle } from "lib/lifecycle";
+import { parseEnvLines } from "lib/env/parse-env";
 
 export type VercelParseFunction = (
 	envFileContent: string,
@@ -41,10 +42,7 @@ export interface VercelLoadConfig {
 }
 
 const load =
-	(
-		parse: VercelParseFunction,
-		config?: VercelLoadConfig,
-	): FatimaBuiltInLoadFunction =>
+	(config?: VercelLoadConfig): FatimaBuiltInLoadFunction =>
 	async () => {
 		try {
 			const isProjectLinked = existsSync("./.vercel");
@@ -104,7 +102,7 @@ const load =
 
 			const envFileContent = await fs.readFile(".tmp.vercel.env", "utf-8");
 
-			const envVariables = parse(envFileContent);
+			const envVariables = parseEnvLines(envFileContent);
 
 			await fs.unlink(".tmp.vercel.env");
 
