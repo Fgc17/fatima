@@ -1,10 +1,10 @@
+import type { FatimaConfig } from "lib/config";
+import type { FatimaLoadFunction } from "lib/types";
 import {
 	fatimaStore,
 	logger,
 	type UnsafeEnvironmentVariables,
 } from "@fatimajs/tools/lib";
-import type { FatimaLoadFunction } from "lib/types";
-import type { FatimaConfig } from "../config";
 import { lifecycle } from "../lifecycle";
 
 export async function loadEnv(config: FatimaConfig) {
