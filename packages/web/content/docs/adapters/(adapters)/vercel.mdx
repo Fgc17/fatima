@@ -45,13 +45,12 @@ Just grab your `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` from you
 
 ```ts title="env.config.ts"
 import { config, adapters } from "fatima";
-import { parse } from "dotenv";
 
 export default config({
   load: {
     development: [
       adapters.local.load(".env"),
-      adapters.vercel.load(parse, {
+      adapters.vercel.load({
         // Check out here with intellisense
       }),
       // You may want to overwrite some values from vercel
