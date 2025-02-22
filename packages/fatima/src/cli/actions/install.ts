@@ -64,6 +64,11 @@ const getInstallArgs = (
 	return [installCommand, installFlag, ...packageArray];
 };
 
+const isTypescriptProject = (): boolean => {
+	const tsConfigPath = resolve(process.cwd(), "tsconfig.json");
+	return existsSync(tsConfigPath);
+};
+
 const installService = () => {
 	fatimaStore.set("environment", "installation");
 
@@ -107,6 +112,12 @@ const installService = () => {
 			});
 		});
 	};
+
+	const devDependencies = ["fatima@latest"];
+
+	if (isTypescriptProject()) {
+		devDependencies.push("jiti@2.4.2");
+	}
 
 	const installDevDependencies = () =>
 		installDependency("fatima@latest", "dev", "fatima (as dev)");
