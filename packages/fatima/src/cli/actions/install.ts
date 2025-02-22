@@ -1,7 +1,7 @@
+import { debug, fatimaStore, logger } from "@fatimajs/tools/lib";
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { createAction } from "../utils/create-action";
 
 const LOCK_FILE_NAMES = {
 	npm: "package-lock.json",
@@ -11,6 +11,8 @@ const LOCK_FILE_NAMES = {
 };
 
 type PackageManager = keyof typeof LOCK_FILE_NAMES;
+
+type DependencyType = "dev" | "runtime";
 
 const getPackageManager = (): {
 	manager: PackageManager;
@@ -48,55 +50,87 @@ const checkLockFile = (manager: PackageManager): boolean => {
 	return existsSync(resolve(process.cwd(), lockFileName));
 };
 
-const getInstallArgs = (manager: PackageManager): string[] => {
-	const devPackageName = "fatima@latest";
-	const runtimePackageName = "@fatimajs/tools@latest";
+const getInstallArgs = (
+	manager: PackageManager,
+	packages: string | string[],
+	type: DependencyType,
+): string[] => {
 	const devFlag = manager === "bun" ? "-d" : "-D";
+	const installFlag = type === "dev" ? devFlag : "";
+	const installCommand = manager === "npm" ? "install" : "add";
 
-	switch (manager) {
-		case "yarn":
-		case "pnpm":
-		case "bun":
-			return ["add", devFlag, devPackageName, runtimePackageName];
-		case "npm":
-			return ["install", devFlag, devPackageName, runtimePackageName];
-		default:
-			console.error(`Error: Unknown package manager: ${manager}`);
-			return [];
-	}
+	const packageArray = Array.isArray(packages) ? packages : [packages];
+
+	return [installCommand, installFlag, ...packageArray];
 };
 
 const installService = () => {
+	fatimaStore.set("environment", "installation");
+
 	const { manager } = getPackageManager();
-	const args = getInstallArgs(manager);
-	const dependencyTypes = "fatima (as dev) and @fatimajs/tools (as runtime)";
 
-	if (args.length === 0) {
-		console.warn("No install arguments generated. Skipping installation.");
-		return;
-	}
+	const installErrorMessage = (dependency: string, code: number | null) =>
+		`Error installing ${dependency} with ${manager}: process exited with code ${code}`;
 
-	const installProcess = spawn(manager, args, {
-		stdio: "inherit",
-		shell: false,
-	});
+	const installDependency = (
+		packages: string | string[],
+		type: "dev" | "runtime",
+		dependency: string,
+	): Promise<void> => {
+		const installArgs = getInstallArgs(manager, packages, type);
 
-	installProcess.on("close", (code) => {
-		if (code !== 0) {
-			console.error(
-				`Error installing ${dependencyTypes} with ${manager}: process exited with code ${code}`,
+		if (installArgs.length === 0) {
+			console.warn(
+				`No install arguments generated for ${dependency}. Skipping installation.`,
 			);
-			return;
+			return Promise.resolve();
 		}
-		console.log("Packages installed successfully!");
-	});
 
-	installProcess.on("error", (err) => {
-		console.error(
-			`Failed to start child process for ${dependencyTypes} install with ${manager}.`,
-			err,
+		return new Promise<void>((resolve, reject) => {
+			const installProcess = spawn(manager, installArgs, {
+				stdio: "inherit",
+				shell: false,
+			});
+
+			installProcess.on("close", (code) => {
+				if (code !== 0) {
+					logger.error(installErrorMessage(dependency, code));
+					reject(new Error(`Install process exited with code ${code}`));
+					return;
+				}
+				resolve();
+			});
+
+			installProcess.on("error", (err) => {
+				logger.error(installErrorMessage(dependency, null));
+				reject(err);
+			});
+		});
+	};
+
+	const installDevDependencies = () =>
+		installDependency("fatima@latest", "dev", "fatima (as dev)");
+
+	const installRuntimeDependencies = () =>
+		installDependency(
+			"@fatimajs/tools@latest",
+			"runtime",
+			"@fatimajs/tools (as runtime)",
 		);
-	});
+
+	Promise.resolve()
+		.then(installDevDependencies)
+		.then(installRuntimeDependencies)
+		.then(() => logger.success("🎉 Installation complete."))
+		.catch((e) => {
+			logger.error(
+				"An error happened, sorry for the inconvenience 😔",
+				"Alternatively, you can:",
+				"	1. Install manually: 'npm install -D fatima && @fatimajs/tools'",
+				"	2. Run with --debug flag and tell us on github about the error",
+			);
+			debug.error(e);
+		});
 };
 
-export const installAction = createAction(installService, false);
+export const installAction = installService;

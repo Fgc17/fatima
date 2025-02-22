@@ -36,6 +36,6 @@ command("dev")
 
 command("reload").action(reloadAction);
 
-program.command("install").action(installAction);
+command("install").action(installAction);
 
 program.parse();
