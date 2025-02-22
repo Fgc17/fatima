@@ -3,51 +3,51 @@ import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 
-const LOCK_FILE_NAMES = {
+const lockfiles = {
 	npm: "package-lock.json",
 	pnpm: "pnpm-lock.yaml",
 	yarn: "yarn.lock",
 	bun: "bun.lockb",
 };
 
-type PackageManager = keyof typeof LOCK_FILE_NAMES;
+type PackageManager = keyof typeof lockfiles;
 
 type DependencyType = "dev" | "runtime";
 
-const getPackageManager = (): {
-	manager: PackageManager;
-	hasLockFile: boolean;
-} => {
+const resolveManagerFromAgent = (): PackageManager => {
 	const userAgent = process.env.npm_config_user_agent;
 
-	if (!userAgent) {
-		console.warn(
-			"Warning: Could not determine npm_config_user_agent. Defaulting to npm.",
-		);
-		return { manager: "npm", hasLockFile: checkLockFile("npm") };
-	}
-
-	const manager = detectPackageManager(userAgent);
-
-	return { manager, hasLockFile: checkLockFile(manager) };
-};
-
-const detectPackageManager = (userAgent: string): PackageManager => {
-	if (userAgent.includes("pnpm")) {
+	if (userAgent?.includes("pnpm")) {
 		return "pnpm";
 	}
-	if (userAgent.includes("yarn")) {
+
+	if (userAgent?.includes("yarn")) {
 		return "yarn";
 	}
-	if (userAgent.includes("bun")) {
+
+	if (userAgent?.includes("bun")) {
 		return "bun";
 	}
+
 	return "npm";
 };
 
-const checkLockFile = (manager: PackageManager): boolean => {
-	const lockFileName = LOCK_FILE_NAMES[manager];
-	return existsSync(resolve(process.cwd(), lockFileName));
+const resolveManagerFromLock = () => {
+	for (const [manager, name] of Object.entries(lockfiles)) {
+		if (existsSync(resolve(process.cwd(), name))) {
+			return manager as PackageManager;
+		}
+	}
+};
+
+const detectPackageManager = (): PackageManager => {
+	const managerFromLock = resolveManagerFromLock();
+
+	if (managerFromLock) {
+		return managerFromLock;
+	}
+
+	return resolveManagerFromAgent();
 };
 
 const getInstallArgs = (
@@ -72,7 +72,7 @@ const isTypescriptProject = (): boolean => {
 const installService = () => {
 	fatimaStore.set("environment", "installation");
 
-	const { manager } = getPackageManager();
+	const manager = detectPackageManager();
 
 	const installErrorMessage = (dependency: string, code: number | null) =>
 		`Error installing ${dependency} with ${manager}: process exited with code ${code}`;
