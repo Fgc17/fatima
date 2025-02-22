@@ -8,7 +8,7 @@ Visit https://fatimajs.vercel.app to see the documentation.
 
 Visit [https://npmjs.com/package/fatima](https://www.npmjs.com/package/fatima) to see the registry.
 
-# Init CLI
+## Init CLI
 
 ```bash
 npx init fatima@latest
