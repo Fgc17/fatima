@@ -13,13 +13,13 @@
 		"strictNullChecks": true,
 		"forceConsistentCasingInFileNames": true,
 		"useUnknownInCatchVariables": false,
-		"baseUrl": "./",
-		"outDir": "./dist",
-		"rootDir": "./",
 		"noEmit": true,
 		"paths": {
 			"lib/*": ["./src/lib/*"]
-		}
+		},
+		"baseUrl": "./",
+		"outDir": "./dist",
+		"rootDir": "./"
 	},
 	"include": ["./src/**/*.ts"],
 	"exclude": ["node_modules", "dist"]
