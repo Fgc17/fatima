@@ -43,11 +43,6 @@ yarn dlx fatima@latest add
 
 </Tabs>
 
-This will install:
-
-- `@fatimajs/tools` as a **runtime** dependency (unpacked: 9kb).
-- `fatima` and maybe `jiti` as **development** dependencies.
-
 ### Configuration file
 
 Let's load some stuff from `.env`, declare a `publicPrefix` and then validate everything with `zod`.
@@ -222,7 +217,7 @@ export async function GET() {
 
 ### Run your app with fatima
 
-This will load, generate and inject the environment variables into your app.
+The development command will load, generate and inject the environment variables into your app.
 
 ```json title="package.json"
 {
@@ -250,7 +245,7 @@ env.js
 
 ### Overview
 
-At the end of the setup, your project should look like something around this:
+At the end, your project should look like this:
 
 <Tabs groupId='languages' persist items={['typescript', 'javascript']}>
 
