@@ -1,5 +1,7 @@
-import type { UnsafeEnvironmentVariables } from "@fatimajs/tools/lib";
-import type { FatimaBuiltInLoadFunction } from "lib/types";
+import type {
+	FatimaBuiltInLoadFunction,
+	UnsafeEnvironmentVariables,
+} from "lib/types";
 import { resolve } from "node:path";
 import { spawn } from "node:child_process";
 import { lifecycle } from "lib/lifecycle";

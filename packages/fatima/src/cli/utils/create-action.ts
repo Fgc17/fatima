@@ -1,13 +1,13 @@
 import type { FatimaConfig } from "lib/config";
+import { readConfig } from "lib/config/read-config";
+import { resolveConfigPath } from "lib/config/resolve-config-path";
+import { loadEnv } from "lib/env/load-env";
+import { fatimaStore } from "lib/store";
 import type {
 	UnsafeEnvironmentVariables,
 	Promisable,
 	AnyType,
-} from "@fatimajs/tools/lib";
-import { readConfig } from "lib/config/read-config";
-import { resolveConfigPath } from "lib/config/resolve-config-path";
-import { initializeFatimaStore } from "lib/store";
-import { loadEnv } from "lib/env/load-env";
+} from "lib/types";
 
 export interface ActionContext {
 	config: FatimaConfig;
@@ -32,7 +32,7 @@ export const createAction = (
 
 		const config = await readConfig(configPath);
 
-		initializeFatimaStore(config, options);
+		fatimaStore.initialize(config, options);
 
 		if (load) {
 			const { env, envCount } = await loadEnv(config);

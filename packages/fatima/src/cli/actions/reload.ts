@@ -1,5 +1,6 @@
-import { debug, logger } from "@fatimajs/tools/lib";
+import { logger } from "lib/logger";
 import { createAction, type ActionContext } from "../utils/create-action";
+import { debug } from "lib/debugger";
 
 export const reloadService = async ({ config }: ActionContext) => {
 	const port = config.heaven;

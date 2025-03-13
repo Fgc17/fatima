@@ -1,13 +1,13 @@
-import {
-	type UnsafeEnvironmentVariables,
-	type AnyType,
-	fatimaStore,
-} from "@fatimajs/tools/lib";
-import type { FatimaValidator } from "lib/types";
+import type {
+	AnyType,
+	FatimaValidator,
+	UnsafeEnvironmentVariables,
+} from "lib/types";
+import { fatimaStore } from "lib/store";
 import { spawn } from "node:child_process";
+import { readConfig } from "lib/config/read-config";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { readConfig } from "lib/config/read-config";
 
 export type TypiaFunction = (env: UnsafeEnvironmentVariables) => {
 	success: boolean;

@@ -1,4 +1,4 @@
-import type { Promisable } from "@fatimajs/tools/lib";
+import type { Promisable } from "lib/types";
 import { lifecycle } from "../lifecycle";
 import net from "node:net";
 

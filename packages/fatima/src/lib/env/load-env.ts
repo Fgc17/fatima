@@ -1,11 +1,8 @@
 import type { FatimaConfig } from "lib/config";
-import type { FatimaLoadFunction } from "lib/types";
-import {
-	fatimaStore,
-	logger,
-	type UnsafeEnvironmentVariables,
-} from "@fatimajs/tools/lib";
+import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "lib/types";
 import { lifecycle } from "../lifecycle";
+import { logger } from "lib/logger";
+import { fatimaStore } from "lib/store";
 
 export async function loadEnv(config: FatimaConfig) {
 	try {
@@ -54,7 +51,7 @@ export async function loadEnv(config: FatimaConfig) {
 			return lifecycle.error.environmentMixing(initialNodeEnv, finalEnv);
 		}
 
-		fatimaStore.set("envNames", Object.keys(env).join("#"));
+		fatimaStore.set("envNames", Object.keys(env));
 
 		return {
 			env,

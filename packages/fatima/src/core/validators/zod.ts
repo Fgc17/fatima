@@ -1,5 +1,4 @@
-import type { UnsafeEnvironmentVariables } from "@fatimajs/tools/lib";
-import type { FatimaValidator } from "lib/types";
+import type { FatimaValidator, UnsafeEnvironmentVariables } from "lib/types";
 
 export type ZodSchemaMock = {
 	safeParse: (env: unknown) => {

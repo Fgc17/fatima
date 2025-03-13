@@ -1,13 +1,13 @@
-import type { FatimaBuiltInLoadFunction } from "lib/types";
-import {
-	type UnsafeEnvironmentVariables,
-	createInjectableEnv,
-	logger,
-} from "@fatimajs/tools/lib";
+import type {
+	FatimaBuiltInLoadFunction,
+	UnsafeEnvironmentVariables,
+} from "lib/types";
 import { spawn } from "node:child_process";
 import { existsSync, promises as fs } from "node:fs";
 import { lifecycle } from "lib/lifecycle";
 import { parseEnvLines } from "lib/env/parse-env";
+import { createInjectableEnv } from "lib/env/patch-env";
+import { logger } from "lib/logger";
 
 export type VercelParseFunction = (
 	envFileContent: string,

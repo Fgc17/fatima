@@ -1,10 +1,10 @@
-import type { AnyType } from "@fatimajs/tools/lib";
+import type { AnyType } from "lib/types";
 
 declare const Bun: AnyType;
 declare const Deno: AnyType;
 
 export const getRuntime = () => {
-	let runtime = "";
+	let runtime = "" as "node" | "bun" | "deno";
 
 	if (process.release.name === "node") {
 		runtime = "node";

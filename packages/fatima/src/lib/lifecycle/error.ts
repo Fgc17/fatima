@@ -1,4 +1,4 @@
-import { logger } from "@fatimajs/tools/lib";
+import { logger } from "lib/logger";
 import type { FatimaParsedValidationErrors } from "../types";
 
 const missingEnvironmentVariable = (env: string): never => {

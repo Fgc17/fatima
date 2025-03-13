@@ -1,9 +1,9 @@
 import type { FatimaConfig } from ".";
-import { logger } from "@fatimajs/tools/lib";
 import { createRequire } from "node:module";
 import { isTypescriptFile } from "src/lib/utils/is-typescript";
 import { isFatimaConfig } from "./utils";
 import { lifecycle } from "lib/lifecycle";
+import { logger } from "lib/logger";
 
 const require = createRequire(import.meta.url);
 

@@ -1,5 +1,7 @@
-import type { FatimaBuiltInLoadFunction } from "lib/types";
-import type { UnsafeEnvironmentVariables } from "@fatimajs/tools/lib";
+import type {
+	FatimaBuiltInLoadFunction,
+	UnsafeEnvironmentVariables,
+} from "lib/types";
 import { lifecycle } from "lib/lifecycle";
 
 export interface HerokuLoadOptions {

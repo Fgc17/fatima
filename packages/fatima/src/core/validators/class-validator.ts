@@ -1,5 +1,8 @@
-import type { AnyType, UnsafeEnvironmentVariables } from "@fatimajs/tools/lib";
-import type { FatimaValidator } from "lib/types";
+import type {
+	AnyType,
+	FatimaValidator,
+	UnsafeEnvironmentVariables,
+} from "lib/types";
 import { lifecycle } from "lib/lifecycle";
 
 export type ClassValidatorValidateMock = (instance: AnyType) => Promise<

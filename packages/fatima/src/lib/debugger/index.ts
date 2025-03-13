@@ -1,4 +1,4 @@
-import { fatimaStore } from "../lib";
+import { fatimaStore } from "lib/store";
 
 const utils = {
 	error: console.error,

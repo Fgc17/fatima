@@ -4,9 +4,8 @@ import { generateAction } from "./actions/generate";
 import { devAction } from "./actions/dev";
 import { validateAction } from "./actions/validate";
 import { runAction } from "./actions/run";
-import { initializeEnv } from "@fatimajs/tools/lib";
 import { reloadAction } from "./actions/reload";
-import { installAction } from "./actions/install";
+import { initializeEnv } from "lib/env/patch-env";
 
 initializeEnv();
 
@@ -36,7 +35,5 @@ command("dev")
 	.action(devAction);
 
 command("reload").action(reloadAction);
-
-command("install").alias("i").alias("add").action(installAction);
 
 program.parse();

@@ -1,4 +1,5 @@
 import { defineConfig, type Options } from "tsup";
+import { rawImportPlugin } from "./plugins/esbuild-raw-import-plugin";
 
 const createEntries = (...entries: string[]) => {
 	return entries.map((entry) => {
@@ -13,6 +14,7 @@ export default defineConfig((opts) => {
 		shims: true,
 		platform: "node",
 		removeNodeProtocol: false,
+		esbuildPlugins: [rawImportPlugin()],
 	};
 
 	const release: Options = {
