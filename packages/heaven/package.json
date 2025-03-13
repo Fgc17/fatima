@@ -1,38 +1,20 @@
 {
-	"name": "@fatimajs/tools",
-	"description": "tooling for Fatima",
+	"name": "@fatimajs/heaven",
+	"description": "the heaven client for fatima",
 	"author": "Fernando Coelho",
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.0.1",
+	"version": "0.0.0",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Fgc17/fatima.git"
 	},
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"type": "module",
-	"exports": {
-		"./env": "./dist/env/env.cjs",
-		"./heaven": "./dist/heaven/heaven.cjs",
-		"./lib": "./dist/lib/lib.cjs"
-	},
-	"typesVersions": {
-		"*": {
-			"env": [
-				"./dist/env/env.d.cts"
-			],
-			"heaven": [
-				"./dist/heaven/heaven.d.cts"
-			],
-			"lib": [
-				"./dist/lib/lib.d.cts"
-			]
-		}
-	},
+	"types": "./dist/heaven.d.cts",
+	"main": "./dist/heaven.cjs",
 	"scripts": {
 		"typecheck": "tsc --noEmit",
 		"bundlesize": "pnpm tsup --env.mode release --metafile && npm pack --dry-run",

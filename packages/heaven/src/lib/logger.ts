@@ -1,4 +1,4 @@
-import { fatimaStore } from "../lib";
+import { fatimaStore } from "./store";
 
 const join = (message: string[]) => {
 	const env = fatimaStore.get("environment") ?? "EnvironmentNotFound";
@@ -7,7 +7,7 @@ const join = (message: string[]) => {
 };
 
 const block = (message: string) => {
-	const isFirstLog = fatimaStore.get("logs") === "1";
+	const isFirstLog = fatimaStore.get("logs") === 1;
 
 	let block = message;
 
@@ -38,9 +38,7 @@ export const logger: Record<LogTheme, (...messages: string[]) => void> =
 				const [open, close] = colors[level as LogTheme];
 				const message = join(messages);
 
-				const currentLogCount = Number(fatimaStore.get("logs") ?? "0");
-
-				fatimaStore.set("logs", (currentLogCount + 1).toString());
+				fatimaStore.set("logs", fatimaStore.get("logs") + 1);
 
 				console.log(`\u001B[${open}m ${block(message)} \u001B[${close}m`);
 			};

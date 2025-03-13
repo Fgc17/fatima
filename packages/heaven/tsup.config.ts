@@ -1,14 +1,8 @@
 import { defineConfig, type Options } from "tsup";
 
-const createEntries = (...entries: string[]) => {
-	return entries.map((entry) => {
-		return `src/${entry}/${entry}.ts`;
-	});
-};
-
 export default defineConfig((opts) => {
 	const config: Options = {
-		entry: createEntries("env", "heaven", "lib"),
+		entry: ["./src/heaven.ts"],
 		dts: true,
 		shims: true,
 		clean: true,
