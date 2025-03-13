@@ -9,14 +9,13 @@
 		"type": "git",
 		"url": "git+https://github.com/Fgc17/fatima.git"
 	},
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"type": "module",
 	"bin": {
 		"create-fatima": "./dist/bin.cjs"
 	},
 	"scripts": {
+		"test": "vitest",
 		"typecheck": "tsc --noEmit",
 		"build": "rm -rf dist && tsc && pnpm tsup",
 		"dev": "pnpm run build --watch",

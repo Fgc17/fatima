@@ -16,8 +16,11 @@
 		"baseUrl": "./",
 		"outDir": "./dist",
 		"rootDir": "./",
-		"noEmit": true
+		"noEmit": true,
+		"paths": {
+			"@/*": ["./src/*"]
+		}
 	},
-	"include": ["./src/**/*.ts"],
+	"include": ["./src/**/*.ts", "./test/**/*.ts"],
 	"exclude": ["node_modules", "dist"]
 }
