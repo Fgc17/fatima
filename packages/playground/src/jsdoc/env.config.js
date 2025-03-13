@@ -18,4 +18,7 @@ module.exports = config({
 	},
 	validate: validators.zod(z.object(constraint)),
 	environment: () => process.env.NODE_ENV ?? "development",
+	client: {
+		publicPrefix: "PUBLIC_"
+	}
 });
