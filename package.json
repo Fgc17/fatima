@@ -2,13 +2,13 @@
 	"name": "repo",
 	"private": true,
 	"scripts": {
-		"build": "turbo build",
+		"lint": "turbo lint",
+		"format": "turbo format",
 		"dev": "turbo dev",
-		"release": "turbo release",
-		"lint": "biome lint --error-on-warnings",
-		"format": "biome format --write",
+		"build": "turbo build",
 		"change": "changeset",
-		"bump": "changeset version"
+		"bump": "changeset version",
+		"release": "turbo release"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",

@@ -2,6 +2,22 @@
 	"$schema": "https://turbo.build/schema.json",
 	"ui": "tui",
 	"tasks": {
+		"typecheck": {
+			"dependsOn": ["^typecheck"]
+		},
+		"lint": {
+			"dependsOn": ["^lint"]
+		},
+		"test": {
+			"dependsOn": ["^test"]
+		},
+		"format": {
+			"dependsOn": ["^format"]
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
+		},
 		"build": {
 			"dependsOn": ["^build"],
 			"inputs": ["$TURBO_DEFAULT$", ".env*"],
@@ -13,13 +29,6 @@
 				"fatima#build",
 				"create-fatima#build"
 			]
-		},
-		"typecheck": {
-			"dependsOn": ["^typecheck"]
-		},
-		"dev": {
-			"cache": false,
-			"persistent": true
 		}
 	}
 }

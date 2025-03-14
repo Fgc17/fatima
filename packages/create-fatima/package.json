@@ -15,10 +15,12 @@
 		"create-fatima": "./dist/bin.cjs"
 	},
 	"scripts": {
-		"test": "vitest",
+		"format": "biome format --write",
+		"lint": "biome lint --error-on-warnings",
 		"typecheck": "tsc --noEmit",
-		"build": "rm -rf dist && tsc && pnpm tsup",
 		"dev": "pnpm run build --watch",
+		"test": "vitest",
+		"build": "rm -rf dist && tsc && pnpm tsup",
 		"release": "pnpm publish --no-git-checks"
 	},
 	"devDependencies": {
