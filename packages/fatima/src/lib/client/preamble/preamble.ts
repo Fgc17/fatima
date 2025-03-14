@@ -22,7 +22,8 @@ const logError = (...messages) => {
 
 const undefinedEnvironment = (key) => {
 	logError(`Environment variable ${key} not found.`);
-	process.exit(1);
+
+	throw "Environment variable not found";
 };
 
 const undefinedEnvironmentAndStore = (key) => {
@@ -30,7 +31,8 @@ const undefinedEnvironmentAndStore = (key) => {
 		`Environment variable ${key} not found.`,
 		"You might have forgotten to run: fatima dev -g -- 'your-command'",
 	);
-	process.exit(1);
+
+	throw "Environment variable not found";
 };
 
 const createEnv = (options) => {
