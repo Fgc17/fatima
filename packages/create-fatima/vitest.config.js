@@ -1,12 +1,12 @@
-import path from 'path'
+import path from "node:path";
 
 export default {
-  test: {
-    globals: true,
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src')
-    },
-  },
-}
+	test: {
+		globals: true,
+	},
+	resolve: {
+		alias: {
+			"@": path.resolve(__dirname, "./src"),
+		},
+	},
+};
