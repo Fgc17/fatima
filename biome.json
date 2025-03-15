@@ -12,7 +12,7 @@
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab",
-		"include": ["**/*.ts", "**/*.tsx", "**/*.json"],
+		"include": ["**/*.ts", "**/*.js", "**/*.tsx", "**/*.css", "**/*.json"],
 		"ignore": [".next", "dist", "node_modules"]
 	},
 	"linter": {
@@ -24,7 +24,7 @@
 				"noParameterAssign": "off"
 			}
 		},
-		"include": ["**/*.ts", "**/*.tsx", "**/*.json"],
+		"include": ["**/*.ts", "**/*.js", "**/*.tsx", "**/*.css", "**/*.json"],
 		"ignore": [".next", "dist", "node_modules"]
 	},
 	"organizeImports": {
