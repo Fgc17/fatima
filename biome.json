@@ -13,7 +13,7 @@
 		"enabled": true,
 		"indentStyle": "tab",
 		"include": ["**/*.ts", "**/*.js", "**/*.tsx", "**/*.css", "**/*.json"],
-		"ignore": [".next", "dist", "node_modules"]
+		"ignore": [".next", ".turbo", ".source", "node_modules"]
 	},
 	"linter": {
 		"enabled": true,
@@ -25,7 +25,7 @@
 			}
 		},
 		"include": ["**/*.ts", "**/*.js", "**/*.tsx", "**/*.css", "**/*.json"],
-		"ignore": [".next", "dist", "node_modules"]
+		"ignore": [".next", ".turbo", ".source", "dist", "node_modules"]
 	},
 	"organizeImports": {
 		"enabled": true
