@@ -1,122 +1,128 @@
 # fatima
 
+## 0.0.21
+
+### Patch Changes (2025/03/15)
+
+- remove "fatima/tools" and "jiti" install requirements, now 0kb on production.
+
 ## 0.0.20
 
-### Patch Changes (02/22/2025)
+### Patch Changes (2025/02/22)
 
-- added command aliases
-- added jiti as automatically installed dependency
+- add command aliases
+- add jiti as automatically installed dependency
 
 ## 0.0.19
 
-### Patch Changes (02/22/2025)
+### Patch Changes (2025/02/22)
 
-- removed vercel loader parse option
-- added 'fatima install' command
-- turned fatima into a real dev dependency
+- remove vercel loader parse option
+- add 'fatima install' command
+- turn fatima into a real dev dependency
 
 ## 0.0.18
 
 ### Patch Changes
 
-- reduced 40kb on bundlesize by implementing terser
+- reduce 40kb on bundlesize by implementing terser
 
 ## 0.0.17
 
 ### Patch Changes
 
-- implemented heaven, runtime env reloading solution
+- implement heaven, runtime env reloading solution
 
 ## 0.0.16
 
 ### Patch Changes
 
-- disabled removeNodeProtocol
+- disable removeNodeProtocol
 
 ## 0.0.15
 
 ### Patch Changes
 
-- improved instrumentation compatibility
+- improve instrumentation compatibility
 
 ## 0.0.14
 
 ### Patch Changes
 
-- improved logging and make instrumentation safer
+- improve logging and make instrumentation safer
 
 ## 0.0.13
 
 ### Patch Changes
 
-- added complete environment reloading support
+- add complete environment reloading support
 
 ## 0.0.12
 
 ### Patch Changes
 
-- added type abstraction and fix type errors
+- add type abstraction and fix type errors
 
 ## 0.0.11
 
 ### Patch Changes
 
-- removed inquirer dependency
+- remove inquirer dependency
 
 ## 0.0.10
 
 ### Patch Changes
 
-- removed transform decorators plugin depemdency
+- remove transform decorators plugin depemdency
 
 ## 0.0.9
 
 ### Patch Changes
 
-- added full lite mode support and performance improvements.
+- add full lite mode support and performance improvements.
 
 ## 0.0.8
 
 ### Patch Changes
 
-- ignored .env files starting with .tmp
+- ignore .env files starting with .tmp
 
 ## 0.0.7
 
 ### Patch Changes
 
-- improved publishing method
+- improve publishing method
 
 ## 0.0.6
 
 ### Patch Changes
 
-- implemented underlying type api, a reload command and general fixes
+- implement underlying type api, a reload command and general fixes
 
 ## 0.0.5
 
 ### Patch Changes
 
-- implemented environment configuration
+- implement environment configuration
 
 ## 0.0.4
 
 ### Patch Changes
 
-- made vercel load function more consistent
+- make vercel load function more consistent
 
 ## 0.0.3
 
 ### Patch Changes
 
-- improved warn for wrong environment
-- improved warn when NODE_ENV is undefined
+- improve warn for wrong environment
+- improve warn when NODE_ENV is undefined
 
 ## 0.0.2
 
 ### Patch Changes
 
-- fix: undefined environments in initializers
+- fix undefined environments in initializers
 
 ## 0.0.1
 

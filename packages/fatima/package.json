@@ -5,7 +5,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.0.20",
+	"version": "0.0.21",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -17,13 +17,11 @@
 	"main": "./dist/core/core.cjs",
 	"types": "./dist/core/core.d.cts",
 	"exports": {
-		".": "./dist/core/core.cjs",
-		"./lib": "./dist/lib/lib.cjs"
+		".": "./dist/core/core.cjs"
 	},
 	"typesVersions": {
 		"*": {
-			".": ["./dist/core/core.d.cts"],
-			"lib": ["./dist/lib/lib.d.cts"]
+			".": ["./dist/core/core.d.cts"]
 		}
 	},
 	"bin": {
