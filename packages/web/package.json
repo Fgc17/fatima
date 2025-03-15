@@ -3,6 +3,11 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
+		"------------- toolchain -------------": "-------------",
+		"format": "biome format --write",
+		"lint": "biome lint --error-on-warnings",
+		"typecheck": "tsc --noEmit",
+		"--------------------------": "-------------",
 		"build": "next build",
 		"dev": "next dev --turbopack",
 		"tunnel": "lt --port 3000 --subdomain fatima-tunnel",
