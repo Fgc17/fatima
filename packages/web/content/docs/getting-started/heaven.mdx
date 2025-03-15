@@ -7,7 +7,23 @@ Restarting a process is really annoying, especially when dealing with slow build
 
 ## Heaven, runtime reloading
 
-To enable runtime reloading, we will use `@fatimajs/tools/heaven` with the `watch` method.
+To enable runtime reloading, we will use `@fatimajs/heaven`, make sure to install it:
+
+<Tabs groupId='package-manager' persist items={['npm', 'pnpm', 'yarn']}>
+
+```bash tab="npm"
+npm init @fatimajs/heaven
+```
+
+```bash tab="pnpm"
+pnpm init @fatimajs/heaven
+```
+
+```bash tab="yarn"
+yarn create @fatimajs/heaven
+```
+
+</Tabs>
 
 <Tabs groupId='framework' persist items={['nextjs', 'nestjs']}>
 
@@ -15,7 +31,7 @@ To enable runtime reloading, we will use `@fatimajs/tools/heaven` with the `watc
 // Here we are using the 'instrumentation' entry hook to watch for changes
 export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
-    const { heaven } = await import("@fatimajs/tools/heaven");
+    const { heaven } = await import("@fatimajs/heaven");
 
     heaven.watch();
   }
@@ -26,7 +42,7 @@ export async function register() {
 // Here we are directly tweaking the app entry file to watch for changes
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { heaven } from "@fatimajs/tools/heaven";
+import { heaven } from "@fatimajs/heaven";
 
 async function bootstrap() {
   heaven.watch();
