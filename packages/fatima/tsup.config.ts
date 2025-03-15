@@ -15,6 +15,7 @@ export default defineConfig((opts) => {
 		platform: "node",
 		removeNodeProtocol: false,
 		esbuildPlugins: [rawImportPlugin()],
+		external: ["prettier", "@biomejs/biome"],
 	};
 
 	const release: Options = {

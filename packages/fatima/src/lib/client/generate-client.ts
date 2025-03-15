@@ -1,16 +1,10 @@
 import type { FatimaConfig } from "lib/config";
 import type { UnsafeEnvironmentVariables } from "lib/types";
+import path from "node:path";
 import { writeFileSync } from "node:fs";
 import { client } from "./client";
 import { getConfigLanguage } from "lib/config/config-language";
-import path from "node:path";
-import * as prettier from "prettier";
-
-const format = async (content: string) => {
-	return await prettier.format(content, {
-		parser: "typescript",
-	});
-};
+import { format } from "lib/utils/format";
 
 export async function generateClient(
 	config: FatimaConfig,
