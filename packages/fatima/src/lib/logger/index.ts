@@ -40,9 +40,15 @@ export const logger: Record<LogTheme, (...messages: string[]) => void> =
 
 				fatimaStore.set("logs", fatimaStore.get("logs") + 1);
 
-				console.log(`\u001B[${open}m ${block(message)} \u001B[${close}m`);
+				console.log(block(`\u001B[${open}m ${message} \u001B[${close}m`));
 			};
 			return acc;
 		},
 		{} as Record<LogTheme, (...messages: string[]) => void>,
 	);
+
+export const finishLog = () => {
+	if (process.env.npm_package_version) {
+		console.log("\r");
+	}
+};

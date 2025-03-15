@@ -6,6 +6,7 @@ import { validateAction } from "./actions/validate";
 import { runAction } from "./actions/run";
 import { reloadAction } from "./actions/reload";
 import { initializeEnv } from "lib/env/patch-env";
+import { finishLog } from "lib/logger";
 
 initializeEnv();
 
@@ -13,6 +14,8 @@ program
 	.name("fatima")
 	.version("0.0.17")
 	.description("typesafe environment variables for the js ecosystem");
+
+program.hook("postAction", finishLog);
 
 const command = (cmd: string) =>
 	program
