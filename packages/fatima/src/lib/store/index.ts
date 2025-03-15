@@ -25,7 +25,7 @@ const serialize = <T>(value: T): string => {
 
 	if (typeof value === "boolean") return value ? "b:t" : "b:f";
 
-	if (typeof value === "number") return "i:";
+	if (typeof value === "number") return "i:" + String(value);
 
 	if (Array.isArray(value))
 		return "a:" + value.map(encodeURIComponent).join("&");
@@ -71,6 +71,8 @@ export const fatimaStore = {
 		this.set("liteMode", Boolean(options.lite));
 		this.set("debug", Boolean(options.debug));
 		this.set("devMode", Boolean(options.devMode));
+
+		this.set("logs", 0);
 	},
 
 	get<K extends keyof FatimaStore>(key: K): FatimaStore[K] {
@@ -79,7 +81,12 @@ export const fatimaStore = {
 	},
 
 	set<K extends keyof FatimaStore>(key: K, value?: FatimaStore[K]) {
-		process.env[`fatima_${key}`] = serialize(value);
+		const serializedValue = serialize(value);
+
+		Object.defineProperty(process.env, `fatima_${key}`, {
+			value: serializedValue,
+			enumerable: true,
+		});
 	},
 
 	exists() {
