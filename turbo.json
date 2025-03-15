@@ -25,7 +25,7 @@
 		},
 		"release": {
 			"dependsOn": [
-				"@fatimajs/tools#build",
+				"@fatimajs/heaven#build",
 				"fatima#build",
 				"create-fatima#build"
 			]
