@@ -1,0 +1,40 @@
+---
+title: Deploy
+description: Deploying with Fatima is straightforward.
+---
+
+## How
+
+Currently, the only command you need for deploying is `fatima generate`.
+
+You may config as you want, I like to include it in hook scripts:
+
+```json title="package.json"
+{
+  "scripts": {
+    "preinstall": "fatima generate"
+  }
+}
+```
+
+Remember, as best practice _you should not commit your generated client_.
+
+## Bundling
+
+Fatima is a development dependency, it doesn't need to be bundled with your application.
+
+This is specially useful for frontend, as you will get 0kb onto your website bundle.
+
+## Should I use `fatima run` on production?
+
+No, you should not.
+
+You should not declare a `load.production` function.
+
+Instead, load your environment variables through your hosting provider, directly on the server.
+
+## What if I really want to use `fatima run`?
+
+You can, but you should not.
+
+Just declare a `load.production` function if you need any customization, and you're good to go.
