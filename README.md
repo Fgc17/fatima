@@ -25,15 +25,15 @@ yarn create fatima@latest
 ## Manual Setup
 
 ```bash
-npx fatima@latest install
+npm install -D fatima
 ```
 
 ```bash
-pnpm dlx fatima@latest add
+pnpm add -D fatima
 ```
 
 ```bash
-yarn dlx fatima@latest add
+yarn add -D fatima
 ```
 
 ## License
