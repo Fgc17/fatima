@@ -3,7 +3,7 @@
 		"index",
 		"getting-started",
 		"security",
-		"client-secrets",
+		"public-secrets",
 		"frameworks",
 		"environment-reloading",
 		"adapters",
