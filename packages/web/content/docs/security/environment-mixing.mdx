@@ -24,7 +24,7 @@ However, right after all secrets are loaded, Fatima injects them into `process.e
 
 If for some reason the `environment` function returns a different environment than the one loaded, Fatima will throw an error.
 
-By doing so we can add a double layer of security to make sure that the loaded secrets are from the same environment as the one we're asking them for, or vice-versa.
+That's why it is important to keep the return value of this function somehow linked to your environment variables. Everyone likes a double layer of security.
 
 <Callout type="info" title="Why 'processEnv' instead of 'process.env'?">
   The callback argument "processEnv" is useful to avoid using 'process.env'
@@ -48,9 +48,9 @@ Few people will define a `load.production` function in config, that's because `f
 
 Production variables should be loaded in CI/CD pipelines, directly into the hosting machine `process.env`.
 
-But if you actually defined `load.production` and you run the command described above, you will load production secrets into your local process. Not much to do here, Fatima can't help you with that.
+But if you actually define `load.production` and then run the command described above, you will load production secrets into your local process. Not much to do here, Fatima can't help you with that.
 
-As for the existance of the `fatima run` command, I've also questioned it, but it is nice for testing purposes.
+As for the existance of the `fatima run` command, I've also questioned it, but it can be useful in some cases, like running a script that needs access to secrets.
 
 ### 2. Setting the wrong environments in your secret storage
 
