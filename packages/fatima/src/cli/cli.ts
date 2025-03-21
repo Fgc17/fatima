@@ -7,21 +7,24 @@ import { runAction } from "./actions/run";
 import { reloadAction } from "./actions/reload";
 import { initializeEnv } from "lib/env/patch-env";
 import { finishLog } from "lib/logger";
+import { commander } from "./utils/commander";
 
 initializeEnv();
 
 program
 	.name("fatima")
-	.version("0.0.17")
-	.description("typesafe environment variables for the js ecosystem");
+	.version("0.0.22")
+	.description("safe environment variables for the js ecosystem");
 
-program.hook("postAction", finishLog);
-
-const command = (cmd: string) =>
-	program
-		.command(cmd)
+const command = commander(program, (base) =>
+	base
 		.option("-c, --config <config>, --config=<config>", "Config file path")
-		.option("-d, --debug", "Debug mode");
+		.option(
+			"-e, --environment <env>, --environment=<env>",
+			"Environment variables",
+		)
+		.option("-d, --debug", "Debug mode"),
+);
 
 command("generate").alias("g").action(generateAction);
 
@@ -38,5 +41,17 @@ command("dev")
 	.action(devAction);
 
 command("reload").action(reloadAction);
+
+command("help")
+	.alias("h")
+	.action(() => {
+		program.help();
+	});
+
+command()
+	.argument("<run-script...>", "The script to execute after --")
+	.action(runAction);
+
+process.on("exit", finishLog);
 
 program.parse();
