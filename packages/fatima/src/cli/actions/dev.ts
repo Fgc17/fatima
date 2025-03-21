@@ -1,10 +1,11 @@
-import { spawn } from "node:child_process";
-import { createAction, type ActionContext } from "../utils/create-action";
 import { generateClient } from "lib/client/generate-client";
 import { createHeaven } from "lib/env/create-heaven";
 import { createInjectableEnv } from "lib/env/patch-env";
+import { exec } from "lib/exec";
 import { logger } from "lib/logger";
 import { fatimaStore } from "lib/store";
+import { createAction } from "../utils/create-action";
+import { type EnvActionContext, envActionContext } from "../context/env";
 
 const environmentBlacklist = [
 	"production",
@@ -22,7 +23,7 @@ export const devService = async ({
 	env,
 	envCount,
 	args,
-}: ActionContext) => {
+}: EnvActionContext) => {
 	fatimaStore.set("devMode", true);
 
 	const environment = fatimaStore.get("environment") as string;
@@ -42,12 +43,9 @@ export const devService = async ({
 
 	const injectableEnv = createInjectableEnv(env);
 
-	const cmd = args.shift();
-
-	const child = spawn(cmd as string, args, {
+	const child = exec(args, {
 		env: injectableEnv,
 		shell: false,
-		stdio: ["inherit", "inherit", "inherit", "ipc"],
 	});
 
 	const { closeHeaven } = createHeaven(config);
@@ -67,4 +65,4 @@ export const devService = async ({
 	});
 };
 
-export const devAction = createAction(devService);
+export const devAction = createAction(devService, envActionContext);

@@ -1,9 +1,10 @@
-import { createAction, type ActionContext } from "../utils/create-action";
 import { generateClient } from "lib/client/generate-client";
 import { validateService } from "./validate";
 import { logger } from "lib/logger";
+import { createAction } from "../utils/create-action";
+import { type EnvActionContext, envActionContext } from "../context/env";
 
-export const generateService = async (ctx: ActionContext) => {
+export const generateService = async (ctx: EnvActionContext) => {
 	const { env, config, envCount } = ctx;
 
 	if (config.validate) {
@@ -17,4 +18,4 @@ export const generateService = async (ctx: ActionContext) => {
 	);
 };
 
-export const generateAction = createAction(generateService);
+export const generateAction = createAction(generateService, envActionContext);

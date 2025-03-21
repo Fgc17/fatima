@@ -1,12 +1,13 @@
 import { parseValidationErrors } from "lib/utils/parse-validation";
-import { createAction, type ActionContext } from "../utils/create-action";
 import { lifecycle } from "lib/lifecycle";
 import { logger } from "lib/logger";
+import { createAction } from "../utils/create-action";
+import { type EnvActionContext, envActionContext } from "../context/env";
 
 export const validateService = async ({
 	env,
 	config: { validate },
-}: ActionContext) => {
+}: EnvActionContext) => {
 	if (!validate) {
 		logger.error(
 			"Validate command was called but no validator was provided in the config.",
@@ -25,4 +26,4 @@ export const validateService = async ({
 	logger.success("Successfully validated environment variables");
 };
 
-export const validateAction = createAction(validateService);
+export const validateAction = createAction(validateService, envActionContext);

@@ -33,4 +33,4 @@ export const reloadService = async ({ config }: ActionContext) => {
 		});
 };
 
-export const reloadAction = createAction(reloadService, false);
+export const reloadAction = createAction(reloadService);

@@ -1,25 +1,18 @@
 import type { FatimaConfig } from "lib/config";
 import { readConfig } from "lib/config/read-config";
 import { resolveConfigPath } from "lib/config/resolve-config-path";
-import { loadEnv } from "lib/env/load-env";
 import { fatimaStore } from "lib/store";
-import type {
-	UnsafeEnvironmentVariables,
-	Promisable,
-	AnyType,
-} from "lib/types";
+import type { Promisable, AnyType } from "lib/types";
 
 export interface ActionContext {
-	config: FatimaConfig;
-	env: UnsafeEnvironmentVariables;
-	envCount: number;
-	args: string[];
 	options: Record<string, string>;
+	args: string[];
+	config: FatimaConfig;
 }
 
-export const createAction = (
-	action: (ctx: ActionContext) => Promisable<void>,
-	load = true,
+export const createAction = <T extends ActionContext>(
+	action: (ctx: T) => Promisable<void>,
+	contextFn?: (payload: ActionContext) => Promisable<T>,
 ) => {
 	return async (param1: AnyType, param2: AnyType) => {
 		const isParam1Array = Array.isArray(param1);
@@ -28,22 +21,20 @@ export const createAction = (
 
 		const options = isParam1Array ? param2 : param1;
 
+		fatimaStore.earlyInitialize();
+
 		const configPath = resolveConfigPath(options.config);
 
 		const config = await readConfig(configPath);
 
 		fatimaStore.initialize(config, options);
 
-		if (load) {
-			const { env, envCount } = await loadEnv(config);
+		const baseContext: ActionContext = { options, args, config };
 
-			await action({ config, env, envCount, args, options });
-		} else {
-			await action({ config, env: {}, envCount: 0, args, options });
-		}
+		const context = contextFn
+			? await contextFn(baseContext)
+			: (baseContext as T);
 
-		if (!process.env.npm_package_version) {
-			console.log("");
-		}
+		await action(context);
 	};
 };

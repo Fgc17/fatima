@@ -1,16 +1,14 @@
-import { spawn } from "node:child_process";
-import { createAction, type ActionContext } from "../utils/create-action";
+import { exec } from "lib/exec";
 import { createInjectableEnv } from "lib/env/patch-env";
+import { createAction } from "../utils/create-action";
+import { type EnvActionContext, envActionContext } from "../context/env";
 
-export const runService = async ({ env, args }: ActionContext) => {
-	const cmd = args.shift();
-
+export const runService = async ({ env, args }: EnvActionContext) => {
 	const injectableEnv = createInjectableEnv(env);
 
-	const child = spawn(cmd as string, [...args], {
+	const child = exec(args, {
 		env: injectableEnv,
 		shell: true,
-		stdio: "inherit",
 	});
 
 	child.on("error", (error) => {
@@ -26,4 +24,4 @@ export const runService = async ({ env, args }: ActionContext) => {
 	});
 };
 
-export const runAction = createAction(runService);
+export const runAction = createAction(runService, envActionContext);
