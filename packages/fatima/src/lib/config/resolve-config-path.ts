@@ -24,6 +24,13 @@ export function resolveConfigPath(configPath?: string): string {
 	if (configPath) {
 		const parsed = parse(configPath);
 
+		if (!parsed.ext) {
+			logger.error(
+				`No extension found in given config file path: ${configPath}`,
+			);
+			process.exit(1);
+		}
+
 		if (!extensions.includes(parsed.ext)) {
 			logger.error(`Invalid given config file extension: ${parsed.ext}`);
 			process.exit(1);
