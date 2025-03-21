@@ -4,8 +4,8 @@ export default defineConfig((opts) => {
 	const config: Options = {
 		entry: ["./src/heaven.ts"],
 		dts: true,
-		shims: true,
 		clean: true,
+		shims: true,
 		removeNodeProtocol: false,
 	};
 

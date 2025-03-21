@@ -12,6 +12,7 @@ export default defineConfig((opts) => {
 		entry: createEntries("core", "cli"),
 		dts: true,
 		shims: true,
+		clean: true,
 		platform: "node",
 		removeNodeProtocol: false,
 		esbuildPlugins: [rawImportPlugin()],
@@ -31,7 +32,6 @@ export default defineConfig((opts) => {
 	const dev: Options = {
 		watch: true,
 		sourcemap: true,
-		clean: true,
 	};
 
 	if (opts.env?.mode === "release") {
