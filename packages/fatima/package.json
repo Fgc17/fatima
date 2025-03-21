@@ -11,6 +11,7 @@
 		"type": "git",
 		"url": "git+https://github.com/Fgc17/fatima.git"
 	},
+	"homepage": "https://fatimajs.vercel.app",
 	"files": ["dist"],
 	"keywords": ["env", "typesafe", "typescript", "environment", "variable"],
 	"type": "module",
