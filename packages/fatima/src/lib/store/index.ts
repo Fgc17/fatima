@@ -54,15 +54,16 @@ const deserialize = <T>(serializedValue: SerializedValue | undefined): T => {
 };
 
 export const fatimaStore = {
-	initialize(config: FatimaConfig, options: Record<string, string | boolean>) {
-		this.set("envNames", []);
-
+	earlyInitialize() {
 		this.set("storeMarker", true);
-
+		this.set("logs", 0);
+		this.set("envNames", []);
+	},
+	initialize(config: FatimaConfig, options: Record<string, string | boolean>) {
 		this.set(
 			"environment",
 			(options.environment as string) ??
-			config.environment(process.env as UnsafeEnvironmentVariables),
+				config.environment(process.env as UnsafeEnvironmentVariables),
 		);
 
 		this.set("configPath", config.file.path);
@@ -72,10 +73,7 @@ export const fatimaStore = {
 		this.set("liteMode", Boolean(options.lite));
 		this.set("debug", Boolean(options.debug));
 		this.set("devMode", Boolean(options.devMode));
-
-		this.set("logs", 0);
 	},
-
 	get<K extends keyof FatimaStore>(key: K): FatimaStore[K] {
 		const rawValue = process.env[`fatima_${key}`] as SerializedValue;
 		return deserialize(rawValue);
