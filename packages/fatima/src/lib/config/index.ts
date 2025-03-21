@@ -15,23 +15,49 @@ export type FatimaOptions<
 	Environments extends FatimaEnvironment = FatimaEnvironment,
 > = {
 	/**
-	 * Anything you return here will become your environment variables
+	 * Defines how Fatima loads environment variables.
+	 *
+	 * This should be an object where keys represent different environments, and values
+	 * are arrays of functions responsible for loading the environment variables.
+	 *
+	 * Fatima determines the current environment using the `environment` function
+	 * and then loads variables accordingly.
+	 *
+	 * @type {Record<Environments, LoadFunction[]>}
 	 */
 	load: FatimaLoadObject<Environments>;
+
 	/**
-	 * The environment to pull the variables from, will be used in the load object.
+	 * A function responsible for determining the current environment.
+	 *
+	 * The return value of this function should match one of the environments
+	 * defined in the `load` object.
+	 *
+	 * @type {FatimaEnvironmentFunction}
 	 */
 	environment: FatimaEnvironmentFunction;
+
 	/**
-	 * Environment options
+	 * Optional configuration settings for the generated client.
+	 *
+	 * @type {FatimaClientOptions | undefined}
 	 */
 	client?: FatimaClientOptions;
+
 	/**
-	 * Function that will validate the environment variables
+	 * An optional function to validate the loaded environment variables.
+	 *
+	 * @type {FatimaValidator | undefined}
 	 */
 	validate?: FatimaValidator;
+
 	/**
-	 * A port number or 'false' to disable heaven
+	 * Configures the "heaven" feature, which listens on a specified port.
+	 *
+	 * - If set to a number, the heaven service will be enabled on that port.
+	 * - If set to `false`, the feature will be disabled.
+	 *
+	 * @default false
 	 */
 	heaven?: number | false;
 };
