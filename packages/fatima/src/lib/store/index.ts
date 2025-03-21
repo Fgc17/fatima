@@ -61,6 +61,7 @@ export const fatimaStore = {
 
 		this.set(
 			"environment",
+			(options.environment as string) ??
 			config.environment(process.env as UnsafeEnvironmentVariables),
 		);
 
