@@ -4,11 +4,22 @@ import { assign } from "comment-json";
 
 const tweakTypescript = () => {
 	tweakUserConfig("tsconfig.json", (config) => {
+		if (!config.compilerOptions) {
+			config.compilerOptions = {
+				paths: {
+					env: ["./env.ts"],
+				},
+			};
+
+			return config;
+		}
+
 		config.compilerOptions = assign(config.compilerOptions, {
 			paths: assign(config.compilerOptions?.paths, {
 				env: ["./env.ts"],
 			}),
 		});
+
 		return config;
 	});
 
@@ -17,7 +28,13 @@ const tweakTypescript = () => {
 
 		if (didIgnoreEnv) return null;
 
-		const additions = ["\n", "# fatima", "\n", "env.ts"];
+		const additions = [];
+
+		if (content.length > 0) {
+			additions.push("\n");
+		}
+
+		additions.push("# fatima", "\n", "env.ts");
 
 		return content + additions.join("");
 	});
@@ -25,11 +42,22 @@ const tweakTypescript = () => {
 
 const tweakJavascript = () => {
 	tweakUserConfig("jsconfig.json", (config) => {
+		if (!config.compilerOptions) {
+			config.compilerOptions = {
+				paths: {
+					"#env": ["./env.js"],
+				},
+			};
+
+			return config;
+		}
+
 		config.compilerOptions = assign(config.compilerOptions, {
 			paths: assign(config.compilerOptions?.paths, {
 				"#env": ["./env.js"],
 			}),
 		});
+
 		return config;
 	});
 
@@ -53,9 +81,7 @@ const tweakJavascript = () => {
 };
 
 export const applyUserConfigTweaks = (language: Language) => {
-	if (language === "typescript") {
-		tweakTypescript();
-	} else {
-		tweakJavascript();
-	}
+	const tweak = language === "typescript" ? tweakTypescript : tweakJavascript;
+
+	tweak();
 };
