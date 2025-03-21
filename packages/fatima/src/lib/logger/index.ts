@@ -48,7 +48,7 @@ export const logger: Record<LogTheme, (...messages: string[]) => void> =
 	);
 
 export const finishLog = () => {
-	if (process.env.npm_package_version) {
-		console.log("\r");
+	if (fatimaStore.get("logs") !== 0) {
+		console.log("");
 	}
 };
