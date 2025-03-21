@@ -84,9 +84,8 @@ export const fatimaStore = {
 	set<K extends keyof FatimaStore>(key: K, value?: FatimaStore[K]) {
 		const serializedValue = serialize(value);
 
-		Object.defineProperty(process.env, `fatima_${key}`, {
-			value: serializedValue,
-			enumerable: true,
+		Object.assign(process.env, {
+			[`fatima_${key}`]: serializedValue,
 		});
 	},
 
