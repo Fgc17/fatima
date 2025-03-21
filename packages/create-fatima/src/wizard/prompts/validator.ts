@@ -1,6 +1,8 @@
 import { select } from "@inquirer/prompts";
 import type { InquirerSelectChoice, Language } from "src/lib/types";
 
+export type Validator = "zod" | "class-validator" | "typia" | "custom";
+
 const tsChoices: InquirerSelectChoice = [
 	{
 		name: "class-validator",

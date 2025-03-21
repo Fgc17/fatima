@@ -1,10 +1,12 @@
 import { select } from "@inquirer/prompts";
 import { findNestedPackage } from "src/utils/has-nested-package";
 
-export async function askMonorepo() {
+export type UserIntent = "quit" | "continue";
+
+export async function askUserIntent(): Promise<UserIntent> {
 	const hasNestedPackage = findNestedPackage();
 
-	if (!hasNestedPackage) return;
+	if (!hasNestedPackage) return "continue";
 
 	const willQuit = await select({
 		message:
@@ -21,5 +23,7 @@ export async function askMonorepo() {
 		],
 	});
 
-	if (willQuit) throw "Exiting...";
+	if (willQuit) return "quit";
+
+	return "continue";
 }

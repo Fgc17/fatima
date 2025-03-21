@@ -1,7 +1,9 @@
 import { select } from "@inquirer/prompts";
 
+export type Language = "typescript" | "javascript";
+
 export const askLanguage = async () =>
-	await select({
+	(await select({
 		message: "Choose the language you want to use",
 		choices: [
 			{
@@ -14,4 +16,4 @@ export const askLanguage = async () =>
 				description: "Fatima provides full type safety via JSDoc.",
 			},
 		],
-	});
+	})) as Language;
