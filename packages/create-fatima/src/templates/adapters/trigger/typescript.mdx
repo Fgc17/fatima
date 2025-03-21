@@ -1,11 +1,10 @@
 ```ts
 import { adapters } from "fatima";
-import dotenv from "dotenv";
 import * as trigger from "@trigger.dev/sdk/v3";
 
 export default config({
   load: {
-    development: [adapters.dotenv.load(dotenv), adapters.trigger.load(trigger)],
+    development: [adapters.local.load(".env"), adapters.trigger.load(trigger)],
   },
 });
 ```

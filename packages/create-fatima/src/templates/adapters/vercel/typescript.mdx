@@ -1,10 +1,9 @@
 ```ts
-import { adapters } from "fatima";
-import { parse } from "fatima/env";
+import { adapters, parse } from "fatima";
 
 export default config({
   load: {
-    development: [adapters.vercel.load(dotenv.parse)],
+    development: [adapters.vercel.load(parse)],
   },
 });
 ```
