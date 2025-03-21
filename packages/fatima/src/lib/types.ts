@@ -51,7 +51,7 @@ export type FatimaEnvironmentFunction = (
 
 export interface FatimaClientOptions {
 	/**
-	 * Prefix for the client
+	 * Prefix for public secrets
 	 */
 	publicPrefix?: string;
 	/**
