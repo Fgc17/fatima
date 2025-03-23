@@ -47,18 +47,17 @@ And yeah, this means you can load secrets from **any** source, .env or cloud.
   loader](/docs/loaders/infisical), this is just an example.
 </Callout>
 
-We will be using the built-in `dotenv` loader to load from `.env`. [It is just a dumb wrapper around `dotenv`](https://github.com/Fgc17/fatima/blob/fatima/packages/fatima/src/core/adapters/dotenv.ts).
+We will be using the built-in `local` loader to load from `.env`.
 
 ```ts title="env.config.ts"
 import { config, adapters, UnsafeEnvironmentVariables } from "fatima";
-import dotenv from "dotenv";
 
 export default config({
   load: {
     development: [
-      adapters.dotenv.load(dotenv),
+      adapters.local.load(".env"),
       async () => {
-        // All of the process.env were loaded by the previous dotenv loader
+        // All of the process.env were loaded by the previous local loader
 
         const client = new infisicalClient();
 

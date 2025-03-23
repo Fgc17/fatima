@@ -36,7 +36,6 @@ import { env } from "$env/dynamic/private";
 import { EnvRecord } from "@fatimajs/tools/env";
 import { validate, config, adapters } from "fatima";
 import { z, ZodType } from "zod";
-import dotenv from "dotenv";
 
 type DynamicPrivateEnvObject = typeof env;
 
@@ -54,7 +53,7 @@ export default config<Environment>({
   environment: (processEnv) => processEnv.NODE_ENV ?? "development"
   validate: validate.zod(constraint),
   load: {
-    development: [adapters.dotenv.load(dotenv)]
+    development: [adapters.local.load(".env")]
   }
 });
 ```
