@@ -14,9 +14,15 @@ export async function loadEnv(config: FatimaConfig) {
 
 		const load = config.load[initialNodeEnv];
 
-		if (!load) {
+		if (fatimaStore.get("skipLoading") || !load) {
+			if (!load) {
+				logger.warn(
+					`No environment loading function found for the environment "${initialNodeEnv}"`,
+				);
+			}
+
 			logger.info(
-				`No loader function found for the environment "${initialNodeEnv}", I will load the system process.env object (this is expected for production/staging environments).`,
+				"Skipping environment loading, loading system process.env object.",
 			);
 
 			return {

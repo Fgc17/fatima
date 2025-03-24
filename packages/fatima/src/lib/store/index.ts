@@ -12,6 +12,7 @@ type FatimaStore = {
 	liteMode: boolean;
 	debug: boolean;
 	devMode: boolean;
+	skipLoading: boolean;
 };
 
 type Prefix = "u:" | "n:" | "b:" | "i:" | "s:" | "a:";
@@ -73,6 +74,7 @@ export const fatimaStore = {
 		this.set("liteMode", Boolean(options.lite));
 		this.set("debug", Boolean(options.debug));
 		this.set("devMode", Boolean(options.devMode));
+		this.set("skipLoading", Boolean(options.processEnv));
 	},
 	get<K extends keyof FatimaStore>(key: K): FatimaStore[K] {
 		const rawValue = process.env[`fatima_${key}`] as SerializedValue;

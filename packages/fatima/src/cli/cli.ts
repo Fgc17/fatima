@@ -26,6 +26,7 @@ program
 		"-e, --environment <env>, --environment=<env>",
 		"overwrite your environment function",
 	)
+	.option("--process-env", "load only from process.env")
 	.argument("<run-script...>", "the script to execute after --")
 	.action(runAction);
 
