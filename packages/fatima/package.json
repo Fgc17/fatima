@@ -33,6 +33,8 @@
 		"format": "biome format --write",
 		"lint": "biome lint --error-on-warnings",
 		"typecheck": "tsc --noEmit",
+		"check": "pnpm typecheck && pnpm lint",
+		"test": "vitest",
 		"------------- dev -------------": "-------------",
 		"dev": "pnpm tsup --env.mode dev",
 		"------------- build -------------": "-------------",
@@ -40,8 +42,8 @@
 		"bundlesize": "pnpm build --metafile && npm pack --dry-run",
 		"bundlesize:dev": "pnpm tsup --metafile && npm pack --dry-run",
 		"------------- publishing -------------": "-------------",
-		"release": "pnpm typecheck && pnpm build && pnpm publish --no-git-checks",
-		"release:rc": "pnpm typecheck && pnpm build && pnpm version prerelease --preid=rc"
+		"release": "pnpm check && pnpm build && pnpm publish --no-git-checks",
+		"release:rc": "pnpm check && pnpm build && pnpm version prerelease --preid=rc"
 	},
 	"devDependencies": {
 		"@types/node": "^22.9.1",

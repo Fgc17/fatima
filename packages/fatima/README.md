@@ -1,4 +1,41 @@
+[![Fatima](./assets/banner.png "Fatima")](https://fatimajs.vercel.app)
 
-# Fatima
+## Documentation
 
-This is the core package.
+Visit https://fatimajs.vercel.app to see the documentation.
+
+## NPM
+
+Visit [https://npmjs.com/package/fatima](https://www.npmjs.com/package/fatima) to see the registry.
+
+## Init CLI
+
+```bash
+npx init fatima@latest
+```
+
+```bash
+pnpm init fatima@latest
+```
+
+```bash
+yarn create fatima@latest
+```
+
+## Manual Setup
+
+```bash
+npm install -D fatima
+```
+
+```bash
+pnpm add -D fatima
+```
+
+```bash
+yarn add -D fatima
+```
+
+## License
+
+Licensed under the [MIT license](https://github.com/Fgc17/fatima/blob/fatima/LICENSE).
