@@ -1,5 +1,14 @@
 # fatima
 
+## 0.0.22
+
+### Patch Changes (2025/03/24)
+
+- expose env parse function
+- add global cli options
+- implement --process-env flag for skipping custom load functions
+- implement --environment flag for overwriting the environment function result
+
 ## 0.0.21
 
 ### Patch Changes (2025/03/15)
