@@ -3,7 +3,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -15,13 +15,21 @@
 		"create-fatima": "./dist/bin.cjs"
 	},
 	"scripts": {
+		"------------- toolchain -------------": "-------------",
 		"format": "biome format --write",
 		"lint": "biome lint --error-on-warnings",
 		"typecheck": "tsc --noEmit",
-		"dev": "pnpm run build --watch",
+		"check": "pnpm typecheck && pnpm lint",
 		"test": "vitest",
-		"build": "rm -rf dist && tsc && pnpm tsup",
-		"release": "pnpm publish --no-git-checks"
+		"------------- dev -------------": "-------------",
+		"dev": "pnpm tsup --watch",
+		"------------- build -------------": "-------------",
+		"build": "rm -rf dist && pnpm tsup",
+		"bundlesize": "pnpm build --metafile && npm pack --dry-run",
+		"bundlesize:dev": "pnpm tsup --metafile && npm pack --dry-run",
+		"------------- publishing -------------": "-------------",
+		"release": "pnpm check && pnpm build && pnpm publish --no-git-checks",
+		"release:rc": "pnpm check && pnpm build && pnpm version prerelease --preid=rc"
 	},
 	"devDependencies": {
 		"@types/node": "^22.9.1",
