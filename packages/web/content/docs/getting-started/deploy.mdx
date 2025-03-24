@@ -1,5 +1,5 @@
 ---
-title: Deploy
+title: Deploy (CI/CD)
 description: Deploying with Fatima is straightforward.
 ---
 
@@ -7,34 +7,28 @@ description: Deploying with Fatima is straightforward.
 
 Currently, the only command you need for deploying is `fatima generate`.
 
-You may config as you want, I like to include it in hook scripts:
+Before building, make sure to run:
 
-```json title="package.json"
-{
-  "scripts": {
-    "preinstall": "fatima generate"
-  }
-}
+```sh
+npx fatima@latest --process-env generate
 ```
 
-Remember, as best practice _you should not commit your generated client_.
+Don't be scared if it shows you a high count of envs in your `env.ts`, those are the system variables.
+
+## Why `--process-env`?
+
+This flag is used to load environments only from `process.env`, it will tell fatima to skip load functions declared in your config.
+
+Ideally, every environment variable should be injected by your hosting provider, so you don't need to load them, they are already exposed in `process.env`.
+
+This flag is useless 99% of the time, because fatima automatically loads from `process.env` if it doesn't find a matching load function in your config, it even warns you about what's going on.
+
+However, let's say you want to load from `.env.test` locally, but from `process.env` in your CI/CD, then you can use this flag to make sure your client gets generated correctly.
+
+At the end, keep it, won't hurt if you don't need custom loading in your pipeline.
 
 ## Bundling
 
 Fatima is a development dependency, it doesn't need to be bundled with your application.
 
-This is specially useful for frontend, as you will get 0kb onto your website bundle.
-
-## Should I use `fatima run` on production?
-
-No, you should not.
-
-You should not declare a `load.production` function.
-
-Instead, load your environment variables through your hosting provider, directly on the server.
-
-## What if I really want to use `fatima run`?
-
-You can, but you should not.
-
-Just declare a `load.production` function if you need any customization, and you're good to go.
+This is specially useful for frontend, as you will get 0kb into your website bundle.
