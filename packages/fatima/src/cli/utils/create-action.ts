@@ -14,12 +14,14 @@ export const createAction = <T extends ActionContext>(
 	action: (ctx: T) => Promisable<void>,
 	contextFn?: (payload: ActionContext) => Promisable<T>,
 ) => {
-	return async (param1: AnyType, param2: AnyType) => {
-		const isParam1Array = Array.isArray(param1);
+	return async (param1: AnyType, param2: AnyType, param3: AnyType) => {
+		const hasPositionalArgs = Array.isArray(param1);
 
-		const args = isParam1Array ? param1 : param2;
+		const program = hasPositionalArgs ? param3 : param2;
 
-		const options = isParam1Array ? param2 : param1;
+		const args = hasPositionalArgs ? param1 : param2;
+
+		const options = program.optsWithGlobals();
 
 		fatimaStore.earlyInitialize();
 
