@@ -30,10 +30,12 @@ const content = (blueprint: {
 
 	const exportObject = `{ env${ifstring(publicEnvs.length, ", publicEnv")} }`;
 
-	const preambleTypesContent = (preambleTypes as string).replace(
-		"export type EnvObject = AnyType;",
-		`export interface EnvObject {${blueprint.envs.map((key) => `"${key}": string;`).join("\n  ")}}\n`,
-	);
+	const preambleTypesContent = (preambleTypes as string)
+		.replace(
+			"export type EnvObject = AnyType;",
+			`export interface EnvObject {${blueprint.envs.map((key) => `"${key}": string;`).join("\n  ")}}\n`,
+		)
+		.replaceAll("<PUBLIC_>", blueprint.publicPrefix ?? "PUBLIC_");
 
 	const preambleContent = preamble.split("\n").slice(1).join("\n");
 

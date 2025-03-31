@@ -34,5 +34,6 @@ type PrimitiveEnvType = FatimaPrimitiveEnvType<EnvObject>;
 
 export type EnvType<T extends PrimitiveEnvType> = FatimaEnvType<EnvObject, T>;
 
-export type Env = ServerEnvRecord<EnvKeys, "PUBLIC_">;
-export type PublicEnv = PublicEnvRecord<EnvKeys, "PUBLIC_">;
+export type Env = ServerEnvRecord<EnvKeys, "<PUBLIC_>">;
+
+export type PublicEnv = PublicEnvRecord<EnvKeys, "<PUBLIC_>">;
