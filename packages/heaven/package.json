@@ -5,7 +5,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -16,13 +16,21 @@
 	"types": "./dist/heaven.d.cts",
 	"main": "./dist/heaven.cjs",
 	"scripts": {
-		"bundlesize": "pnpm tsup --env.mode release --metafile && npm pack --dry-run",
+		"------------- toolchain -------------": "-------------",
 		"format": "biome format --write",
 		"lint": "biome lint --error-on-warnings",
 		"typecheck": "tsc --noEmit",
-		"dev": "pnpm tsup --env.mode dev --watch",
-		"build": "pnpm tsup --env.mode release && npm pack --dry-run",
-		"release": "pnpm typecheck && pnpm publish --no-git-checks"
+		"check": "pnpm typecheck && pnpm lint",
+		"test": "vitest",
+		"------------- dev -------------": "-------------",
+		"dev": "pnpm tsup --env.mode dev",
+		"------------- build -------------": "-------------",
+		"build": "rm -rf dist && pnpm tsup --env.mode release",
+		"bundlesize": "pnpm build --metafile && npm pack --dry-run",
+		"bundlesize:dev": "pnpm tsup --metafile && npm pack --dry-run",
+		"------------- publishing -------------": "-------------",
+		"release": "pnpm check && pnpm build && pnpm publish --no-git-checks",
+		"release:rc": "pnpm check && pnpm build && pnpm version prerelease --preid=rc"
 	},
 	"devDependencies": {
 		"@types/node": "^22.9.1",
