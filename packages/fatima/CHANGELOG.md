@@ -1,5 +1,10 @@
 # fatima
 
+## 0.0.24
+### Patch Changes (2025/03/31)
+
+- fix broken public secrets typesafety
+
 ## 0.0.22
 
 ### Patch Changes (2025/03/24)
