@@ -30,9 +30,9 @@ const load =
 	(
 		infisicalClient: InfisicalClientMock,
 		config?: {
-			clientId: string;
-			clientSecret: string;
-			projectId: string;
+			clientId?: string;
+			clientSecret?: string;
+			projectId?: string;
 			environment?: string;
 		},
 	): FatimaBuiltInLoadFunction =>
@@ -40,11 +40,11 @@ const load =
 		const client = new infisicalClient();
 
 		const auth = {
-			...config,
 			clientId: process.env.INFISICAL_CLIENT_ID,
 			clientSecret: process.env.INFISICAL_CLIENT_SECRET,
 			projectId: process.env.INFISICAL_PROJECT_ID,
 			environment: "dev",
+			...config,
 		};
 
 		if (!auth.clientId) {
