@@ -6,18 +6,18 @@ import { fatimaStore } from "lib/store";
 
 export async function loadEnv(config: FatimaConfig) {
 	try {
-		const initialNodeEnv = fatimaStore.get("environment");
+		const initialSecretsEnviornment = fatimaStore.get("environment");
 
-		if (!initialNodeEnv || initialNodeEnv === "") {
+		if (!initialSecretsEnviornment || initialSecretsEnviornment === "") {
 			return lifecycle.error.undefinedEnvironmentFunctionReturn();
 		}
 
-		const load = config.load[initialNodeEnv];
+		const load = config.load[initialSecretsEnviornment];
 
 		if (fatimaStore.get("skipLoading") || !load) {
 			if (!load) {
 				logger.warn(
-					`No environment loading function found for the environment "${initialNodeEnv}"`,
+					`No environment loading function found for the environment "${initialSecretsEnviornment}"`,
 				);
 			}
 
@@ -49,12 +49,15 @@ export async function loadEnv(config: FatimaConfig) {
 			env = { ...env, ...loadedEnvs };
 		}
 
-		const finalEnv = config.environment(
+		const finalSecretsEnvironment = config.environment(
 			process.env as UnsafeEnvironmentVariables,
 		);
 
-		if (finalEnv !== initialNodeEnv) {
-			return lifecycle.error.environmentMixing(initialNodeEnv, finalEnv);
+		if (finalSecretsEnvironment !== initialSecretsEnviornment) {
+			return lifecycle.error.environmentMixing(
+				initialSecretsEnviornment,
+				finalSecretsEnvironment,
+			);
 		}
 
 		fatimaStore.set("envNames", Object.keys(env));
