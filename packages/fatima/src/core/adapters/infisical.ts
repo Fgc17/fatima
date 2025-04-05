@@ -4,6 +4,7 @@ import type {
 	GenericClass,
 	UnsafeEnvironmentVariables,
 } from "lib/types";
+import type { GenericClass, AnyType } from "lib/utils/types";
 
 import { lifecycle } from "lib/lifecycle";
 

@@ -1,4 +1,4 @@
-import type { AnyType } from "lib/types";
+import type { AnyType } from "./types";
 
 export function compareArrays(arr1: AnyType[], arr2: AnyType[]) {
 	if (arr1.length !== arr2.length) return false;

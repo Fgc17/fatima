@@ -2,7 +2,7 @@ import type { FatimaConfig } from "lib/config";
 import { readConfig } from "lib/config/read-config";
 import { resolveConfigPath } from "lib/config/resolve-config-path";
 import { fatimaStore } from "lib/store";
-import type { Promisable, AnyType } from "lib/types";
+import type { AnyType, Promisable } from "lib/utils/types";
 
 export interface ActionContext {
 	options: Record<string, string>;

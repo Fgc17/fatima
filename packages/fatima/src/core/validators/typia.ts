@@ -1,8 +1,5 @@
-import type {
-	AnyType,
-	FatimaValidator,
-	UnsafeEnvironmentVariables,
-} from "lib/types";
+import type { FatimaValidator, UnsafeEnvironmentVariables } from "lib/types";
+import type { AnyType } from "lib/utils/types";
 import { fatimaStore } from "lib/store";
 import { spawn } from "node:child_process";
 import { readConfig } from "lib/config/read-config";

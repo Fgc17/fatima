@@ -1,4 +1,4 @@
-import type { Promisable } from "lib/types";
+import type { Promisable } from "lib/utils/types";
 import { watch } from "node:fs";
 import { debounce } from "../utils/debounce";
 

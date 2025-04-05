@@ -1,4 +1,4 @@
-import type { Promisable } from "lib/types";
+import type { Promisable } from "lib/utils/types";
 import { lifecycle } from "../lifecycle";
 import net from "node:net";
 

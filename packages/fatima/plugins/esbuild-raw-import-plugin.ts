@@ -1,5 +1,4 @@
 import type { Plugin, PluginBuild } from "esbuild";
-import type { AnyType } from "lib/types";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -94,5 +93,6 @@ export function rawImportPlugin(config: RawImportConfig = {}) {
 		},
 	};
 
-	return plugin as AnyType;
+	// biome-ignore lint/suspicious/noExplicitAny: fine here.
+	return plugin as any;
 }

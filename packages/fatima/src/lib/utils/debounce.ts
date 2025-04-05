@@ -1,4 +1,4 @@
-import type { AnyType } from "lib/types";
+import type { AnyType } from "./types";
 
 export function debounce<T extends (...args: AnyType[]) => void>(
 	func: T,

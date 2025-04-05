@@ -1,8 +1,8 @@
 import type {
-	AnyType,
 	FatimaBuiltInLoadFunction,
 	UnsafeEnvironmentVariables,
 } from "lib/types";
+import type { AnyType } from "lib/utils/types";
 
 export type DotenvConfigOptionsMock = {
 	path: string | string[] | URL;
