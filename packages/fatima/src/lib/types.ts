@@ -15,6 +15,10 @@ export type FatimaLoadFunction =
 	| FatimaBuiltInLoadFunction
 	| FatimaCustomLoadFunction;
 
+export type FatimaLoadConfig<Config> = (
+	processEnv: UnsafeEnvironmentVariables,
+) => Promisable<Config>;
+
 export type FatimaLoaderChain = FatimaLoadFunction[] | FatimaLoadFunction;
 
 export type FatimaLoadObject<Environments extends FatimaEnvironment> = {
