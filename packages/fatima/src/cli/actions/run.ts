@@ -2,9 +2,12 @@ import { exec } from "lib/exec";
 import { createInjectableEnv } from "lib/env/patch-env";
 import { createAction } from "../utils/create-action";
 import { type EnvActionContext, envActionContext } from "../context/env";
+import { logger } from "lib/logger";
 
-export const runService = async ({ env, args }: EnvActionContext) => {
+export const runService = async ({ env, envCount, args }: EnvActionContext) => {
 	const injectableEnv = createInjectableEnv(env);
+
+	logger.success(`Loaded ${envCount} environment variables`);
 
 	const child = exec(args, {
 		env: injectableEnv,
