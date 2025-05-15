@@ -55,6 +55,7 @@ const createEnv = (options) => {
 	/** @param {string} key */
 	const handleForbiddenAccess = (key) => {
 		const error = [
+			`Environment variable ${key} not allowed on the client.`,
 			"Here are some possible fixes:",
 			"\n 1. Add the public prefix to your variable if you want to expose it to the client.",
 			"\n 2. Check if your public prefix is correct by assigning 'env.publicPrefix' to your fatima configuration.",
@@ -71,6 +72,10 @@ const createEnv = (options) => {
 	const fatimaEnv = new Proxy(processEnv, {
 		/** @param {Object} target @param {string} key @returns {string} */
 		get(target, key) {
+			if (typeof key !== "string" || !/^[A-Z0-9_]+$/.test(key)) {
+				return undefined;
+			}
+
 			if (isAccessForbidden()) {
 				handleForbiddenAccess(key);
 			}
