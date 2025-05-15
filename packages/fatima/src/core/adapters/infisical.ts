@@ -1,7 +1,6 @@
 import type {
-	AnyType,
 	FatimaBuiltInLoadFunction,
-	GenericClass,
+	FatimaLoadConfig,
 	UnsafeEnvironmentVariables,
 } from "lib/types";
 import type { GenericClass, AnyType } from "lib/utils/types";
@@ -30,22 +29,26 @@ type InfisicalClientMock = GenericClass<{
 const load =
 	(
 		infisicalClient: InfisicalClientMock,
-		config?: {
+		config?: FatimaLoadConfig<{
 			clientId?: string;
 			clientSecret?: string;
 			projectId?: string;
 			environment?: string;
-		},
+		}>,
 	): FatimaBuiltInLoadFunction =>
 	async () => {
 		const client = new infisicalClient();
+
+		const configObject = config
+			? config(process.env as UnsafeEnvironmentVariables)
+			: {};
 
 		const auth = {
 			clientId: process.env.INFISICAL_CLIENT_ID,
 			clientSecret: process.env.INFISICAL_CLIENT_SECRET,
 			projectId: process.env.INFISICAL_PROJECT_ID,
 			environment: "dev",
-			...config,
+			...configObject,
 		};
 
 		if (!auth.clientId) {
