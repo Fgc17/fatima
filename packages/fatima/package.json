@@ -18,11 +18,13 @@
 	"main": "./dist/core/core.cjs",
 	"types": "./dist/core/core.d.cts",
 	"exports": {
-		".": "./dist/core/core.cjs"
+		".": "./dist/core/core.cjs",
+		"./register": "./dist/register/register.cjs"
 	},
 	"typesVersions": {
 		"*": {
-			".": ["./dist/core/core.d.cts"]
+			".": ["./dist/core/core.d.cts"],
+			"./register": ["./dist/register/register.d.cts"]
 		}
 	},
 	"bin": {

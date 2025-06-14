@@ -9,7 +9,7 @@ const createEntries = (...entries: string[]) => {
 
 export default defineConfig((opts) => {
 	const config: Options = {
-		entry: createEntries("core", "cli"),
+		entry: createEntries("core", "cli", "register"),
 		dts: true,
 		shims: true,
 		clean: true,
