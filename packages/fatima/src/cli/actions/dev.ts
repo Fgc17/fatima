@@ -4,7 +4,7 @@ import { createInjectableEnv } from "lib/env/patch-env";
 import { exec } from "lib/exec";
 import { logger } from "lib/logger";
 import { fatimaStore } from "lib/store";
-import { createAction } from "../utils/create-action";
+import { action } from "../context/action";
 import { type EnvActionContext, envActionContext } from "../context/env";
 
 const environmentBlacklist = [
@@ -29,10 +29,9 @@ export const devService = async ({
 	const environment = fatimaStore.get("environment") as string;
 
 	if (environmentBlacklist.includes(environment)) {
-		logger.error(
+		throw new Error(
 			`Your 'config.environment()' function returned '${environment}', you can't run 'fatima dev' in this environment.`,
 		);
-		process.exit(1);
 	}
 
 	if (!fatimaStore.get("liteMode")) {
@@ -65,4 +64,4 @@ export const devService = async ({
 	});
 };
 
-export const devAction = createAction(devService, envActionContext);
+export const devAction = action(devService, envActionContext);

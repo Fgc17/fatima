@@ -1,13 +1,14 @@
+import { spawn } from "node:child_process";
+import { promises as fs, existsSync } from "node:fs";
+import { parseEnvLines } from "lib/env/parse-env";
+import { createInjectableEnv } from "lib/env/patch-env";
+import { logger } from "lib/logger";
 import type {
 	FatimaBuiltInLoadFunction,
 	UnsafeEnvironmentVariables,
 } from "lib/types";
-import { spawn } from "node:child_process";
-import { existsSync, promises as fs } from "node:fs";
-import { lifecycle } from "lib/lifecycle";
-import { parseEnvLines } from "lib/env/parse-env";
-import { createInjectableEnv } from "lib/env/patch-env";
-import { logger } from "lib/logger";
+import { txt } from "lib/utils/txt";
+import { wording } from "lib/wording";
 
 export type VercelParseFunction = (
 	envFileContent: string,
@@ -68,15 +69,15 @@ const load =
 
 			if (!isProjectLinked) {
 				if (!auth.VERCEL_ORG_ID) {
-					return lifecycle.error.missingConfig("VERCEL_ORG_ID");
+					throw new Error(wording.error.missingConfig("VERCEL_ORG_ID"));
 				}
 
 				if (!auth.VERCEL_PROJECT_ID) {
-					return lifecycle.error.missingConfig("VERCEL_PROJECT_ID");
+					throw new Error(wording.error.missingConfig("VERCEL_PROJECT_ID"));
 				}
 
 				if (!auth.VERCEL_TOKEN) {
-					return lifecycle.error.missingConfig("VERCEL_TOKEN");
+					throw new Error(wording.error.missingConfig("VERCEL_TOKEN"));
 				}
 
 				args.push(`--token=${auth.VERCEL_TOKEN}`);
@@ -107,21 +108,25 @@ const load =
 			await fs.unlink(".tmp.vercel.env");
 
 			return envVariables;
-		} catch (error) {
-			logger.error(
-				"Fatima could not load secrets from Vercel, here are some possible reasons:\n",
-				"1. You didn't install the Vercel CLI: 'npm i -g vercel'",
-				"",
-				"2. You didn't authenticate correctly:",
-				"  - Authenticate by CLI: run 'vercel login' and then 'vercel link'",
-				"  - * you can delete the .vercel folder and try again",
-				"",
-				"  - Authenticate by TOKEN: VERCEL_TOKEN, VERCEL_PROJECT_ID, and VERCEL_ORG_ID",
-				"  - * you can auth by token via .env or passing down the options to the loader",
-				"",
-				`3. You don't have the '${config?.vercelEnvironment ?? "development"}' environment in your project.`,
+		} catch (err) {
+			throw new Error(
+				txt(
+					"Fatima could not load secrets from Vercel, here are some possible reasons:\n",
+					"1. You didn't install the Vercel CLI: 'npm i -g vercel'",
+					"",
+					"2. You didn't authenticate correctly:",
+					"  - Authenticate by CLI: run 'vercel login' and then 'vercel link'",
+					"  - * you can delete the .vercel folder and try again",
+					"",
+					"  - Authenticate by TOKEN: VERCEL_TOKEN, VERCEL_PROJECT_ID, and VERCEL_ORG_ID",
+					"  - * you can auth by token via .env or passing down the options to the loader",
+					"",
+					`3. You don't have the '${config?.vercelEnvironment ?? "development"}' environment in your project.`,
+				),
+				{
+					cause: err,
+				},
 			);
-			process.exit(1);
 		}
 	};
 

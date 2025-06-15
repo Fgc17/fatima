@@ -1,11 +1,11 @@
-import type { FatimaConfig } from "../config";
-import { generateClient } from "../client/generate-client";
-import { lifecycle } from "../lifecycle";
-import { compareArrays } from "../utils/compare-arrays";
-import { parseValidationErrors } from "../utils/parse-validation";
-import { loadEnv } from "./load-env";
 import { logger } from "lib/logger";
 import { fatimaStore } from "lib/store";
+import { parseValidationErrors } from "lib/utils/parse-validation";
+import { generateClient } from "../client/generate-client";
+import type { FatimaConfig } from "../config";
+import { compareArrays } from "../utils/compare-arrays";
+import { wording } from "../wording";
+import { loadEnv } from "./load-env";
 
 export const reloadEnv = async (config: FatimaConfig) => {
 	const isClientGenerationEnabled = !fatimaStore.get("liteMode");
@@ -29,7 +29,7 @@ export const reloadEnv = async (config: FatimaConfig) => {
 		if (errors?.length) {
 			const parsedErrors = parseValidationErrors(errors);
 
-			lifecycle.error.invalidEnvironmentVariables(parsedErrors, false);
+			logger.error(wording.error.invalidEnvironmentVariables(parsedErrors));
 		}
 	}
 

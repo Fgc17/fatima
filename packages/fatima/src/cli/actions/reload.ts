@@ -1,36 +1,26 @@
 import { logger } from "lib/logger";
-import { createAction, type ActionContext } from "../utils/create-action";
-import { debug } from "lib/debugger";
+import { type ActionContext, action } from "../context/action";
 
 export const reloadService = async ({ config }: ActionContext) => {
 	const port = config.heaven;
 
 	if (!port) {
-		logger.error(
+		throw new Error(
 			"Failed to reload environment variables, missing port, please set 'ports.reload' in your fatima config.",
 		);
-		process.exit(1);
 	}
 
 	await fetch(`http://localhost:${port}/fatima`, {
 		method: "POST",
-	})
-		.then((res) => {
-			if (res.status !== 200) {
-				throw "err";
-			}
-
-			logger.success("Successfully reloaded environment variables");
-		})
-		.catch((e) => {
-			debug.error(e);
-
-			logger.error(
+	}).then((res) => {
+		if (res.status !== 200) {
+			throw new Error(
 				`Failed to reload environment variables, did you run 'fatima dev'?`,
 			);
+		}
 
-			process.exit(1);
-		});
+		logger.success("Successfully reloaded environment variables");
+	});
 };
 
-export const reloadAction = createAction(reloadService);
+export const reloadAction = action(reloadService);

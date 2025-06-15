@@ -1,11 +1,11 @@
 import { resolve } from "node:path";
 import { exec } from "lib/exec";
-import { lifecycle } from "lib/lifecycle";
 import type {
 	FatimaBuiltInLoadFunction,
 	UnsafeEnvironmentVariables,
 } from "lib/types";
 import { getRuntime } from "lib/utils/get-runtime";
+import { wording } from "lib/wording";
 
 type TriggerDevClientMock = {
 	envvars: {
@@ -40,11 +40,11 @@ const load =
 		};
 
 		if (!auth.projectId) {
-			return lifecycle.error.missingConfig("TRIGGER_PROJECT_ID");
+			throw new Error(wording.error.missingConfig("TRIGGER_PROJECT_ID"));
 		}
 
 		if (!auth.accessToken) {
-			return lifecycle.error.missingConfig("TRIGGER_ACCESS_TOKEN");
+			throw new Error(wording.error.missingConfig("TRIGGER_ACCESS_TOKEN"));
 		}
 
 		trigger.configure({

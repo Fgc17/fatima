@@ -1,6 +1,6 @@
-import type { Promisable } from "lib/utils/types";
-import { lifecycle } from "../lifecycle";
 import net from "node:net";
+import type { Promisable } from "lib/utils/types";
+import { wording } from "lib/wording";
 
 export const createHeavenServer = <T>(
 	port: number | string,
@@ -56,9 +56,11 @@ export const createHeavenServer = <T>(
 
 	server.listen(Number(port));
 
-	server.on("error", (error) => {
-		if ((error as NodeJS.ErrnoException).code === "EADDRINUSE") {
-			lifecycle.error.heavenPortAlreadyInUse(port);
+	server.on("error", (err) => {
+		if ((err as NodeJS.ErrnoException).code === "EADDRINUSE") {
+			throw new Error(wording.error.heavenPortAlreadyInUse(port), {
+				cause: err,
+			});
 		}
 	});
 

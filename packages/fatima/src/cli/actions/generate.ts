@@ -1,11 +1,11 @@
 import { generateClient } from "lib/client/generate-client";
-import { validateService } from "./validate";
 import { logger } from "lib/logger";
-import { createAction } from "../utils/create-action";
+import { action } from "../context/action";
 import { type EnvActionContext, envActionContext } from "../context/env";
+import { validateService } from "./validate";
 
 export const generateService = async (ctx: EnvActionContext) => {
-	const { env, config, envCount } = ctx;
+	const { env, config } = ctx;
 
 	if (config.validate) {
 		await validateService(ctx);
@@ -13,9 +13,7 @@ export const generateService = async (ctx: EnvActionContext) => {
 
 	await generateClient(config, env);
 
-	logger.success(
-		`Successfully generated env.ts with ${envCount} environment variables`,
-	);
+	logger.success("Successfully generated env.ts");
 };
 
-export const generateAction = createAction(generateService, envActionContext);
+export const generateAction = action(generateService, envActionContext);

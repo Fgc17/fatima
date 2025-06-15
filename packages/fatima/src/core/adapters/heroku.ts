@@ -2,7 +2,7 @@ import type {
 	FatimaBuiltInLoadFunction,
 	UnsafeEnvironmentVariables,
 } from "lib/types";
-import { lifecycle } from "lib/lifecycle";
+import { wording } from "lib/wording";
 
 export interface HerokuLoadOptions {
 	app_id_or_name: string;
@@ -17,7 +17,7 @@ const load =
 		};
 
 		if (!auth.bearer_token) {
-			return lifecycle.error.missingConfig("HEROKU_API_TOKEN");
+			throw new Error(wording.error.missingConfig("HEROKU_API_TOKEN"));
 		}
 
 		const headers = new Headers();
@@ -33,9 +33,9 @@ const load =
 			.then(async (res) => {
 				if (!res.ok) {
 					const errorText = await res.text();
-					throw new Error(
-						`Failed to fetch Heroku config vars. Status: ${res.status}, Response: ${errorText}`,
-					);
+					throw new Error("Failed to fetch Heroku config vars", {
+						cause: errorText,
+					});
 				}
 
 				return await res.json();

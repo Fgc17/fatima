@@ -1,5 +1,5 @@
-import { resolve, parse } from "node:path";
 import { existsSync, readdirSync, statSync } from "node:fs";
+import { parse, resolve } from "node:path";
 import { logger } from "lib/logger";
 
 const searchBlacklist = [
@@ -25,22 +25,19 @@ export function resolveConfigPath(configPath?: string): string {
 		const parsed = parse(configPath);
 
 		if (!parsed.ext) {
-			logger.error(
+			throw new Error(
 				`No extension found in given config file path: ${configPath}`,
 			);
-			process.exit(1);
 		}
 
 		if (!extensions.includes(parsed.ext)) {
-			logger.error(`Invalid given config file extension: ${parsed.ext}`);
-			process.exit(1);
+			throw new Error(`Invalid given config file extension: ${parsed.ext}`);
 		}
 
 		const fullPath = resolve(baseDir, configPath);
 
 		if (!existsSync(fullPath)) {
-			logger.error(`Config file doesn't exist: ${fullPath}`);
-			process.exit(1);
+			throw new Error(`Config file doesn't exist: ${fullPath}`);
 		}
 
 		return fullPath;
@@ -80,10 +77,9 @@ export function resolveConfigPath(configPath?: string): string {
 	const configPathFound = searchConfig(baseDir);
 
 	if (!configPathFound) {
-		logger.error(
+		throw new Error(
 			"No 'env.config.{js|ts|etc}' file found in the current directory or its subdirectories.",
 		);
-		process.exit(1);
 	}
 
 	return configPathFound;

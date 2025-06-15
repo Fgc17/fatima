@@ -2,9 +2,9 @@ import type {
 	FatimaBuiltInLoadFunction,
 	UnsafeEnvironmentVariables,
 } from "lib/types";
-import type { GenericClass, AnyType } from "lib/utils/types";
+import type { AnyType, GenericClass } from "lib/utils/types";
 
-import { lifecycle } from "lib/lifecycle";
+import { wording } from "lib/wording";
 
 type InfisicalClientMock = GenericClass<
 	{
@@ -60,15 +60,15 @@ const load =
 		};
 
 		if (!auth.clientId) {
-			return lifecycle.error.missingConfig("INFISICAL_CLIENT_ID");
+			throw new Error(wording.error.missingConfig("INFISICAL_CLIENT_ID"));
 		}
 
 		if (!auth.clientSecret) {
-			return lifecycle.error.missingConfig("INFISICAL_CLIENT_SECRET");
+			throw new Error(wording.error.missingConfig("INFISICAL_CLIENT_SECRET"));
 		}
 
 		if (!auth.projectId) {
-			return lifecycle.error.missingConfig("INFISICAL_PROJECT_ID");
+			throw new Error(wording.error.missingConfig("INFISICAL_PROJECT_ID"));
 		}
 
 		const siteUrl = auth.siteUrl;

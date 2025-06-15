@@ -1,19 +1,16 @@
+import { extname } from "node:path";
 import type {
 	FatimaClientOptions,
-	FatimaEnvironment,
 	FatimaEnvironmentFunction,
 	FatimaLoadObject,
 	FatimaValidator,
 } from "lib/types";
-import { FATIMA_DEFAULT_HEAVEN_PORT } from "../constants/port";
-import { lifecycle } from "../lifecycle";
-import { extname } from "node:path";
 import { getCallerLocation } from "lib/utils/get-caller-location";
+import { wording } from "lib/wording";
+import { FATIMA_DEFAULT_HEAVEN_PORT } from "../constants/port";
 import { markConfig } from "./utils";
 
-export type FatimaOptions<
-	Environments extends FatimaEnvironment = FatimaEnvironment,
-> = {
+export type FatimaOptions<PublicPrefix extends string> = {
 	/**
 	 * Defines how Fatima loads environment variables.
 	 *
@@ -25,7 +22,7 @@ export type FatimaOptions<
 	 *
 	 * @type {Record<Environments, LoadFunction[]>}
 	 */
-	load: FatimaLoadObject<Environments>;
+	load: FatimaLoadObject;
 
 	/**
 	 * A function responsible for determining the current environment.
@@ -42,7 +39,7 @@ export type FatimaOptions<
 	 *
 	 * @type {FatimaClientOptions | undefined}
 	 */
-	client?: FatimaClientOptions;
+	client?: FatimaClientOptions<PublicPrefix>;
 
 	/**
 	 * An optional function to validate the loaded environment variables.
@@ -64,15 +61,15 @@ export type FatimaOptions<
 
 export type FatimaConfig = ReturnType<typeof config>;
 
-export function config<Environments extends FatimaEnvironment>({
+export function config<PublicPrefix extends string>({
 	load,
 	environment,
 	validate,
 	client,
 	heaven,
-}: FatimaOptions<Environments>) {
+}: FatimaOptions<PublicPrefix>) {
 	if (!environment) {
-		return lifecycle.error.missingEnvironmentConfig();
+		throw new Error(wording.error.missingEnvironmentConfig());
 	}
 
 	const { filePath: configFilePath, folderPath: configFolderPath } =

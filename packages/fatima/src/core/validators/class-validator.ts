@@ -1,6 +1,6 @@
 import type { FatimaValidator, UnsafeEnvironmentVariables } from "lib/types";
-import { lifecycle } from "lib/lifecycle";
-import type { AnyType } from "lib/utils/types";
+import type { AnyType, GenericClass } from "lib/utils/types";
+import { wording } from "lib/wording";
 
 export type ClassValidatorValidateMock = (instance: AnyType) => Promise<
 	Array<{
@@ -16,14 +16,15 @@ export type ClassTransformerPlainToInstance = (
 	object: AnyType,
 ) => AnyType;
 
-export const classValidator = (
-	constraint: AnyType,
-	helpers: {
-		validate: ClassValidatorValidateMock;
-		plainToInstance: ClassTransformerPlainToInstance;
-	},
-): FatimaValidator => {
-	return async (env: UnsafeEnvironmentVariables) => {
+export const classValidator =
+	(
+		constraint: GenericClass<AnyType>,
+		helpers: {
+			validate: ClassValidatorValidateMock;
+			plainToInstance: ClassTransformerPlainToInstance;
+		},
+	): FatimaValidator =>
+	async (env: UnsafeEnvironmentVariables) => {
 		try {
 			const instance = helpers.plainToInstance(constraint, env);
 
@@ -45,7 +46,6 @@ export const classValidator = (
 				errors,
 			};
 		} catch {
-			return lifecycle.error.missingBabelTransformClassProperties();
+			throw new Error(wording.error.missingBabelTransformClassProperties());
 		}
 	};
-};

@@ -1,15 +1,15 @@
 import type { FatimaConfig } from "lib/config";
-import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "lib/types";
-import { lifecycle } from "../lifecycle";
 import { logger } from "lib/logger";
 import { fatimaStore } from "lib/store";
+import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "lib/types";
+import { wording } from "../wording";
 
 export async function loadEnv(config: FatimaConfig) {
 	try {
 		const initialSecretsEnviornment = fatimaStore.get("environment");
 
 		if (!initialSecretsEnviornment || initialSecretsEnviornment === "") {
-			return lifecycle.error.undefinedEnvironmentFunctionReturn();
+			throw new Error(wording.error.undefinedEnvironmentFunctionReturn());
 		}
 
 		const load = config.load[initialSecretsEnviornment];
@@ -54,9 +54,11 @@ export async function loadEnv(config: FatimaConfig) {
 		);
 
 		if (finalSecretsEnvironment !== initialSecretsEnviornment) {
-			return lifecycle.error.environmentMixing(
-				initialSecretsEnviornment,
-				finalSecretsEnvironment,
+			throw new Error(
+				wording.error.environmentMixing(
+					initialSecretsEnviornment,
+					finalSecretsEnvironment,
+				),
 			);
 		}
 
@@ -67,7 +69,8 @@ export async function loadEnv(config: FatimaConfig) {
 			envCount: Object.keys(env).length,
 		};
 	} catch (err) {
-		logger.error(`Failed to load environment variables: ${err.message}`);
-		process.exit(1);
+		throw new Error(`Failed to load environment variables: ${err.message}`, {
+			cause: err,
+		});
 	}
 }

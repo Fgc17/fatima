@@ -1,5 +1,5 @@
 import { error } from "./error";
 
-export const lifecycle = {
+export const wording = {
 	error,
 };

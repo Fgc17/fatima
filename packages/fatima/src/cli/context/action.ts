@@ -44,7 +44,7 @@ export const action = <T extends ActionContext>(
 			logger.error(error.message);
 
 			if (fatimaStore.get("debug")) {
-				console.error(error);
+				console.error(error.cause);
 			}
 
 			process.exit(1);
