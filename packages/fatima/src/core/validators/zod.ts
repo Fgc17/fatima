@@ -1,4 +1,4 @@
-import type { FatimaValidator, UnsafeEnvironmentVariables } from "lib/types";
+import type { FatimaValidator } from "lib/types";
 
 export type ZodSchemaMock = {
 	safeParse: (env: unknown) => {
@@ -13,8 +13,9 @@ export type ZodSchemaMock = {
 	};
 };
 
-export const zod = (constraint: ZodSchemaMock): FatimaValidator => {
-	return (env: UnsafeEnvironmentVariables) => {
+export const zod =
+	(constraint: ZodSchemaMock): FatimaValidator =>
+	(env) => {
 		const result = constraint.safeParse(env);
 
 		const isValid = result.success;
@@ -30,4 +31,3 @@ export const zod = (constraint: ZodSchemaMock): FatimaValidator => {
 			errors,
 		};
 	};
-};
