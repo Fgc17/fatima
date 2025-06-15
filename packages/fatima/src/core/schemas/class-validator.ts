@@ -1,4 +1,8 @@
-import type { FatimaValidator, UnsafeEnvironmentVariables } from "lib/types";
+import type {
+	FatimaSchema,
+	FatimaSchemaType,
+	UnsafeEnvironmentVariables,
+} from "lib/types";
 import type { AnyType, GenericClass } from "lib/utils/types";
 import { wording } from "lib/wording";
 
@@ -16,15 +20,14 @@ export type ClassTransformerPlainToInstance = (
 	object: AnyType,
 ) => AnyType;
 
-export const classValidator =
-	(
-		constraint: GenericClass<AnyType>,
-		helpers: {
-			validate: ClassValidatorValidateMock;
-			plainToInstance: ClassTransformerPlainToInstance;
-		},
-	): FatimaValidator =>
-	async (env: UnsafeEnvironmentVariables) => {
+export const classValidator = <S extends FatimaSchemaType>(
+	constraint: GenericClass<S>,
+	helpers: {
+		validate: ClassValidatorValidateMock;
+		plainToInstance: ClassTransformerPlainToInstance;
+	},
+): FatimaSchema<S> => {
+	const validate = async (env: UnsafeEnvironmentVariables) => {
 		try {
 			const instance = helpers.plainToInstance(constraint, env);
 
@@ -49,3 +52,9 @@ export const classValidator =
 			throw new Error(wording.error.missingBabelTransformClassProperties());
 		}
 	};
+
+	return {
+		$type: null as unknown as S,
+		validate,
+	};
+};

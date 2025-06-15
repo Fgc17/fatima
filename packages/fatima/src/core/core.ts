@@ -1,9 +1,9 @@
 import { parseEnvLines as parse } from "lib/env/parse-env";
 import { adapters } from "./adapters";
+import { config } from "./config";
 import { linter } from "./linter";
-import { validators } from "./validators";
+import { schemas } from "./schemas";
 
-export { validators, linter, adapters, parse };
+export { schemas, linter, adapters, parse, config };
 
-export * from "lib/config";
 export * from "lib/types";

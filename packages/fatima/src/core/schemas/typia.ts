@@ -3,8 +3,21 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { readConfig } from "lib/config/read-config";
 import { fatimaStore } from "lib/store";
-import type { FatimaValidator, UnsafeEnvironmentVariables } from "lib/types";
+import type {
+	FatimaSchema,
+	FatimaValidator,
+	UnsafeEnvironmentVariables,
+} from "lib/types";
 import type { AnyType } from "lib/utils/types";
+
+type ExtractTypiaValidateReturnDataType<T> = T extends {
+	success: true;
+	data: infer D;
+}
+	? D extends Record<string, string>
+		? D
+		: never
+	: never;
 
 export type TypiaFunction = (env: UnsafeEnvironmentVariables) => {
 	success: boolean;
@@ -20,8 +33,10 @@ interface IError {
 
 const typiaTempFolderName = "eba76a2e-684c-4377-a31f-e433246df2f5";
 
-export const typia = (fn: TypiaFunction): FatimaValidator => {
-	return async (env: AnyType) => {
+export const typia = <TFn extends TypiaFunction>(
+	fn: TFn,
+): FatimaSchema<ExtractTypiaValidateReturnDataType<ReturnType<TFn>>> => {
+	const validate = async (env: AnyType) => {
 		let configPath =
 			fatimaStore.get("transformedConfigPath") ?? fatimaStore.get("configPath");
 
@@ -33,7 +48,7 @@ export const typia = (fn: TypiaFunction): FatimaValidator => {
 			const isValid = result.success;
 
 			const errors =
-				result.errors?.map((error) => ({
+				result.errors?.map((error: AnyType) => ({
 					key: error.path.replace("$input.", ""),
 					message: error.expected,
 				})) ?? [];
@@ -92,12 +107,19 @@ export const typia = (fn: TypiaFunction): FatimaValidator => {
 
 		fatimaStore.set("transformedConfigPath", configPath);
 
-		const validate = transformedConfig.validate as FatimaValidator;
+		const validate = transformedConfig.schema?.validate as FatimaValidator;
 
 		const result = validate(env);
 
 		await fs.rm(tempFolderPath, { recursive: true });
 
 		return result;
+	};
+
+	return {
+		validate,
+		$type: null as unknown as ExtractTypiaValidateReturnDataType<
+			ReturnType<TypiaFunction>
+		>,
 	};
 };

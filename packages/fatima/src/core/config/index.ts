@@ -1,17 +1,23 @@
 import { extname } from "node:path";
 import type {
+	CreatePrivateEnv,
+	CreatePublicEnv,
 	FatimaClientOptions,
-	FatimaEnvironment,
+	FatimaEnvType,
 	FatimaEnvironmentFunction,
 	FatimaLoadObject,
-	FatimaValidator,
+	FatimaSchema,
+	FatimaSchemaType,
 } from "lib/types";
 import { getCallerLocation } from "lib/utils/get-caller-location";
 import { wording } from "lib/wording";
-import { FATIMA_DEFAULT_HEAVEN_PORT } from "../constants/port";
-import { markConfig } from "./utils";
+import { markConfig } from "../../lib/config/utils";
+import { FATIMA_DEFAULT_HEAVEN_PORT } from "../../lib/constants/port";
 
-export type FatimaOptions<Environments extends FatimaEnvironment> = {
+export type FatimaOptions<
+	S extends FatimaSchemaType,
+	PublicPrefix extends string,
+> = {
 	/**
 	 * Defines how Fatima loads environment variables.
 	 *
@@ -23,7 +29,7 @@ export type FatimaOptions<Environments extends FatimaEnvironment> = {
 	 *
 	 * @type {Record<Environments, LoadFunction[]>}
 	 */
-	load: FatimaLoadObject<Environments>;
+	load: FatimaLoadObject;
 
 	/**
 	 * A function responsible for determining the current environment.
@@ -40,14 +46,14 @@ export type FatimaOptions<Environments extends FatimaEnvironment> = {
 	 *
 	 * @type {FatimaClientOptions | undefined}
 	 */
-	client?: FatimaClientOptions;
+	client?: FatimaClientOptions<PublicPrefix>;
 
 	/**
-	 * An optional function to validate the loaded environment variables.
+	 * An optional function to specify a schema for validating environment variables.
 	 *
-	 * @type {FatimaValidator | undefined}
+	 * @type {FatimaSchema | undefined}
 	 */
-	validate?: FatimaValidator;
+	schema?: FatimaSchema<S>;
 
 	/**
 	 * Configures the "heaven" feature, which listens on a specified port.
@@ -62,13 +68,16 @@ export type FatimaOptions<Environments extends FatimaEnvironment> = {
 
 export type FatimaConfig = ReturnType<typeof config>;
 
-export function config<PublicPrefix extends string>({
+export function config<
+	S extends FatimaSchemaType,
+	PublicPrefix extends string,
+>({
 	load,
-	environment,
-	validate,
+	schema,
 	client,
 	heaven,
-}: FatimaOptions<PublicPrefix>) {
+	environment,
+}: FatimaOptions<S, PublicPrefix>) {
 	if (!environment) {
 		throw new Error(wording.error.missingEnvironmentConfig());
 	}
@@ -83,7 +92,8 @@ export function config<PublicPrefix extends string>({
 	}
 
 	return markConfig({
-		validate,
+		$envType: null as unknown as FatimaEnvType<S, PublicPrefix>,
+		schema,
 		environment,
 		client,
 		load,

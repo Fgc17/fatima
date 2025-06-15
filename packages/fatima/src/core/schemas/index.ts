@@ -2,7 +2,7 @@ import { classValidator } from "./class-validator";
 import { typia } from "./typia";
 import { zod } from "./zod";
 
-export const validators = {
+export const schemas = {
 	zod,
 	classValidator,
 	typia,

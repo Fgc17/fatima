@@ -21,8 +21,8 @@ export type FatimaLoadConfig<Config> = (
 
 export type FatimaLoaderChain = FatimaLoadFunction[] | FatimaLoadFunction;
 
-export type FatimaLoadObject<Environments extends FatimaEnvironment> = {
-	[env in Environments]?: FatimaLoaderChain;
+export type FatimaLoadObject = {
+	[env in FatimaEnvironment]?: FatimaLoaderChain;
 };
 
 export type FatimaValidatorError = {
@@ -39,17 +39,51 @@ export type FatimaValidator = (
 	env: UnsafeEnvironmentVariables,
 ) => Promisable<FatimaValidationResult>;
 
+export type CreatePrivateEnv<
+	EnvObject extends UnsafeEnvironmentVariables,
+	Prefix extends string,
+> = {
+	[K in keyof EnvObject as K extends `${Prefix}${string}`
+		? never
+		: K]: EnvObject[K];
+};
+
+export type CreatePublicEnv<
+	EnvObject extends UnsafeEnvironmentVariables,
+	Prefix extends string,
+> = {
+	[K in keyof EnvObject as K extends `${Prefix}${string}`
+		? K
+		: never]: EnvObject[K];
+};
+
+export type FatimaEnvType<
+	SchemaType extends FatimaSchemaType,
+	PublicPrefix extends string,
+> = {
+	public: CreatePublicEnv<SchemaType, PublicPrefix>;
+	private: CreatePrivateEnv<SchemaType, PublicPrefix>;
+	all: SchemaType;
+};
+
+export type FatimaSchemaType = Record<string, string>;
+
+export type FatimaSchema<Type extends FatimaSchemaType> = {
+	$type: Type;
+	validate: FatimaValidator;
+};
+
 export type FatimaParsedValidationErrors = Record<string, string[]>;
 
 export type FatimaEnvironmentFunction = (
 	processEnv: UnsafeEnvironmentVariables,
 ) => string;
 
-export interface FatimaClientOptions {
+export interface FatimaClientOptions<PublicPrefix extends string> {
 	/**
 	 * Prefix for public secrets
 	 */
-	publicPrefix?: string;
+	publicPrefix?: PublicPrefix;
 	/**
 	 * Function to verify server environment
 	 */

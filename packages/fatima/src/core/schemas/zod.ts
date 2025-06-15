@@ -1,6 +1,11 @@
-import type { FatimaValidator } from "lib/types";
+import type {
+	FatimaSchema,
+	FatimaSchemaType,
+	FatimaValidator,
+} from "lib/types";
 
-export type ZodSchemaMock = {
+export type ZodSchemaMock<S> = {
+	_type: S;
 	safeParse: (env: unknown) => {
 		success: boolean;
 		error?: {
@@ -13,9 +18,10 @@ export type ZodSchemaMock = {
 	};
 };
 
-export const zod =
-	(constraint: ZodSchemaMock): FatimaValidator =>
-	(env) => {
+export const zod = <Type extends FatimaSchemaType>(
+	constraint: ZodSchemaMock<Type>,
+): FatimaSchema<Type> => {
+	const validate: FatimaValidator = (env) => {
 		const result = constraint.safeParse(env);
 
 		const isValid = result.success;
@@ -31,3 +37,11 @@ export const zod =
 			errors,
 		};
 	};
+
+	const $type = constraint._type;
+
+	return {
+		validate,
+		$type,
+	};
+};
