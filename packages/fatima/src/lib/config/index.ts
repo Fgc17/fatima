@@ -1,6 +1,7 @@
 import { extname } from "node:path";
 import type {
 	FatimaClientOptions,
+	FatimaEnvironment,
 	FatimaEnvironmentFunction,
 	FatimaLoadObject,
 	FatimaValidator,
@@ -10,7 +11,7 @@ import { wording } from "lib/wording";
 import { FATIMA_DEFAULT_HEAVEN_PORT } from "../constants/port";
 import { markConfig } from "./utils";
 
-export type FatimaOptions<PublicPrefix extends string> = {
+export type FatimaOptions<Environments extends FatimaEnvironment> = {
 	/**
 	 * Defines how Fatima loads environment variables.
 	 *
@@ -22,7 +23,7 @@ export type FatimaOptions<PublicPrefix extends string> = {
 	 *
 	 * @type {Record<Environments, LoadFunction[]>}
 	 */
-	load: FatimaLoadObject;
+	load: FatimaLoadObject<Environments>;
 
 	/**
 	 * A function responsible for determining the current environment.
@@ -39,7 +40,7 @@ export type FatimaOptions<PublicPrefix extends string> = {
 	 *
 	 * @type {FatimaClientOptions | undefined}
 	 */
-	client?: FatimaClientOptions<PublicPrefix>;
+	client?: FatimaClientOptions;
 
 	/**
 	 * An optional function to validate the loaded environment variables.
