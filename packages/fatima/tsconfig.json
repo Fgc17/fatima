@@ -15,7 +15,8 @@
 		"useUnknownInCatchVariables": false,
 		"noEmit": true,
 		"paths": {
-			"lib/*": ["./src/lib/*"]
+			"lib/*": ["./src/lib/*"],
+			"core/*": ["./src/core/*"]
 		},
 		"baseUrl": "./",
 		"outDir": "./dist",
