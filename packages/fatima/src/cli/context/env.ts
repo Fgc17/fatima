@@ -1,5 +1,5 @@
 import { loadEnv } from "lib/env/load-env";
-import type { ActionContext } from "../utils/create-action";
+import type { ActionContext } from "./action";
 
 export const envActionContext = async ({
 	args,
