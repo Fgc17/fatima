@@ -1,4 +1,4 @@
-import type { FatimaConfig } from "lib/config";
+import type { FatimaConfig } from "core/config";
 import { readConfig } from "lib/config/read-config";
 import { resolveConfigPath } from "lib/config/resolve-config-path";
 import { logger } from "lib/logger";

@@ -1,9 +1,8 @@
 import { createRequire } from "node:module";
-import { logger } from "lib/logger";
+import type { FatimaConfig } from "core/config";
 import { getTsconfigAliases } from "lib/tsconfig/tsconfig";
 import { wording } from "lib/wording";
 import { isTypescriptFile } from "src/lib/utils/is-typescript";
-import type { FatimaConfig } from ".";
 import { isFatimaConfig } from "./utils";
 
 const require = createRequire(import.meta.url);

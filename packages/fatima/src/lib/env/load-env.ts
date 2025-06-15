@@ -1,4 +1,4 @@
-import type { FatimaConfig } from "lib/config";
+import type { FatimaConfig } from "core/config";
 import { logger } from "lib/logger";
 import { fatimaStore } from "lib/store";
 import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "lib/types";

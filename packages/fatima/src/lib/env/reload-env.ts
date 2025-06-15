@@ -1,8 +1,8 @@
+import type { FatimaConfig } from "core/config";
 import { logger } from "lib/logger";
 import { fatimaStore } from "lib/store";
 import { parseValidationErrors } from "lib/utils/parse-validation";
-import { generateClient } from "../client/generate-client";
-import type { FatimaConfig } from "../config";
+import { generateClient } from "../client/create";
 import { compareArrays } from "../utils/compare-arrays";
 import { wording } from "../wording";
 import { loadEnv } from "./load-env";
@@ -23,8 +23,8 @@ export const reloadEnv = async (config: FatimaConfig) => {
 		logger.success(`Updated types with ${envCount} environment variables`);
 	}
 
-	if (config.validate) {
-		const { errors } = await config.validate(env);
+	if (config.schema) {
+		const { errors } = await config.schema.validate(env);
 
 		if (errors?.length) {
 			const parsedErrors = parseValidationErrors(errors);

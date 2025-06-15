@@ -1,4 +1,4 @@
-import type { FatimaConfig } from "lib/config";
+import type { FatimaConfig } from "core/config";
 import type { UnsafeEnvironmentVariables } from "lib/types";
 
 type FatimaStore = {

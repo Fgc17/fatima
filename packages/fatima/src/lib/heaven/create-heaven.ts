@@ -1,4 +1,4 @@
-import type { FatimaConfig } from "../config";
+import type { FatimaConfig } from "core/config";
 import { reloadEnv } from "../env/reload-env";
 import { createFileWatcher } from "./file-watcher";
 import { createHeavenServer } from "./heaven-server";
