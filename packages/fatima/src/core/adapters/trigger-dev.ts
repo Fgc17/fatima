@@ -1,10 +1,10 @@
+import { resolve } from "node:path";
+import { exec } from "lib/exec";
+import { lifecycle } from "lib/lifecycle";
 import type {
 	FatimaBuiltInLoadFunction,
 	UnsafeEnvironmentVariables,
 } from "lib/types";
-import { resolve } from "node:path";
-import { spawn } from "node:child_process";
-import { lifecycle } from "lib/lifecycle";
 import { getRuntime } from "lib/utils/get-runtime";
 
 type TriggerDevClientMock = {
@@ -94,17 +94,18 @@ export const extension = (configPath?: string): TriggerDevExtensionMock => ({
 					);
 
 					await new Promise<void>((resolve, reject) => {
-						const child = spawn(
-							runtime,
-							[cmdPath, "generate", configPath ? `--config=${configPath}` : ""],
-							{
-								shell: true,
-								stdio: "inherit",
-							},
-						);
+						const cmd = [runtime, cmdPath, "generate"];
+
+						if (configPath) {
+							cmd.push(`--config=${configPath}`);
+						}
+
+						const child = exec(cmd, {
+							shell: true,
+						});
 
 						child.on("error", (error) => {
-							console.error(`Error: ${error.message}`);
+							console.error(`[Fatima] Error: ${error.message}`);
 							reject(error);
 						});
 
