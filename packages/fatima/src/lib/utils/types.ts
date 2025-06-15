@@ -1,9 +1,10 @@
 // biome-ignore lint/suspicious/noExplicitAny: I need a AnyType
 export type AnyType = any;
 
-// biome-ignore lint/complexity/noBannedTypes: Let me use the Function type
-export interface GenericClass<T> extends Function {
-	new (...args: AnyType[]): T;
+export interface GenericClass<T, Args extends AnyType[] = AnyType[]>
+	// biome-ignore lint/complexity/noBannedTypes: Let me use the Function type
+	extends Function {
+	new (...args: Args): T;
 }
 
 export type Promisable<T> = T | Promise<T>;
