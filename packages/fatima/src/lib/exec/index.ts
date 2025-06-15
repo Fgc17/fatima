@@ -1,10 +1,10 @@
-import type { UnsafeEnvironmentVariables } from "lib/types";
 import { spawn } from "node:child_process";
+import type { UnsafeEnvironmentVariables } from "lib/types";
 
 export const exec = (
 	command: string[],
 	options: {
-		env: UnsafeEnvironmentVariables;
+		env?: UnsafeEnvironmentVariables;
 		shell?: boolean;
 	},
 ) => {
