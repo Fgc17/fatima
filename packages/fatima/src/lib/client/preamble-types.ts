@@ -23,11 +23,11 @@ export type CreatePrivateEnv<
 	Keys extends PropertyKey,
 	Prefix extends string,
 > = {
-	[K in Keys as K extends `${Prefix}${string}` ? never : K]: string;
+	[K in Keys as K extends `${Prefix}${string}` ? never : K]: EnvObject[K];
 };
 
 export type CreatePublicEnv<Keys extends PropertyKey, Prefix extends string> = {
-	[K in Keys as K extends `${Prefix}${string}` ? K : never]: string;
+	[K in Keys as K extends `${Prefix}${string}` ? K : never]: EnvObject[K];
 };
 
 export type EnvKeys = keyof EnvObject;

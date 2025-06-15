@@ -1,3 +1,4 @@
+import { getConfigLanguage } from "lib/config/config-language";
 import type { UnsafeEnvironmentVariables } from "lib/types";
 import { txt } from "lib/utils/txt";
 import preambleTypes from "./preamble-types?raw";
@@ -8,11 +9,15 @@ const ifThenString = <T>(condition: T, Then = "", Else = "") =>
 
 export const content = (params: {
 	createEnvArg: string;
-	module: "cjs" | "esm";
-	lang: "ts" | "js";
 	publicPrefix: string;
 	env: UnsafeEnvironmentVariables;
+	hasSchema: boolean;
+	configPath: string;
 }) => {
+	const { module, lang } = getConfigLanguage(params.configPath);
+
+	const hasSchema = params.hasSchema;
+
 	const keys = Object.keys(params.env);
 
 	const privateEnvs = keys.filter(
@@ -27,28 +32,32 @@ export const content = (params: {
 		.map((key) => `    ${key}: process.env.${key}`)
 		.join(",\n")}}`;
 
-	const isJs = params.lang === "js";
+	const isJs = lang === "js";
 
-	const isCjs = params.module === "cjs";
+	const isCjs = module === "cjs";
 
 	const isTs = !isJs;
 
 	const preambleTypesContent = (preambleTypes as string)
 		.replace(
 			"type EnvObject = AnyType;",
-			`export interface EnvObject {${keys.map((key) => `"${key}": string;`).join("\n  ")}}\n`,
+			`type EnvObject = {${keys.map((key) => `"${key}": string;`).join("\n  ")}} ${ifThenString(hasSchema, "& typeof Config.$envType.all")} \n`,
 		)
 		.replaceAll("<PUBLIC_>", params.publicPrefix ?? "PUBLIC_");
 
 	const preambleContent = preamble;
 
+	const configPath = params.configPath ?? "./env.config";
+
 	return [
 		ifThenString(isTs, "// @ts-nocheck"),
+
+		ifThenString(isTs, 'import type Config from "./env.config"'),
 
 		ifThenString(
 			isJs,
 			txt(
-				"/** @typedef {Object} Env",
+				"/** @typedef {Object} PrivateEnv",
 				privateEnvs.map((key) => ` * @property {string} ${key}`).join("\n"),
 				" */",
 				"",
@@ -80,14 +89,20 @@ export const content = (params: {
 		preambleContent,
 		"",
 
-		ifThenString(isJs, "/** @type { Env } */"),
+		ifThenString(
+			isJs,
+			`/** @type { ${ifThenString(hasSchema, `typeof import("${configPath}").$envType.private &`)} PrivateEnv } */`,
+		),
 		`const env = createEnv(${params.createEnvArg}) ${ifThenString(isTs, " as Env")}`,
 		"",
 
 		ifThenString(
 			publicEnvs.length,
 			txt(
-				ifThenString(isJs, "/** @type { PublicEnv } */"),
+				ifThenString(
+					isJs,
+					`/** @type { ${ifThenString(hasSchema, `typeof import("${configPath}").$envType.public &`)} PublicEnv } */`,
+				),
 				`const publicEnv = createPublicEnv(${publicEnvsObject}) ${ifThenString(isTs, " as PublicEnv")}`,
 			),
 		),
