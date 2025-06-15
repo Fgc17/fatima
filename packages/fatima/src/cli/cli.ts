@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 import { program } from "commander";
-import { generateAction } from "./actions/generate";
-import { devAction } from "./actions/dev";
-import { validateAction } from "./actions/validate";
-import { runAction } from "./actions/run";
-import { reloadAction } from "./actions/reload";
 import { initializeEnv } from "lib/env/patch-env";
-import { finishLog } from "lib/logger";
+import { exitLog } from "lib/logger";
+import { devAction } from "./actions/dev";
+import { generateAction } from "./actions/generate";
+import { reloadAction } from "./actions/reload";
+import { runAction } from "./actions/run";
+import { validateAction } from "./actions/validate";
 
 initializeEnv();
 
@@ -50,6 +50,6 @@ program.command("reload").action(reloadAction);
 
 program.command("help").alias("h").action(program.help);
 
-process.on("exit", finishLog);
+process.on("exit", exitLog);
 
 program.parse();
