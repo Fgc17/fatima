@@ -4,6 +4,7 @@ import { isTypescriptFile } from "src/lib/utils/is-typescript";
 import { isFatimaConfig } from "./utils";
 import { lifecycle } from "lib/lifecycle";
 import { logger } from "lib/logger";
+import { getTsconfigAliases } from "lib/tsconfig/tsconfig";
 
 const require = createRequire(import.meta.url);
 
@@ -39,11 +40,14 @@ export async function readConfig(configPath: string): Promise<FatimaConfig> {
 				return lifecycle.error.missinJitiModule();
 			}
 
+			const aliases = getTsconfigAliases();
+
 			const createJiti = jitiModule.createJiti;
 
 			const jiti = createJiti(import.meta.url, {
 				interopDefault: true,
 				fsCache: false,
+				alias: aliases,
 				transformOptions: {
 					ts: true,
 					babel: {
@@ -68,7 +72,7 @@ export async function readConfig(configPath: string): Promise<FatimaConfig> {
 
 		return config;
 	} catch (error) {
-		logger.error(error.message);
+		logger.error(error);
 		logger.error("Failed to read config file, check if it exists.");
 		process.exit(1);
 	}
