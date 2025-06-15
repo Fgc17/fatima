@@ -6,15 +6,13 @@ import { type EnvActionContext, envActionContext } from "../context/env";
 
 export const validateService = async ({
 	env,
-	config: { validate },
+	config: { schema },
 }: EnvActionContext) => {
-	if (!validate) {
-		throw new Error(
-			"You need to provide a validate function in your config file.",
-		);
+	if (!schema) {
+		throw new Error("No schema defined in the configuration for validation.");
 	}
 
-	const { isValid, errors } = await validate(env);
+	const { isValid, errors } = await schema.validate(env);
 
 	if (!isValid && errors) {
 		const parsedErrors = parseValidationErrors(errors);

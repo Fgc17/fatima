@@ -7,7 +7,7 @@ import { validateService } from "./validate";
 export const generateService = async (ctx: EnvActionContext) => {
 	const { env, config } = ctx;
 
-	if (config.validate) {
+	if (ctx.config.schema) {
 		await validateService(ctx);
 	}
 
