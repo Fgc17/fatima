@@ -1,10 +1,10 @@
-import type { FatimaConfig } from "lib/config";
-import type { UnsafeEnvironmentVariables } from "lib/types";
-import path from "node:path";
 import { writeFileSync } from "node:fs";
-import { client } from "./client";
+import path from "node:path";
+import type { FatimaConfig } from "lib/config";
 import { getConfigLanguage } from "lib/config/config-language";
+import type { UnsafeEnvironmentVariables } from "lib/types";
 import { format } from "lib/utils/format";
+import { content } from "./content";
 
 export async function generateClient(
 	config: FatimaConfig,
@@ -15,15 +15,19 @@ export async function generateClient(
 		`env${config.file.extension}`,
 	);
 
-	const envs = Object.keys(env ?? {});
-
 	const { module, lang } = getConfigLanguage(config.file.path);
 
-	const clientContent = client(envs, {
+	const createEnvArg = `{ isServer: ${config.client?.isServer?.toString() ?? "undefined"} }`;
+
+	const clientContent = content({
+		createEnvArg,
+		publicPrefix: config.client?.publicPrefix ?? "PUBLIC_",
 		lang,
 		module,
-		...config.client,
+		env,
 	});
 
-	writeFileSync(clientPath, await format(clientContent.join("\n")));
+	const formattedContent = await format(clientContent.join("\n"));
+
+	writeFileSync(clientPath, formattedContent);
 }

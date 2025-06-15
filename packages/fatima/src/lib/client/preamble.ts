@@ -1,11 +1,8 @@
 // @ts-nocheck
 
-// eslint-disable-next-line @fatima/no-process-env
-const processEnv = process.env;
-
 const createLogLine = (message) => {
 	const env =
-		processEnv.fatima_environment?.split(":")[1] ?? "EnvironmentNotFound";
+		process.env.fatima_environment?.split(":")[1] ?? "EnvironmentNotFound";
 
 	return `🔒 [fatima] (${env}) ` + message.join("\n");
 };
@@ -13,9 +10,9 @@ const createLogLine = (message) => {
 const logError = (...messages) => {
 	const message = createLogLine(messages);
 
-	const currentLogCount = Number(processEnv.fatima_logs?.split(2) ?? "0");
+	const currentLogCount = Number(process.env.fatima_logs?.split(2) ?? "0");
 
-	processEnv.fatima_logs = "i:" + (currentLogCount + 1).toString();
+	process.env.fatima_logs = "i:" + (currentLogCount + 1).toString();
 
 	console.log(`\u001B[31m ${message} \u001B[39m`);
 };
@@ -42,11 +39,11 @@ const createEnv = (options) => {
 	const isAccessForbidden = () => !isServer();
 
 	/** @param {string} key @returns {boolean} */
-	const isUndefined = (key) => !processEnv[key];
+	const isUndefined = (key) => !process.env[key];
 
 	/** @param {string} key */
 	const handleUndefined = (key) => {
-		if (!processEnv.fatima_storeMarker) {
+		if (!process.env.fatima_storeMarker) {
 			return undefinedEnvironmentAndStore(key);
 		}
 		return undefinedEnvironment(key);
@@ -69,10 +66,14 @@ const createEnv = (options) => {
 		);
 	};
 
-	const fatimaEnv = new Proxy(processEnv, {
+	const fatimaEnv = new Proxy(process.env, {
 		/** @param {Object} target @param {string} key @returns {string} */
 		get(target, key) {
-			if (typeof key !== "string" || !/^[A-Z0-9_]+$/.test(key)) {
+			if (
+				typeof key !== "string" ||
+				key === "__esModule" ||
+				key === "$$typeof"
+			) {
 				return undefined;
 			}
 
@@ -91,10 +92,10 @@ const createEnv = (options) => {
 	return fatimaEnv;
 };
 
-const createPublicEnv = (options) => {
+const createPublicEnv = (publicVariables) => {
 	/** @param {string} key @returns {boolean} */
 	const isUndefined = (key) => {
-		if (!options.publicVariables[key]) {
+		if (!publicVariables[key]) {
 			return true;
 		}
 	};
@@ -104,7 +105,7 @@ const createPublicEnv = (options) => {
 		throw new Error(`🔒 [fatima] Environment variable ${key} not found.`);
 	};
 
-	const fatimaPublicEnv = new Proxy(options.publicVariables, {
+	const fatimaPublicEnv = new Proxy(publicVariables, {
 		/** @param {Object} target @param {string} key @returns {string} */
 		get(target, key) {
 			if (isUndefined(key)) {
