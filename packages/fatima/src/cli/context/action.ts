@@ -25,13 +25,13 @@ export const action = <T extends ActionContext>(
 
 			const options = program.optsWithGlobals();
 
-			fatimaStore.earlyInitialize();
+			fatimaStore.initialize(options);
 
 			const configPath = resolveConfigPath(options.config);
 
 			const config = await readConfig(configPath);
 
-			fatimaStore.initialize(config, options);
+			fatimaStore.postInitialize(config);
 
 			const baseContext: ActionContext = { options, args, config };
 
