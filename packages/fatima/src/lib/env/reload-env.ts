@@ -1,8 +1,8 @@
 import type { FatimaConfig } from "core/config";
+import { generateClient } from "lib/client/generate";
 import { logger } from "lib/logger";
 import { fatimaStore } from "lib/store";
 import { parseValidationErrors } from "lib/utils/parse-validation";
-import { generateClient } from "../client/create";
 import { compareArrays } from "../utils/compare-arrays";
 import { wording } from "../wording";
 import { loadEnv } from "./load-env";

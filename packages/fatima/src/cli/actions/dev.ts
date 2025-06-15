@@ -1,4 +1,4 @@
-import { generateClient } from "lib/client/generate-client";
+import { generateClient } from "lib/client/generate";
 import { createHeaven } from "lib/env/create-heaven";
 import { createInjectableEnv } from "lib/env/patch-env";
 import { exec } from "lib/exec";

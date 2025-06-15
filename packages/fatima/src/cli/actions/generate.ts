@@ -1,4 +1,4 @@
-import { generateClient } from "lib/client/generate-client";
+import { generateClient } from "lib/client/generate";
 import { logger } from "lib/logger";
 import { action } from "../context/action";
 import { type EnvActionContext, envActionContext } from "../context/env";
