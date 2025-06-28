@@ -49,15 +49,13 @@ export const devService = async ({
 
 	const { closeHeaven } = createHeaven(config);
 
-	child.on("error", (error) => {
-		console.error(`Error: ${error.message}`);
+	child.on("error", () => {
 		closeHeaven();
 		process.exit(1);
 	});
 
 	child.on("close", (code) => {
 		if (code !== 0) {
-			console.error(`Command exited with code ${code}`);
 			closeHeaven();
 			process.exit(code);
 		}

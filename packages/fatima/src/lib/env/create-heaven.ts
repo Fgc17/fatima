@@ -20,7 +20,7 @@ export function createHeaven(config: FatimaConfig) {
 			await send();
 		};
 
-		closeHeaven = heavenServer.close;
+		closeHeaven = heavenServer.close.bind(heavenServer);
 	}
 
 	createFileWatcher(reload);
