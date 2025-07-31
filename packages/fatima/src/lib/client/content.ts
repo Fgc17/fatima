@@ -108,6 +108,6 @@ export const content = (params: {
 		),
 		"",
 
-		`${isCjs ? "module.exports = " : "export"} { env, publicEnv }`,
+		`${isCjs ? "module.exports = " : "export"} { env, ${ifThenString(publicEnvs.length, "publicEnv")} }`,
 	];
 };
