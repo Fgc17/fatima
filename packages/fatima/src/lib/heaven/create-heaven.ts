@@ -11,16 +11,15 @@ export function createHeaven(config: FatimaConfig) {
 	};
 
 	if (config.heaven) {
-		const { send, server: heavenServer } = createHeavenServer(
-			config.heaven,
-			() => reloadEnv(config),
+		const { send, shutdown } = createHeavenServer(config.heaven, () =>
+			reloadEnv(config),
 		);
 
 		reload = async () => {
 			await send();
 		};
 
-		closeHeaven = heavenServer.close;
+		closeHeaven = shutdown;
 	}
 
 	createFileWatcher(reload);

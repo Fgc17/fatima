@@ -1,7 +1,7 @@
 import { generateClient } from "lib/client/generate";
-import { createHeaven } from "lib/env/create-heaven";
 import { createInjectableEnv } from "lib/env/patch-env";
 import { exec } from "lib/exec";
+import { createHeaven } from "lib/heaven/create-heaven";
 import { logger } from "lib/logger";
 import { fatimaStore } from "lib/store";
 import { action } from "../context/action";
@@ -55,10 +55,18 @@ export const devService = async ({
 	});
 
 	child.on("close", (code) => {
-		if (code !== 0) {
-			closeHeaven();
-			process.exit(code);
-		}
+		closeHeaven();
+		process.exit(code);
+	});
+
+	process.on("SIGINT", () => {
+		closeHeaven();
+		process.exit(0);
+	});
+
+	process.once("SIGTERM", () => {
+		closeHeaven();
+		process.exit(0);
 	});
 };
 

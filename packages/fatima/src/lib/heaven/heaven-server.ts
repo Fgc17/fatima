@@ -8,7 +8,7 @@ export const createHeavenServer = <T>(
 ) => {
 	const clients = new Set<net.Socket>();
 
-	const sendDataToHeavenClient = async () => {
+	const send = async () => {
 		const data = await getSendEventData();
 
 		return Promise.all(
@@ -37,7 +37,7 @@ export const createHeavenServer = <T>(
 			if (isHttpRequest) {
 				clients.delete(socket);
 
-				await sendDataToHeavenClient();
+				await send();
 
 				socket.write(
 					"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 2\r\n\r\nOK",
@@ -64,8 +64,16 @@ export const createHeavenServer = <T>(
 		}
 	});
 
+	const shutdown = async () => {
+		for (const client of clients) {
+			client.destroy();
+		}
+		server.close();
+	};
+
 	return {
-		send: sendDataToHeavenClient,
+		send,
+		shutdown,
 		server,
 	};
 };
