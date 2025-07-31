@@ -36,7 +36,7 @@ const noEnvRuleObject = {
 	},
 };
 
-const noProcessEnvRule = {
+const noProcessEnvRuleObject = {
 	meta: {
 		type: "problem",
 		docs: {
@@ -81,12 +81,9 @@ export const plugin = {
 		"@fatima": {
 			rules: {
 				"no-env": noEnvRuleObject,
-				"no-process-env": noProcessEnvRule,
+				"no-process-env": noProcessEnvRuleObject,
 			},
 		},
-	},
-	rules: {
-		"@fatima/no-process-env": "error",
 	},
 } as const;
 
@@ -95,5 +92,13 @@ export const noEnvRule = (...files: string[]) =>
 		files,
 		rules: {
 			"@fatima/no-env": "error",
+		},
+	}) as const;
+
+export const noProcessEnvRule = (...files: string[]) =>
+	({
+		files,
+		rules: {
+			"@fatima/no-process-env": "error",
 		},
 	}) as const;
