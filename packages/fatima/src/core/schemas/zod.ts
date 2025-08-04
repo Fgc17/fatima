@@ -3,14 +3,19 @@ import type {
 	FatimaSchemaType,
 	FatimaValidator,
 } from "lib/types";
+import type { AnyType, Defined } from "lib/utils/types";
 
 export type ZodSchemaMock<S> = {
-	_type: S;
+	spa: (...params: AnyType[]) => Promise<{
+		data?: S;
+		error?: AnyType;
+		success: boolean;
+	}>;
 	safeParse: (env: unknown) => {
 		success: boolean;
 		error?: {
-			errors: Array<{
-				path: (string | number)[];
+			issues: Array<{
+				path: PropertyKey[];
 				message: string;
 			}>;
 		};
@@ -27,7 +32,7 @@ export const zod = <Type extends FatimaSchemaType>(
 		const isValid = result.success;
 
 		const errors =
-			result.error?.errors.map((error) => ({
+			result.error?.issues.map((error) => ({
 				key: error.path.join("."),
 				message: error.message,
 			})) ?? [];
@@ -38,7 +43,9 @@ export const zod = <Type extends FatimaSchemaType>(
 		};
 	};
 
-	const $type = constraint._type;
+	const $type = null as unknown as Defined<
+		Awaited<ReturnType<typeof constraint.spa>>["data"]
+	>;
 
 	return {
 		validate,
