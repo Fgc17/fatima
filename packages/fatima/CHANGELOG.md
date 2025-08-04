@@ -1,5 +1,28 @@
 # fatima
 
+## 0.0.25
+### Patch Changes (next)
+
+From highest to lowest impact.
+
+#### Config (env.config.ts)
+
+- feat (fatima): add support for env type augmentation through schema declaration
+
+    The `validate` key is now deprecated in favor of `schema`, envs get validated through schema specifications. This allows for augmenting the generated client typing through the schema.
+
+#### ESLint Plugin
+
+- refactor (fatima): improve eslint rule customization
+
+    Previously the `noProcessEnv` rule was automatically assigned when importing the plugin, now it must be manually declarated, along with file glob pattern.
+
+#### Register (fatima/register)
+
+- feat (fatima): add register import
+
+    Now it is possible to import `fatima/register` in order to load envs synchronously, through local `.env` files. Exactly like `dotenv/config` works.
+
 ## 0.0.24
 ### Patch Changes (2025/03/31)
 
