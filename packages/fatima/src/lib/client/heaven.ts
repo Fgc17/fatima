@@ -1,6 +1,7 @@
-import type { AnyType } from "lib/types";
-import { getRuntime } from "./lib/get-runtime";
 import { logger } from "lib/logger";
+import { fatimaStore } from "lib/store";
+import { getRuntime } from "lib/utils/get-runtime";
+import type { AnyType } from "lib/utils/types";
 
 declare global {
 	namespace Bun {
@@ -45,7 +46,7 @@ interface CrossPlatformSocket {
 	write?: (data: string) => void;
 }
 
-export function createHeavenClient(host: string, portLike: string | number) {
+function createHeavenClient(host: string, portLike: string | number) {
 	let client: CrossPlatformSocket;
 	const port = Number(portLike);
 	const runtime = getRuntime();
@@ -129,4 +130,22 @@ export function createHeavenClient(host: string, portLike: string | number) {
 	});
 
 	return client;
+}
+
+export function watch(host = "localhost") {
+	const isDevMode = Boolean(process.env.fatima_devMode);
+
+	if (!isDevMode) return;
+
+	const port = fatimaStore.get("heavenPort");
+
+	if (!port) {
+		logger.error("You need to set 'config.heaven' to use the watch feature.");
+
+		console.log("");
+
+		process.exit(1);
+	}
+
+	createHeavenClient(host, port);
 }
