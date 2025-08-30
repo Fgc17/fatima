@@ -1,4 +1,4 @@
-import { cn } from "fumadocs-ui/components/api";
+import { cn } from "@/lib/cn";
 
 export function FatimaLogo({
 	className,

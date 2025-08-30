@@ -54,30 +54,28 @@ First create your file `env.config.ts` file:
 ```ts title="env.config.ts" tab="typescript"
 import { config, adapters } from "fatima";
 
-type Environment = "development" | "staging" | "production";
-
-export default config<Environment>({
-  client: {
-    publicPrefix: "NEXT_PUBLIC_",
-  },
+export default config({
+  environment: () => process.env.NODE_ENV ?? "development",
   load: {
     development: [adapters.local.load(".env")],
   },
-  environment: () => process.env.NODE_ENV ?? "development",
+  client: {
+    publicPrefix: "NEXT_PUBLIC_",
+  },
 });
 ```
 
 ```js title="env.config.js" tab="javascript"
-const { config, adapters, validators } = require("fatima");
+const { config, adapters } = require("fatima");
 
 module.exports = config({
-  client: {
-    publicPrefix: "NEXT_PUBLIC_",
-  },
+  environment: () => process.env.NODE_ENV,
   load: {
     development: [adapters.local.load(".env")],
   },
-  environment: () => process.env.NODE_ENV,
+  client: {
+    publicPrefix: "NEXT_PUBLIC_",
+  },
 });
 ```
 

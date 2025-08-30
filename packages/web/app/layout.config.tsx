@@ -1,5 +1,5 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
-import { FatimaLogo } from "./logo";
+import { FatimaLogo } from "../components/logo";
 
 /**
  * Shared layout configurations

@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { FatimaLogo } from "../logo";
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
+import Link from "next/link";
+import { FatimaLogo } from "../../components/logo";
 
 export default function HomePage() {
 	return (
