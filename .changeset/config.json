@@ -9,5 +9,5 @@
 	"baseBranch": "fatima",
 	"fixed": [],
 	"linked": [],
-	"ignore": ["@fatimajs/playground", "@fatimajs/web"]
+	"ignore": ["@fatimajs/web"]
 }
