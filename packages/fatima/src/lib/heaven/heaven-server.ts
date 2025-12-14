@@ -14,9 +14,9 @@ export const createHeavenServer = <T>(
 		return Promise.all(
 			Array.from(clients).map((c) => {
 				try {
-					c.write(JSON.stringify(data) + "\n");
-				} catch (error) {
-					console.error("Error writing to client:", error);
+					return c.write(JSON.stringify(data) + "\n");
+				} catch {
+					return 0;
 				}
 			}),
 		);
