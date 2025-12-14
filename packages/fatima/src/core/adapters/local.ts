@@ -21,8 +21,8 @@ const load =
 				const env = parseEnvLines(content);
 
 				return env;
-			} catch (error) {
-				return {};
+			} catch {
+				throw new Error(`Failed to read local env file at path: ${envPath}`);
 			}
 		});
 
