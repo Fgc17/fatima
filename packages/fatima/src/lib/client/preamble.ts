@@ -17,25 +17,6 @@ const logError = (...messages) => {
 	console.log(`\u001B[31m ${message} \u001B[39m`);
 };
 
-const undefinedEnvironment = (key) => {
-	const msg = `Environment variable ${key} not found.`;
-
-	logError(msg);
-
-	throw new Error(msg);
-};
-
-const undefinedEnvironmentAndStore = (key) => {
-	const msg = `Environment variable ${key} not found.`;
-
-	logError(
-		msg,
-		"You might have forgotten to run: fatima dev -- 'your-command'",
-	);
-
-	throw new Error(msg);
-};
-
 const createEnv = (options) => {
 	const isServer = options.isServer || (() => typeof window === "undefined");
 
