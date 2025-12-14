@@ -1,8 +1,7 @@
 import { spawn } from "node:child_process";
-import { promises as fs, existsSync } from "node:fs";
+import { existsSync, promises as fs } from "node:fs";
 import { parseEnvLines } from "lib/env/parse-env";
 import { createInjectableEnv } from "lib/env/patch-env";
-import { logger } from "lib/logger";
 import type {
 	FatimaBuiltInLoadFunction,
 	UnsafeEnvironmentVariables,
