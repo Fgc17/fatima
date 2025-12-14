@@ -60,7 +60,7 @@ function createHeavenClient(host: string, portLike: string | number) {
 		case "bun": {
 			client = {
 				connect: async (port: number, host: string, cb?: () => void) => {
-					const conn = await Bun.connect({ hostname: host, port });
+					await Bun.connect({ hostname: host, port });
 					if (cb) cb();
 				},
 				on: (event: string, callback: (data?: AnyType) => void) => {
