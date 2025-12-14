@@ -18,6 +18,7 @@ program
 		showGlobalOptions: true,
 	})
 	.option("-d, --debug", "turn on debug mode")
+	.option("-s, --strict", "turn on strict mode")
 	.option(
 		"-c, --config <config>, --config=<config>",
 		"customize config file path",

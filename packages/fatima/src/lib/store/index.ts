@@ -12,6 +12,7 @@ type FatimaStore = {
 	liteMode: boolean;
 	debug: boolean;
 	devMode: boolean;
+	strictMode: boolean;
 	skipLoading: boolean;
 };
 
@@ -61,8 +62,9 @@ export const fatimaStore = {
 		this.set("envNames", []);
 
 		this.set("liteMode", Boolean(options.lite));
-		this.set("debug", Boolean(options.debug));
 		this.set("devMode", Boolean(options.devMode));
+		this.set("strictMode", Boolean(options.strict));
+		this.set("debug", Boolean(options.debug));
 		this.set("skipLoading", Boolean(options.processEnv));
 
 		options.environment &&
