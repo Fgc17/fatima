@@ -1,10 +1,8 @@
 import { extname } from "node:path";
 import type {
-	CreatePrivateEnv,
-	CreatePublicEnv,
 	FatimaClientOptions,
-	FatimaEnvType,
 	FatimaEnvironmentFunction,
+	FatimaEnvType,
 	FatimaLoadObject,
 	FatimaSchema,
 	FatimaSchemaType,

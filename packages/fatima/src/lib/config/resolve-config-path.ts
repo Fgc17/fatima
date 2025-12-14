@@ -1,6 +1,5 @@
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { parse, resolve } from "node:path";
-import { logger } from "lib/logger";
 
 const searchBlacklist = [
 	"node_modules",
