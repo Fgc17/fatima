@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { existsSync, lstatSync, readdirSync } from "node:fs";
 import { parse, resolve } from "node:path";
 
 const searchBlacklist = [
@@ -14,6 +14,7 @@ const searchBlacklist = [
 	".temp",
 	".vscode",
 	"logs",
+	".pnpm-store",
 ];
 
 export function resolveConfigPath(configPath?: string): string {
@@ -64,7 +65,9 @@ export function resolveConfigPath(configPath?: string): string {
 				foundPaths.push(fullPath);
 			}
 
-			if (statSync(fullPath).isDirectory()) {
+			// Use lstat to avoid following symlinks, preventing ELOOP errors in pnpm stores
+			const stats = lstatSync(fullPath);
+			if (stats.isDirectory() && !stats.isSymbolicLink()) {
 				const nestedConfig = searchConfig(fullPath);
 				if (nestedConfig) foundPaths.push(nestedConfig);
 			}
