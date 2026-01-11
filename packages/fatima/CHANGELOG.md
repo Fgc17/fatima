@@ -1,5 +1,10 @@
 # fatima
 
+## 0.0.27
+### Patch Changes
+
+- fix: patch pnpm symlink eloop
+
 ## 0.0.26
 ### Patch Changes
 
