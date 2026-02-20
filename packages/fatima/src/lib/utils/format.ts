@@ -1,6 +1,6 @@
-import { debug } from "lib/debugger";
 import { execSync } from "node:child_process";
 import path from "node:path";
+import { debug } from "lib/debugger";
 
 export const format = async (content: string) => {
 	let formatCode = async () => content;
@@ -15,7 +15,9 @@ export const format = async (content: string) => {
 	for (const formatter of formatters) {
 		try {
 			const formatterPath = path.dirname(
-				require.resolve(formatter + "/package.json"),
+				require.resolve(formatter + "/package.json", {
+					paths: [process.cwd()],
+				}),
 			);
 
 			userFormatter = {
@@ -31,9 +33,9 @@ export const format = async (content: string) => {
 
 	switch (userFormatter.name) {
 		case "prettier": {
-			const prettier = await import(userFormatter.path).then(
-				(mod) => mod.default,
-			);
+			const prettierPath = path.join(userFormatter.path, "index.mjs");
+
+			const prettier = await import(prettierPath).then((mod) => mod.default);
 
 			formatCode = () => {
 				return prettier.format(content, {
@@ -50,6 +52,7 @@ export const format = async (content: string) => {
 			formatCode = async () =>
 				execSync(`${biomeBinary} format --stdin-file-path=tmp.env.ts`, {
 					input: content,
+					cwd: process.cwd(),
 				}).toString();
 
 			break;
