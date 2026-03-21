@@ -5,7 +5,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.0.27",
+	"version": "0.0.28",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -66,8 +66,7 @@
 		"terser": "5.44.0",
 		"tsup": "8.5.0",
 		"typescript": "5.9.3",
-		"prettier": "3.6.2",
-		"@biomejs/biome": "2.2.7"
+		"prettier": "3.6.2"
 	},
 	"dependencies": {
 		"commander": "13.1.0",

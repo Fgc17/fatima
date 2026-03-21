@@ -1,5 +1,10 @@
 # fatima
 
+## 0.0.28
+### Patch Changes
+
+- fix: patch prettier foramatting import issue
+
 ## 0.0.27
 ### Patch Changes
 
