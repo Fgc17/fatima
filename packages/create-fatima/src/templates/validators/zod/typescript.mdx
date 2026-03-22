@@ -1,5 +1,4 @@
 ```ts
-import { validators } from "fatima";
 import { z, type ZodType } from "zod";
 import type { EnvRecord } from "env";
 
@@ -10,6 +9,6 @@ const constraint: Constraint = {
 };
 
 export default config({
-  validate: validators.zod(z.object(constraint)),
+  validate: z.object(constraint),
 });
 ```

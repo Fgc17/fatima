@@ -1,9 +1,9 @@
 ```js
-const { adapters, parse } = require("fatima");
+const { providers } = require("fatima");
 
 module.exports = config({
-  load: {
-    development: [adapters.vercel.load(parse)],
+  providers: {
+    development: providers.vercel(),
   },
 });
 ```

@@ -1,45 +1,33 @@
 ---
-title: Building your own validator
+title: Building your own schema
 description: Fatima is completely agnostic on how you validate your secrets.
 ---
 
-There's currently some built-in validators that you can use, but I will show you how to create your own.
+Fatima accepts any Standard Schema compatible validator.
 
-<Callout type="warn" title="Do not proceed on your own with these libraries">
-    Unless you know what you're doing, I highly recommend using the built-in validators for the following libraries:
+## How the validate key works
 
-    - Typia
-
-</Callout>
-
-## How the validate function works
-
-Inside your `env.config.ts` there's an available `validate` key that you can fill with a function of the following type:
+Inside your `env.config.ts` there's an available `validate` key that you can fill with any object that follows the Standard Schema interface:
 
 ```ts title="types.d.ts"
-export type FatimaValidator = (
-  env: UnsafeEnvironmentVariables,
-  context: FatimaContext
-) => Promisable<{
-  isValid: boolean;
-  errors?: Array<{
-    key: string;
-    message: string;
-  }>;
-}>;
+export interface StandardSchemaV1<Input = unknown, Output = Input> {
+  readonly "~standard": {
+    readonly version: 1;
+    readonly vendor: string;
+    readonly validate: (value: unknown) =>
+      | Promise<{ value: Output } | { issues: { message: string; path?: PropertyKey[] }[] }>
+      | { value: Output }
+      | { issues: { message: string; path?: PropertyKey[] }[] };
+  };
+}
 ```
 
-## Creating a custom validate function with zod
-
-<Callout type="info" title="Info">
-  Fatima alredy comes with [a built-in zod validator](/docs/validators/zod),
-  this is just an example.
-</Callout>
+## Creating a custom schema with zod
 
 Here's an example using `zod`:
 
 ```ts title="env.config.ts"
-import { config, validators } from "fatima";
+import { config } from "fatima";
 import { z, ZodType } from "zod";
 import { EnvKeys } from "env";
 
@@ -50,21 +38,7 @@ const schema = z.object<ZodEnv>({
 });
 
 export default config({
-  validate: ({ env }) => {
-    const result = schema.safeParse(env);
-
-    const isValid = result.success;
-
-    const errors = result.error?.errors.map((error) => ({
-      key: error.path.join("."),
-      message: error.message,
-    }));
-
-    return {
-      isValid,
-      errors,
-    };
-  },
+  validate: schema,
 });
 ```
 

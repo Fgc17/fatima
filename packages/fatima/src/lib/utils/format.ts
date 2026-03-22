@@ -1,6 +1,8 @@
 import { execSync } from "node:child_process";
+import { createRequire } from "node:module";
 import path from "node:path";
-import { debug } from "lib/debugger";
+
+const require = createRequire(import.meta.url);
 
 export const format = async (content: string) => {
 	let formatCode = async () => content;
@@ -26,9 +28,7 @@ export const format = async (content: string) => {
 			};
 
 			break;
-		} catch (e) {
-			debug.error(e);
-		}
+		} catch {}
 	}
 
 	switch (userFormatter.name) {

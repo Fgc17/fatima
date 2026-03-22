@@ -44,18 +44,13 @@ Just grab your `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` from you
 ## Importing the loader
 
 ```ts title="env.config.ts"
-import { config, adapters } from "fatima";
+import { config, providers } from "fatima";
 
 export default config({
-  load: {
-    development: [
-      adapters.local.load(".env"),
-      adapters.vercel.load({
-        // Check out here with intellisense
-      }),
-      // You may want to overwrite some values from vercel
-      adapters.local.load(".env.local"),
-    ],
+  providers: {
+    development: providers.vercel({
+      // Check out here with intellisense
+    }),
   },
 });
 ```

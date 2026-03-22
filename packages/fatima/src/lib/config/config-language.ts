@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { isTypescriptFile } from "lib/utils/is-typescript";
+import { isTypescriptFile } from "../utils/is-typescript";
 
 export const getConfigLanguage = (configPath: string) => {
 	const lang = isTypescriptFile(configPath) ? "ts" : "js";

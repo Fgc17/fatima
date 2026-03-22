@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
-import chalk from "chalk";
 import path from "node:path";
+import chalk from "chalk";
 
 export function checkPackageJson() {
 	const currentDir = process.cwd();

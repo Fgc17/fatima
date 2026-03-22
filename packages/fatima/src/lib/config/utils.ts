@@ -1,4 +1,4 @@
-import type { FatimaConfig } from "core/config";
+import type { FatimaConfig } from "../../core/config";
 
 export const markConfig = <T>(config: T) => {
 	return {

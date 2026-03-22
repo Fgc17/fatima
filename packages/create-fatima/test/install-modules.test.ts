@@ -1,10 +1,8 @@
-import { describe, it, beforeEach, afterEach, expect } from "vitest";
 import * as fs from "node:fs/promises";
-import * as path from "node:path";
 import { create } from "src/create-fatima";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { Adapter } from "@/wizard/prompts/adapter";
 import type { Language } from "@/wizard/prompts/language";
-import type { Validator } from "@/wizard/prompts/validator";
 import {
 	cleanEphemeralFolder,
 	openEphemeralFolder,

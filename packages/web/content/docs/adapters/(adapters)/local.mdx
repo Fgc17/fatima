@@ -3,7 +3,7 @@ title: local
 description: Let's remove the dotenv dependency.
 ---
 
-This adapter will load environment variables from `.env` files, with no dependencies.
+This provider loads environment variables from `.env` files with no dependencies.
 
 ## Dependencies
 
@@ -12,11 +12,11 @@ Zero.
 ## Importing the loader
 
 ```ts title="env.config.ts"
-import { config, adapters } from "fatima";
+import { config, providers } from "fatima";
 
 export default config({
-  load: {
-    development: [adapters.load.load(".env", ".env.local")],
+  providers: {
+    development: providers.local([".env", ".env.local"]),
   },
 });
 ```

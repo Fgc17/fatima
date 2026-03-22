@@ -1,54 +1,30 @@
-import { fatimaStore } from "../store";
+import chalk from "chalk";
+import logSymbols from "log-symbols";
 
-const join = (message: string[]) => {
-	const env = fatimaStore.get("environment") ?? "EnvironmentNotFound";
+export { chalk };
 
-	return `🔒 [fatima] (${env}) ` + message.join("\n");
-};
+export const logger = {
+	success(message: string): void {
+		process.stdout.write(`${logSymbols.success} ${message}\n`);
+	},
 
-const block = (message: string) => {
-	const isFirstLog = fatimaStore.get("logs") === 1;
+	info(message: string): void {
+		process.stdout.write(`${logSymbols.info} ${message}\n`);
+	},
 
-	let block = message;
+	warning(message: string): void {
+		process.stdout.write(`${logSymbols.warning} ${message}\n`);
+	},
 
-	if (isFirstLog) {
-		block = "\r" + block;
-	}
+	error(message: string): void {
+		process.stderr.write(`${logSymbols.error} ${chalk.red(message)}\n`);
+	},
 
-	if (!isFirstLog || !process.env.npm_package_version) {
-		block = "\n" + block;
-	}
+	dim(message: string): void {
+		process.stdout.write(`${chalk.dim(message)}\n`);
+	},
 
-	return block;
-};
-
-const colors = {
-	error: [31, 39],
-	success: [32, 39],
-	warn: [33, 39],
-	info: [34, 39],
-};
-
-type LogTheme = keyof typeof colors;
-
-export const logger: Record<LogTheme, (...messages: string[]) => void> =
-	Object.keys(colors).reduce(
-		(acc, level) => {
-			acc[level as LogTheme] = (...messages: string[]) => {
-				const [open, close] = colors[level as LogTheme];
-				const message = join(messages);
-
-				fatimaStore.set("logs", fatimaStore.get("logs") + 1);
-
-				console.log(block(`\u001B[${open}m ${message} \u001B[${close}m`));
-			};
-			return acc;
-		},
-		{} as Record<LogTheme, (...messages: string[]) => void>,
-	);
-
-export const exitLog = () => {
-	if (fatimaStore.get("logs") !== 0) {
-		console.log("");
-	}
+	line(message: string): void {
+		process.stdout.write(`${message}\n`);
+	},
 };

@@ -1,16 +1,16 @@
-import { source } from "@/lib/source";
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import defaultMdxComponents from "fumadocs-ui/mdx";
 import {
-	DocsPage,
 	DocsBody,
 	DocsDescription,
+	DocsPage,
 	DocsTitle,
 } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
-import defaultMdxComponents from "fumadocs-ui/mdx";
-import { Tab, Tabs } from "fumadocs-ui/components/tabs";
-import { Callout } from "fumadocs-ui/components/callout";
-import { metadataImage } from "@/lib/metadata";
 import { Icon } from "@/components/icon";
+import { metadataImage } from "@/lib/metadata";
+import { source } from "@/lib/source";
 
 export default async function Page(props: {
 	params: Promise<{ slug?: string[] }>;

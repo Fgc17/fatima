@@ -19,6 +19,11 @@ const searchBlacklist = [
 
 export function resolveConfigPath(configPath?: string): string {
 	const baseDir = process.cwd();
+
+	if (configPath === "tsconfig.json") {
+		return resolve(baseDir, configPath);
+	}
+
 	const extensions = [".ts", ".mts", ".cts", ".js", ".mjs", ".cjs"];
 
 	if (configPath) {

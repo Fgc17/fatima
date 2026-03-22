@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import type { AnyType } from "../lib/types";
-import { parse, stringify, assign } from "comment-json";
+import { assign, parse, stringify } from "comment-json";
+import type { any } from "../lib/types";
 
 function getConfigPath(filename: string): string | null {
 	let currentDir = process.cwd();
@@ -21,8 +21,8 @@ function getConfigPath(filename: string): string | null {
 
 export function tweakUserConfig(
 	fileName: string,
-	modifier: (config: AnyType) => AnyType,
-): AnyType {
+	modifier: (config: any) => any,
+): any {
 	const filePath = getConfigPath(fileName);
 
 	let updatedFile = "";

@@ -1,4 +1,4 @@
-import type { UnsafeEnvironmentVariables } from "lib/types";
+import type { UnsafeEnvironmentVariables } from "../types";
 
 export function createInjectableEnv(env?: UnsafeEnvironmentVariables) {
 	return {
@@ -15,6 +15,5 @@ export function initializeEnv(env: UnsafeEnvironmentVariables = {}) {
 	process.env = {
 		...process.env,
 		...env,
-		FORCE_COLOR: "1",
 	};
 }

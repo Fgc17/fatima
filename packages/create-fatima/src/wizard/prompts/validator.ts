@@ -1,23 +1,8 @@
 import { select } from "@inquirer/prompts";
-import type { InquirerSelectChoice, Language } from "src/lib/types";
 
-export type Validator = "zod" | "class-validator" | "typia" | "custom";
+export type Validator = "zod" | "custom";
 
-const tsChoices: InquirerSelectChoice = [
-	{
-		name: "class-validator",
-		value: "class-validator",
-	},
-	{
-		name: "typia",
-		value: "typia",
-	},
-];
-
-const getTsChoices = (lang: Language) =>
-	lang === "typescript" ? tsChoices : [];
-
-export const askValidator = async (language: Language) =>
+export const askValidator = async (_language?: string) =>
 	(await select({
 		message: "Select a validator",
 		choices: [
@@ -25,7 +10,6 @@ export const askValidator = async (language: Language) =>
 				name: "zod",
 				value: "zod",
 			},
-			...getTsChoices(language),
 			{
 				name: "I'll build my own validator",
 				value: "custom",

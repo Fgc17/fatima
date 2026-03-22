@@ -1,6 +1,6 @@
-import type { AnyType } from "./types";
+import type { Any } from "./types";
 
-export const jsonSafeParse = <T extends Record<string | number, AnyType>>(
+export const jsonSafeParse = <T extends Record<string | number, Any>>(
 	json: string,
 ):
 	| {

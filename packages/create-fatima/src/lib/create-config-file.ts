@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import { join } from "node:path";
 import * as prettier from "prettier";
-import { getCallerLocation } from "src/utils/get-caller-location";
 import type { Adapter, Language, Validator } from "src/lib/types";
+import { getCallerLocation } from "src/utils/get-caller-location";
 
 const getContent = async (filePath: string): Promise<string> => {
 	const code = await fs.readFile(filePath, "utf-8");

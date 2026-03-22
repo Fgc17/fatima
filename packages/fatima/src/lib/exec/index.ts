@@ -1,18 +1,23 @@
 import { spawn } from "node:child_process";
-import type { UnsafeEnvironmentVariables } from "lib/types";
+import type { UnsafeEnvironmentVariables } from "../types";
 
-export const exec = (
+export function runCommand(
 	command: string[],
 	options: {
-		env?: UnsafeEnvironmentVariables;
-		shell?: boolean;
-	},
-) => {
-	const [cmd, ...args] = command;
+		env?: NodeJS.ProcessEnv | UnsafeEnvironmentVariables;
+		stdio?: "ignore" | "inherit";
+	} = {},
+): Promise<number> {
+	const [bin, ...args] = command;
 
-	return spawn(cmd, args, {
-		env: options.env,
-		shell: options.shell,
-		stdio: "inherit",
+	return new Promise((resolve, reject) => {
+		const child = spawn(bin, args, {
+			env: options.env,
+			stdio: options.stdio ?? "inherit",
+			shell: false,
+		});
+
+		child.once("error", reject);
+		child.once("close", (code) => resolve(code ?? 0));
 	});
-};
+}

@@ -1,15 +1,11 @@
 ```ts
 export default config({
-  load: {
-    development: [
-      async () => {
-        const fetch = async () => {
-          return { NODE_ENV: "development" };
-        };
-
-        return await fetch();
+  providers: {
+    development: {
+      async fetch() {
+        return { NODE_ENV: "development" };
       },
-    ],
+    },
   },
 });
 ```

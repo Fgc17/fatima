@@ -2,8 +2,8 @@
 
 import { createConfigFile } from "src/lib/create-config-file";
 import { applyUserConfigTweaks } from "./lib/tweaks";
-import { logger } from "./utils/logger";
 import { checkPackageJson } from "./utils/check-package-json";
+import { logger } from "./utils/logger";
 import { wizard } from "./wizard/wizard";
 
 const form = async () => {

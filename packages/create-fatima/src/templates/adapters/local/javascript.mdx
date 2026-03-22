@@ -1,9 +1,9 @@
 ```js
-const { adapters } = require("fatima");
+const { providers } = require("fatima");
 
 module.exports = config({
-  load: {
-    development: [adapters.local.load(".env")],
+  providers: {
+    development: providers.local(".env"),
   },
 });
 ```

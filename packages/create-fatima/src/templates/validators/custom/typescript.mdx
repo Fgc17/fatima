@@ -1,25 +1,26 @@
 ```ts
-import type { FatimaValidationResult } from "fatima";
+import type { StandardSchemaV1 } from "fatima";
 
 export default config({
-  validate: async (processEnv) => {
-    const validation = {
-      isValid: true,
-      errors: [],
-    } as FatimaValidationResult;
+  validate: {
+    "~standard": {
+      version: 1,
+      vendor: "custom",
+      async validate(env) {
+        if (!env.NODE_ENV) {
+          return {
+            issues: [
+              {
+                message: "NODE_ENV is required",
+                path: ["NODE_ENV"],
+              },
+            ],
+          } satisfies StandardSchemaV1.FailureResult;
+        }
 
-    if (!processEnv.NODE_ENV) {
-      validation.errors.push({
-        key: "NODE_ENV",
-        message: "NODE_ENV is required",
-      });
-    }
-
-    if (validation.errors.length) {
-      validation.isValid = false;
-    }
-
-    return validation;
+        return { value: env };
+      },
+    },
   },
 });
 ```

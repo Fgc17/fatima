@@ -29,7 +29,7 @@ export const summary = async (language: Language, modules: string[]) => {
 		modules.length &&
 			`   ↪ Install dependencies: ${packageManagerInstall} ${modules.join(" ")}`,
 		"   ↪ Make it typesafe: 'fatima generate'",
-		"   ↪ Setup your dev script: 'fatima dev -- npm dev'",
+		"   ↪ In development, call 'registerAsync()' from 'fatima/register' before booting your app'",
 		chalk.bold(
 			"   ↪ Check out docs for much more: https://fatimajs.vercel.app/docs",
 		),

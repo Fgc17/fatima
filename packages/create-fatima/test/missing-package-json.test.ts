@@ -1,9 +1,9 @@
-import { describe, beforeEach, afterEach, test } from "vitest";
+import { afterEach, beforeEach, describe, test } from "vitest";
+import { checkPackageJson } from "@/utils/check-package-json";
 import {
 	cleanEphemeralFolder,
 	openEphemeralFolder,
 } from "./utils/ephemeral-folder";
-import { checkPackageJson } from "@/utils/check-package-json";
 
 describe("Missing package.json", () => {
 	const projectDir = process.cwd();

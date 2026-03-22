@@ -1,6 +1,6 @@
-import type { AnyType } from "./types";
+import type { Any } from "./types";
 
-export function debounce<T extends (...args: AnyType[]) => void>(
+export function debounce<T extends (...args: Any[]) => void>(
 	func: T,
 	delay: number,
 ): (...args: Parameters<T>) => void {

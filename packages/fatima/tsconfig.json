@@ -1,27 +1,10 @@
 {
+	"extends": "@fatima/config/tsconfig",
 	"compilerOptions": {
-		"target": "ES2022",
-		"module": "Preserve",
-		"moduleResolution": "bundler",
-		"isolatedModules": true,
-		"esModuleInterop": true,
-		"declaration": true,
-		"declarationDir": "./",
-		"incremental": true,
-		"tsBuildInfoFile": ".tsbuildinfo",
-		"strict": true,
-		"strictNullChecks": true,
-		"forceConsistentCasingInFileNames": true,
-		"useUnknownInCatchVariables": false,
-		"noEmit": true,
 		"paths": {
-			"lib/*": ["./src/lib/*"],
-			"core/*": ["./src/core/*"]
-		},
-		"baseUrl": "./",
-		"outDir": "./dist",
-		"rootDir": "./"
+			"@/*": ["./src/*"]
+		}
 	},
-	"include": ["./src/**/*.ts", "./plugins/**/*.ts"],
+	"include": ["src/**/*.ts", "test/**/*.ts"],
 	"exclude": ["node_modules", "dist"]
 }

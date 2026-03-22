@@ -1,5 +1,4 @@
 ```js
-const { validators } = require("fatima");
 const { z } = require("zod");
 
 /**
@@ -10,6 +9,6 @@ const constraint = {
 };
 
 module.exports = config({
-  validate: validators.zod(z.object(constraint)),
+  validate: z.object(constraint),
 });
 ```

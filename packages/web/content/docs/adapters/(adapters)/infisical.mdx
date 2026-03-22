@@ -24,15 +24,15 @@ yarn add @infisical/sdk
 ## Importing the loader
 
 ```ts title="env.config.ts"
-import { config, adapters } from "fatima";
+import { config, providers } from "fatima";
 import { InfisicalSDK } from "@infisical/sdk";
 
 export default config({
-  load: {
+  providers: {
     development: [
-      adapters.local.load(".env"),
-      adapters.infisical.load(InfisicalSDK, {
-        // You can check here the needed options, they can be loaded through the previous loader
+      providers.local(".env"),
+      providers.infisical(InfisicalSDK, {
+        // This provider can now read auth values loaded by the previous provider
       }),
     ],
   },

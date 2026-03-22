@@ -52,12 +52,12 @@ First create your file `env.config.ts` file:
 <Tabs groupId='languages' persist items={['typescript', 'javascript']}>
 
 ```ts title="env.config.ts" tab="typescript"
-import { config, adapters } from "fatima";
+import { config, providers } from "fatima";
 
 export default config({
   environment: () => process.env.NODE_ENV ?? "development",
-  load: {
-    development: [adapters.local.load(".env")],
+  providers: {
+    development: providers.local(".env"),
   },
   client: {
     publicPrefix: "NEXT_PUBLIC_",
@@ -66,12 +66,12 @@ export default config({
 ```
 
 ```js title="env.config.js" tab="javascript"
-const { config, adapters } = require("fatima");
+const { config, providers } = require("fatima");
 
 module.exports = config({
   environment: () => process.env.NODE_ENV,
-  load: {
-    development: [adapters.local.load(".env")],
+  providers: {
+    development: providers.local(".env"),
   },
   client: {
     publicPrefix: "NEXT_PUBLIC_",
@@ -132,7 +132,7 @@ Make sure you can import `env` from anywhere in your project without big relativ
 <Tabs groupId='languages' persist items={['typescript', 'javascript']}>
 
 ```ts title="env.config.ts" tab="typescript"
-import { config, adapters, validators } from "fatima";
+import { config, providers } from "fatima";
 import { z, ZodType } from "zod";
 import { EnvRecord } from "env";
 
@@ -146,15 +146,15 @@ const constraint = z.object<Constraint>({
 });
 
 export default config({
-  load: {
-    development: [adapters.local.load(".env")],
+  providers: {
+    development: providers.local(".env"),
   },
-  validate: validators.zod(constraint),
+  validate: constraint,
 });
 ```
 
 ```js title="env.config.js" tab="javascript"
-const { config, adapters, validators } = require("fatima");
+const { config, providers } = require("fatima");
 const { z } = require("zod");
 
 // This JSDoc comment will make sure that your constraint is typesafe
@@ -168,10 +168,10 @@ const constraint = {
 };
 
 module.exports = config({
-  load: {
-    development: [adapters.local.load(".env")],
+  providers: {
+    development: providers.local(".env"),
   },
-  validate: validators.zod(z.object(constraint)),
+  validate: z.object(constraint),
 });
 ```
 
@@ -215,12 +215,12 @@ export async function GET() {
 
 ### Run your app with fatima
 
-The development command will load, generate and inject the environment variables into your app.
+Use the run command to inject your configured environment into the app process.
 
 ```json title="package.json"
 {
   "scripts": {
-    "dev": "fatima dev -- node index"
+    "dev": "fatima run node index"
   }
 }
 ```

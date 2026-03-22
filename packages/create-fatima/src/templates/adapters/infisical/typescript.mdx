@@ -1,13 +1,10 @@
 ```ts
-import { adapters } from "fatima";
+import { providers } from "fatima";
 import { InfisicalSDK } from "@infisical/sdk";
 
 export default config({
-  load: {
-    development: [
-      adapters.local.load(".env"),
-      adapters.infisical.load(InfisicalSDK),
-    ],
+  providers: {
+    development: [providers.local(".env"), providers.infisical(InfisicalSDK)],
   },
 });
 ```

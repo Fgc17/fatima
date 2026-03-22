@@ -1,8 +1,8 @@
-import { getConfigLanguage } from "lib/config/config-language";
-import type { UnsafeEnvironmentVariables } from "lib/types";
-import { txt } from "lib/utils/txt";
-import preambleTypes from "./preamble-types?raw";
+import { getConfigLanguage } from "../config/config-language";
+import type { UnsafeEnvironmentVariables } from "../types";
+import { txt } from "../utils/txt";
 import preamble from "./preamble?raw";
+import preambleTypes from "./preamble-types?raw";
 
 const ifThenString = <T>(condition: T, Then = "", Else = "") =>
 	condition ? Then : Else;
@@ -11,12 +11,12 @@ export const content = (params: {
 	createEnvArg: string;
 	publicPrefix: string;
 	env: UnsafeEnvironmentVariables;
-	hasSchema: boolean;
+	hasValidator: boolean;
 	configPath: string;
 }) => {
 	const { module, lang } = getConfigLanguage(params.configPath);
 
-	const hasSchema = params.hasSchema;
+	const hasValidator = params.hasValidator;
 
 	const keys = Object.keys(params.env);
 
@@ -40,8 +40,8 @@ export const content = (params: {
 
 	const preambleTypesContent = (preambleTypes as string)
 		.replace(
-			"type EnvObject = AnyType;",
-			`type EnvObject = {${keys.map((key) => `"${key}": string;`).join("\n  ")}} ${ifThenString(hasSchema, "& typeof Config.$envType.all")} \n`,
+			"type EnvObject = any;",
+			`type EnvObject = {${keys.map((key) => `"${key}": string;`).join("\n  ")}} ${ifThenString(hasValidator, "& typeof Config.$envType.all")} \n`,
 		)
 		.replaceAll("<PUBLIC_>", params.publicPrefix ?? "PUBLIC_");
 
@@ -91,7 +91,7 @@ export const content = (params: {
 
 		ifThenString(
 			isJs,
-			`/** @type { ${ifThenString(hasSchema, `typeof import("${configPath}").$envType.private &`)} PrivateEnv } */`,
+			`/** @type { ${ifThenString(hasValidator, `typeof import("${configPath}").$envType.private &`)} PrivateEnv } */`,
 		),
 		`const env = createEnv(${params.createEnvArg}) ${ifThenString(isTs, " as Env")}`,
 		"",
@@ -101,7 +101,7 @@ export const content = (params: {
 			txt(
 				ifThenString(
 					isJs,
-					`/** @type { ${ifThenString(hasSchema, `typeof import("${configPath}").$envType.public &`)} PublicEnv } */`,
+					`/** @type { ${ifThenString(hasValidator, `typeof import("${configPath}").$envType.public &`)} PublicEnv } */`,
 				),
 				`const publicEnv = createPublicEnv(${publicEnvsObject}) ${ifThenString(isTs, " as PublicEnv")}`,
 			),

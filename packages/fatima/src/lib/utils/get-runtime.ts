@@ -1,7 +1,7 @@
-import type { AnyType } from "./types";
+import type { Any } from "./types";
 
-declare const Bun: AnyType;
-declare const Deno: AnyType;
+declare const Bun: Any;
+declare const Deno: Any;
 
 export const getRuntime = () => {
 	let runtime = "" as "node" | "bun" | "deno";

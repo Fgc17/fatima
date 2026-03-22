@@ -5,7 +5,6 @@
 		"security",
 		"public-secrets",
 		"frameworks",
-		"environment-reloading",
 		"adapters",
 		"validators"
 	]

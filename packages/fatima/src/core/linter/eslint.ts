@@ -1,4 +1,4 @@
-import type { AnyType } from "lib/utils/types";
+import type { Any } from "../../lib/utils/types";
 
 const noEnvRuleObject = {
 	meta: {
@@ -13,9 +13,9 @@ const noEnvRuleObject = {
 		},
 	},
 
-	create(context: AnyType) {
+	create(context: Any) {
 		return {
-			MemberExpression(node: AnyType) {
+			MemberExpression(node: Any) {
 				if (node.object && node.object.name === "env") {
 					context.report({
 						node,
@@ -24,7 +24,7 @@ const noEnvRuleObject = {
 				}
 			},
 
-			CallExpression(node: AnyType) {
+			CallExpression(node: Any) {
 				if (node.callee?.object?.name === "env") {
 					context.report({
 						node,
@@ -50,9 +50,9 @@ const noProcessEnvRuleObject = {
 		},
 	},
 
-	create(context: AnyType) {
+	create(context: Any) {
 		return {
-			MemberExpression(node: AnyType) {
+			MemberExpression(node: Any) {
 				if (node.object?.name === "process" && node.property?.name === "env") {
 					context.report({
 						node,
@@ -61,7 +61,7 @@ const noProcessEnvRuleObject = {
 				}
 			},
 
-			CallExpression(node: AnyType) {
+			CallExpression(node: Any) {
 				if (
 					node.callee?.object?.name === "process" &&
 					node.callee.property?.name === "env"

@@ -1,16 +1,16 @@
 /* eslint-disable @fatima/no-process-env */
 /* eslint-disable @typescript-eslint/no-explicit-any */ // For ESLint
 // biome-ignore lint/suspicious/noExplicitAny: For Biome
-type AnyType = any;
+type AnyValue = any;
 
-type EnvObject = AnyType;
+type EnvObject = AnyValue;
 
-type FatimaEnvRecord<EnvObject, EnvValues = AnyType> = {
+type FatimaEnvRecord<EnvObject, EnvValues = AnyValue> = {
 	[K in keyof EnvObject as K extends string ? K : never]: EnvValues;
 };
 
 type FatimaPrimitiveEnvType<EnvObject> = {
-	[K in keyof EnvObject as K extends string ? K : never]?: AnyType;
+	[K in keyof EnvObject as K extends string ? K : never]?: AnyValue;
 };
 
 type FatimaEnvType<

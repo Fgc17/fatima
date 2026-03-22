@@ -1,16 +1,10 @@
 import { select } from "@inquirer/prompts";
 
-export type Adapter =
-	| "dotenv"
-	| "infisical"
-	| "vercel"
-	| "triggerdev"
-	| "heroku"
-	| "custom";
+export type Adapter = "local" | "infisical" | "vercel" | "custom";
 
 export const askAdapter = async () =>
 	(await select({
-		message: "Select an adapter",
+		message: "Select a provider",
 		choices: [
 			{
 				name: "local (.env)",
@@ -25,11 +19,7 @@ export const askAdapter = async () =>
 				value: "vercel",
 			},
 			{
-				name: "trigger.dev",
-				value: "triggerdev",
-			},
-			{
-				name: "I'll build my own adapter",
+				name: "I'll build my own provider",
 				value: "custom",
 				description: "It is pretty easy.",
 			},

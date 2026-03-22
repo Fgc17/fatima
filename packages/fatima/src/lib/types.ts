@@ -1,43 +1,23 @@
+import type { StandardSchemaV1 } from "./standard-schema/standard-schema";
 import type { Promisable } from "./utils/types";
 
 export type UnsafeEnvironmentVariables = Record<string, string>;
 
 export type FatimaEnvironment = string;
 
-export type FatimaBuiltInLoadFunction =
-	() => Promisable<UnsafeEnvironmentVariables>;
-
-export type FatimaCustomLoadFunction = (
-	processEnv: UnsafeEnvironmentVariables,
+export type FatimaProviderFetch = (
+	processEnv?: UnsafeEnvironmentVariables,
 ) => Promisable<UnsafeEnvironmentVariables>;
 
-export type FatimaLoadFunction =
-	| FatimaBuiltInLoadFunction
-	| FatimaCustomLoadFunction;
-
-export type FatimaLoadConfig<Config> = (
-	processEnv: UnsafeEnvironmentVariables,
-) => Promisable<Config>;
-
-export type FatimaLoaderChain = FatimaLoadFunction[] | FatimaLoadFunction;
-
-export type FatimaLoadObject = {
-	[env in FatimaEnvironment]?: FatimaLoaderChain;
+export type FatimaProvider = {
+	fetch: FatimaProviderFetch;
 };
 
-export type FatimaValidatorError = {
-	key: string;
-	message: string;
-};
+export type FatimaProviderChain = FatimaProvider | FatimaProvider[];
 
-export type FatimaValidationResult = {
-	isValid: boolean;
-	errors: FatimaValidatorError[];
+export type FatimaProviderObject = {
+	[env in FatimaEnvironment]?: FatimaProviderChain;
 };
-
-export type FatimaValidator = (
-	env: UnsafeEnvironmentVariables,
-) => Promisable<FatimaValidationResult>;
 
 export type CreatePrivateEnv<
 	EnvObject extends UnsafeEnvironmentVariables,
@@ -58,7 +38,7 @@ export type CreatePublicEnv<
 };
 
 export type FatimaEnvType<
-	SchemaType extends FatimaSchemaType,
+	SchemaType extends FatimaValidatorShape,
 	PublicPrefix extends string,
 > = {
 	public: CreatePublicEnv<SchemaType, PublicPrefix>;
@@ -66,18 +46,16 @@ export type FatimaEnvType<
 	all: SchemaType;
 };
 
-export type FatimaSchemaType = Record<string, string>;
-
-export type FatimaSchema<Type extends FatimaSchemaType> = {
-	$type: Type;
-	validate: FatimaValidator;
-};
-
-export type FatimaParsedValidationErrors = Record<string, string[]>;
+export type FatimaValidatorShape = Record<string, string>;
 
 export type FatimaEnvironmentFunction = (
 	processEnv: UnsafeEnvironmentVariables,
 ) => string;
+
+export type FatimaStandardSchema = StandardSchemaV1<
+	UnsafeEnvironmentVariables,
+	UnsafeEnvironmentVariables
+>;
 
 export interface FatimaClientOptions<PublicPrefix extends string> {
 	/**
@@ -89,3 +67,12 @@ export interface FatimaClientOptions<PublicPrefix extends string> {
 	 */
 	isServer?: () => boolean;
 }
+
+export type InferStandardSchemaShape<Schema extends FatimaStandardSchema> =
+	Schema["~standard"]["types"] extends {
+		output: infer Output;
+	}
+		? Output extends FatimaValidatorShape
+			? Output
+			: FatimaValidatorShape
+		: FatimaValidatorShape;

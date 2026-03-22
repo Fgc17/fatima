@@ -22,19 +22,19 @@ As we won't be generating the client, Fatima provides underlying type API so tha
 ```json title="package.json"
 {
   "scripts": {
-    "dev": "fatima dev --lite -- vite dev"
+    "dev": "fatima run vite dev"
   }
 }
 ```
 
-The `--lite` flag will disable the client generation.
+SvelteKit already has a strong runtime env story, so you can skip Fatima's generated client if you want.
 
 ## Config file
 
 ```ts
 import { env } from "$env/dynamic/private";
 import { EnvRecord } from "@fatimajs/tools/env";
-import { validate, config, adapters } from "fatima";
+import { config, providers } from "fatima";
 import { z, ZodType } from "zod";
 
 type DynamicPrivateEnvObject = typeof env;
@@ -49,11 +49,11 @@ export const constraint: Constraint = {
 
 type Environment = 'development' | 'staging' | 'production'
 
-export default config<Environment>({
-  environment: (processEnv) => processEnv.NODE_ENV ?? "development"
-  validate: validate.zod(constraint),
-  load: {
-    development: [adapters.local.load(".env")]
-  }
+export default config({
+  environment: (processEnv) => processEnv.NODE_ENV ?? "development",
+  validate: z.object(constraint),
+  providers: {
+    development: providers.local(".env"),
+  },
 });
 ```

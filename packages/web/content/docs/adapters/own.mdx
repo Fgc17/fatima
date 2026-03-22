@@ -1,73 +1,67 @@
 ---
-title: Building your own loader
+title: Building your own provider
 description: Fatima is completely agnostic on how you load your secrets.
 ---
 
-There's currently some built-in loaders that you can use, but I will show you how to create your own.
+There's currently some built-in providers that you can use, but I will show you how to create your own.
 
 <Callout type="warn" title="Do not proceed on your own with these providers">
-    Unless you know what you're doing, I highly recommend using the built-in loaders for the following providers:
+    Unless you know what you're doing, I highly recommend using the built-in providers for the following platforms:
 
     - Vercel
     - Trigger.dev (the extension is the hard part)
 
 </Callout>
 
-## How the load object works
+## How the providers object works
 
-Inside your `env.config.ts` there's an available `load` key that you can fill with an object of the following type:
+Inside your `env.config.ts` there's an available `providers` key that you can fill with an object of the following type:
 
 ```ts title="types.d.ts"
 export type UnsafeEnvironmentVariables = Record<string, string>;
 
-export type FatimaLoadFunction = () => Promisable<
-  UnsafeEnvironmentVariables | null | undefined
->;
+export type FatimaProvider = {
+  fetch: (processEnv?: UnsafeEnvironmentVariables) => Promisable<UnsafeEnvironmentVariables>;
+};
 
-export type FatimaLoaderChain = FatimaLoadFunction[] | FatimaLoadFunction;
-
-export type FatimaLoader = {
-  development: FatimaLoaderChain;
-  [nodeEnv: string]: FatimaLoaderChain;
+export type FatimaProviders = {
+  development: FatimaProvider | FatimaProvider[];
+  [nodeEnv: string]: FatimaProvider | FatimaProvider[];
 };
 ```
 
-This means you can pass multiple loaders for specific environments based on the environment key.
+The development key is usually the one you will load while running the app locally.
 
-When chain loading your load functions, Fatima will execute them in order, and progressively merge the results, so what's loaded before will be available for the next loader.
-
-The development key is mandatory, it will be used when running `fatima dev`.
+If you pass an array, Fatima executes providers in order. Provider `n + 1` receives the environment already loaded by provider `n`.
 
 And yeah, this means you can load secrets from **any** source, .env or cloud.
 
-## Creating a custom load function with the InfisicalSDK
+## Creating a custom provider with the InfisicalSDK
 
 <Callout type="info" title="Info">
-  Fatima alredy comes with [a built-in infisical
-  loader](/docs/loaders/infisical), this is just an example.
+  Fatima already comes with a built-in Infisical provider, this is just an example.
 </Callout>
 
-We will be using the built-in `local` loader to load from `.env`.
+This example builds a provider directly.
 
 ```ts title="env.config.ts"
-import { config, adapters, UnsafeEnvironmentVariables } from "fatima";
+import { config, providers, UnsafeEnvironmentVariables } from "fatima";
 
 export default config({
-  load: {
+  providers: {
     development: [
-      adapters.local.load(".env"),
-      async () => {
-        // All of the process.env were loaded by the previous local loader
-
+      providers.local(".env"),
+      {
+        async fetch(processEnv) {
         const client = new infisicalClient();
 
         await client.auth().universalAuth.login({
-          clientId: process.env.INFISICAL_CLIENT_ID!,,
-          clientSecret: process.env.INFISICAL_CLIENT_SECRET!,
+          clientId: processEnv.INFISICAL_CLIENT_ID!,
+          clientSecret: processEnv.INFISICAL_CLIENT_SECRET!,
         });
 
         const { secrets } = await client.secrets().listSecrets({
-          projectId: process.env.INFISICAL_PROJECT_ID!,
+          projectId: processEnv.INFISICAL_PROJECT_ID!,
           environment: "dev",
         });
 
@@ -78,9 +72,10 @@ export default config({
 
         return env;
       },
+      },
     ],
   },
 });
 ```
 
-Any loader will work as long as it returns a `UnsafeEnvironmentVariables` object.
+Any provider will work as long as its `fetch()` returns a `UnsafeEnvironmentVariables` object.

@@ -1,9 +1,9 @@
 ```ts
-import { adapters } from "fatima";
+import { providers } from "fatima";
 
 export default config({
-  load: {
-    development: [adapters.local.load(".env")],
+  providers: {
+    development: providers.local(".env"),
   },
 });
 ```

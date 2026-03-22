@@ -1,76 +1,89 @@
-import type { FatimaConfig } from "core/config";
-import { logger } from "lib/logger";
-import { fatimaStore } from "lib/store";
-import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "lib/types";
-import { wording } from "../wording";
+import type { FatimaConfig } from "../../core/config";
+import { FatimaError } from "../errors";
+import type {
+	FatimaProvider,
+	FatimaProviderChain,
+	UnsafeEnvironmentVariables,
+} from "../types";
 
-export async function loadEnv(config: FatimaConfig) {
-	try {
-		const initialSecretsEnviornment = fatimaStore.get("environment");
+export type LoadedEnvironment = {
+	env: UnsafeEnvironmentVariables;
+	environment: string;
+	loadedEnv: UnsafeEnvironmentVariables;
+	providersUsed: number;
+};
 
-		if (!initialSecretsEnviornment || initialSecretsEnviornment === "") {
-			throw new Error(wording.error.undefinedEnvironmentFunctionReturn());
-		}
-
-		const load = config.load[initialSecretsEnviornment];
-
-		if (fatimaStore.get("skipLoading") || !load) {
-			if (!load) {
-				logger.warn(
-					`No environment loading function found for the environment "${initialSecretsEnviornment}"`,
-				);
-			}
-
-			logger.info(
-				"Skipping environment loading, loading system process.env object.",
-			);
-
-			return {
-				env: process.env as UnsafeEnvironmentVariables,
-				envCount: Object.keys(process.env).length,
-			};
-		}
-
-		let loadChain = load as FatimaLoadFunction[];
-
-		if (!load.length) {
-			const loadFunction = load as FatimaLoadFunction;
-
-			loadChain = [loadFunction];
-		}
-
-		let env = {} as UnsafeEnvironmentVariables;
-
-		for (const load of loadChain) {
-			const loadedEnvs = await load(process.env as UnsafeEnvironmentVariables);
-
-			process.env = { ...process.env, ...loadedEnvs };
-
-			env = { ...env, ...loadedEnvs };
-		}
-
-		const finalSecretsEnvironment = config.environment(
-			process.env as UnsafeEnvironmentVariables,
-		);
-
-		if (finalSecretsEnvironment !== initialSecretsEnviornment) {
-			throw new Error(
-				wording.error.environmentMixing(
-					initialSecretsEnviornment,
-					finalSecretsEnvironment,
-				),
-			);
-		}
-
-		fatimaStore.set("envNames", Object.keys(env));
-
-		return {
-			env,
-			envCount: Object.keys(env).length,
-		};
-	} catch (err) {
-		throw new Error(`Failed to load environment variables: ${err.message}`, {
-			cause: err,
-		});
+function normalizeProviders(provider?: FatimaProviderChain): FatimaProvider[] {
+	if (!provider) {
+		return [];
 	}
+
+	return Array.isArray(provider) ? provider : [provider];
+}
+
+export async function loadEnvironment(
+	config: FatimaConfig,
+	options: {
+		environment?: string;
+		useProcessEnv?: boolean;
+	} = {},
+): Promise<LoadedEnvironment> {
+	const baseEnv = { ...process.env } as UnsafeEnvironmentVariables;
+	const environment =
+		options.environment ??
+		config.environment(baseEnv as UnsafeEnvironmentVariables);
+
+	if (!environment) {
+		throw new FatimaError(
+			"config.environment returned an empty value. Return a concrete environment name.",
+		);
+	}
+
+	if (options.useProcessEnv) {
+		return {
+			env: baseEnv,
+			environment,
+			loadedEnv: baseEnv,
+			providersUsed: 0,
+		};
+	}
+
+	const providers = normalizeProviders(config.providers[environment]);
+
+	if (providers.length === 0) {
+		return {
+			env: baseEnv,
+			environment,
+			loadedEnv: baseEnv,
+			providersUsed: 0,
+		};
+	}
+
+	let currentEnv = { ...baseEnv };
+	let loadedEnv = {} as UnsafeEnvironmentVariables;
+
+	for (const provider of providers) {
+		const nextEnv = await provider.fetch(currentEnv);
+		currentEnv = { ...currentEnv, ...nextEnv };
+		loadedEnv = { ...loadedEnv, ...nextEnv };
+	}
+
+	const resolvedEnvironment = config.environment(currentEnv);
+
+	if (resolvedEnvironment !== environment) {
+		throw new FatimaError(
+			`Environment changed while loading providers: started with ${environment} and resolved to ${resolvedEnvironment}.`,
+		);
+	}
+
+	return {
+		env: currentEnv,
+		environment,
+		loadedEnv,
+		providersUsed: providers.length,
+	};
+}
+
+export function populateEnv(env: UnsafeEnvironmentVariables): void {
+	Object.assign(process.env, env);
 }

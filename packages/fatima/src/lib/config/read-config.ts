@@ -1,71 +1,51 @@
-import { createRequire } from "node:module";
-import type { FatimaConfig } from "core/config";
-import { getTsconfigAliases } from "lib/tsconfig/tsconfig";
-import { wording } from "lib/wording";
-import { isTypescriptFile } from "src/lib/utils/is-typescript";
+import fs from "node:fs";
+import { getTsconfigAliases } from "@fatima/config/utils";
+import { createJiti } from "jiti";
+import type { FatimaConfig } from "../../core/config";
+import { FatimaError } from "../errors";
+import { isTypescriptFile } from "../utils/is-typescript";
+import { resolveConfigPath } from "./resolve-config-path";
 import { isFatimaConfig } from "./utils";
 
-const require = createRequire(import.meta.url);
-
-export async function readConfig(configPath: string): Promise<FatimaConfig> {
-	const originalEnv = { ...process.env };
-
-	const isTypescript = isTypescriptFile(configPath);
-
-	let config: FatimaConfig;
-
-	if (!isTypescript) {
-		config = require(configPath);
-	} else {
-		const plugins = [];
-		try {
-			const pluginPath = require.resolve(
-				"@babel/plugin-transform-class-properties",
-			);
-
-			const pluginTransformClassProperties = await import(pluginPath)
-				.then((mod) => mod.default)
-				.catch(() => {});
-
-			plugins.push(pluginTransformClassProperties);
-		} catch {}
-
-		const jitiPath = require.resolve("jiti");
-
-		const jitiModule = await import(jitiPath);
-
-		if (!jitiModule) {
-			throw new Error(wording.error.missinJitiModule());
-		}
-
-		const aliases = getTsconfigAliases();
-
-		const createJiti = jitiModule.createJiti;
-
-		const jiti = createJiti(import.meta.url, {
-			interopDefault: true,
-			fsCache: false,
-			alias: aliases,
-			transformOptions: {
-				ts: true,
-				babel: {
-					plugins,
-				},
-			},
-		});
-
-		config = await jiti.import(configPath, {
-			default: true,
-		});
-	}
-
-	process.env = originalEnv;
-
-	if (!isFatimaConfig(config)) {
-		throw new Error(
-			"Config file should export a FatimaConfig object, you can create it with the 'config' function exported from fatima",
+async function importConfigModule(configPath: string): Promise<unknown> {
+	if (!fs.existsSync(configPath)) {
+		throw new FatimaError(
+			`Config file not found: ${configPath}\n\nCreate an env.config.ts file in your project root.`,
 		);
 	}
 
-	return config;
+	if (!isTypescriptFile(configPath)) {
+		const mod = await import(configPath);
+		return (mod as { default?: unknown }).default ?? mod;
+	}
+
+	const jiti = createJiti(import.meta.url, {
+		alias: (() => {
+			try {
+				return getTsconfigAliases(resolveConfigPath("tsconfig.json"));
+			} catch {
+				return {};
+			}
+		})(),
+		interopDefault: true,
+		fsCache: false,
+	});
+
+	return await jiti.import(configPath);
 }
+
+export async function loadConfig(configPath?: string): Promise<FatimaConfig> {
+	const resolvedPath = resolveConfigPath(configPath);
+	process.env.FATIMA_CONFIG_PATH = resolvedPath;
+	const loaded = await importConfigModule(resolvedPath);
+
+	if (!isFatimaConfig(loaded as FatimaConfig)) {
+		throw new FatimaError(
+			`Invalid config file at ${resolvedPath}. Export the result of config() from "fatima".`,
+		);
+	}
+
+	return loaded as FatimaConfig;
+}
+
+export const readConfig = loadConfig;

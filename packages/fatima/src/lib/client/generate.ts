@@ -1,8 +1,8 @@
 import { writeFileSync } from "node:fs";
 import path from "node:path";
-import type { FatimaConfig } from "core/config";
-import type { UnsafeEnvironmentVariables } from "lib/types";
-import { format } from "lib/utils/format";
+import type { FatimaConfig } from "../../core/config";
+import type { UnsafeEnvironmentVariables } from "../types";
+import { format } from "../utils/format";
 import { content } from "./content";
 
 export async function generateClient(
@@ -24,11 +24,13 @@ export async function generateClient(
 		createEnvArg,
 		publicPrefix,
 		env,
-		hasSchema: Boolean(config.schema),
+		hasValidator: Boolean(config.validate),
 		configPath,
 	});
 
 	const formattedContent = await format(clientContent.join("\n"));
 
 	writeFileSync(clientPath, formattedContent);
+
+	return clientPath;
 }

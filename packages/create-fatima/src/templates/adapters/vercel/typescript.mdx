@@ -1,9 +1,9 @@
 ```ts
-import { adapters, parse } from "fatima";
+import { providers } from "fatima";
 
 export default config({
-  load: {
-    development: [adapters.vercel.load(parse)],
+  providers: {
+    development: providers.vercel(),
   },
 });
 ```

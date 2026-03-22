@@ -16,7 +16,8 @@
 			"!**/.next",
 			"!**/.turbo",
 			"!**/.source",
-			"!**/node_modules"
+			"!**/node_modules",
+			"!**/preamble.ts"
 		]
 	},
 	"formatter": {
@@ -37,6 +38,11 @@
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double"
+		}
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
 		}
 	}
 }

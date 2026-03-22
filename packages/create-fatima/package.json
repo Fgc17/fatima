@@ -9,34 +9,25 @@
 		"type": "git",
 		"url": "git+https://github.com/Fgc17/fatima.git"
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"bin": {
 		"create-fatima": "./dist/bin.cjs"
 	},
 	"scripts": {
-		"------------- toolchain -------------": "-------------",
-		"format": "biome format --write",
-		"lint": "biome lint --error-on-warnings",
-		"typecheck": "tsc --noEmit",
-		"check": "pnpm typecheck && pnpm lint",
+		"checktypes": "tsc --noEmit",
 		"test": "vitest",
-		"------------- dev -------------": "-------------",
-		"dev": "pnpm tsup --watch",
-		"------------- build -------------": "-------------",
-		"build": "rm -rf dist && pnpm tsup",
-		"bundlesize": "pnpm build --metafile && npm pack --dry-run",
-		"bundlesize:dev": "pnpm tsup --metafile && npm pack --dry-run",
-		"------------- publishing -------------": "-------------",
-		"release": "pnpm check && pnpm build && pnpm publish --no-git-checks",
-		"release:rc": "pnpm check && pnpm build && pnpm version prerelease --preid=rc"
+		"dev": "tsup --env.mode dev",
+		"build": "tsdown"
 	},
 	"devDependencies": {
 		"@types/node": "^22.9.1",
-		"esbuild-plugin-copy": "^2.1.1",
-		"tsup": "^8.3.5",
+		"tsdown": "0.21.4",
 		"tsx": "4.19.2",
-		"typescript": "5.6.3"
+		"@typescript/native-preview": "7.0.0-dev.20260321.1",
+		"@fatima/config": "workspace:*"
 	},
 	"dependencies": {
 		"@inquirer/prompts": "^7.2.4",

@@ -1,6 +1,6 @@
+import { assign } from "comment-json";
 import { tweakUserConfig } from "src/utils/tweak-user-config";
 import type { Language } from "./types";
-import { assign } from "comment-json";
 
 const tweakTypescript = () => {
 	tweakUserConfig("tsconfig.json", (config) => {

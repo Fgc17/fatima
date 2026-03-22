@@ -3,9 +3,9 @@
 	"pages": [
 		"own",
 		"./(adapters)/local",
+		"./(adapters)/dotenv",
 		"./(adapters)/infisical",
-		"./(adapters)/vercel",
-		"./(adapters)/trigger"
+		"./(adapters)/vercel"
 	],
 	"defaultOpen": true
 }

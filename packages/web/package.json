@@ -3,11 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"------------- toolchain -------------": "-------------",
-		"format": "biome format --write",
-		"lint": "biome lint --error-on-warnings",
-		"typecheck": "tsc --noEmit",
-		"--------------------------": "-------------",
+		"checktypes": "tsc --noEmit",
 		"build": "next build",
 		"dev": "next dev --turbopack",
 		"start": "next start",
@@ -32,6 +28,6 @@
 		"@types/react-dom": "^19.1.8",
 		"postcss": "^8.5.6",
 		"tailwindcss": "^4.1.12",
-		"typescript": "^5.9.2"
+		"typescript": "5.9.3"
 	}
 }

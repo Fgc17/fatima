@@ -29,7 +29,7 @@ yarn add zod
 </Callout>
 
 ```ts title="env.config.ts"
-import { config, validators } from "fatima";
+import { config } from "fatima";
 import { z, ZodType } from "zod";
 import { EnvRecord } from "env";
 
@@ -41,7 +41,7 @@ const schema = z.object<Constraint>({
 });
 
 export default config({
-  validate: validators.zod(schema),
+  validate: schema,
 });
 ```
 

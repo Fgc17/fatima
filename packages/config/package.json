@@ -1,0 +1,24 @@
+{
+	"name": "@fatima/config",
+	"private": true,
+	"publishConfig": {
+		"access": "restricted"
+	},
+	"version": "0.0.0",
+	"type": "module",
+	"exports": {
+		"./tsconfig": "./src/tsconfig/tsconfig.json",
+		"./tsconfig/build": "./src/tsconfig/tsconfig.build.json",
+		"./tsdown": "./src/tsdown/index.ts",
+		"./utils": "./src/utils/index.ts"
+	},
+	"files": [
+		"src"
+	],
+	"license": "MIT",
+	"peerDependencies": {
+		"@types/node": "*",
+		"tsdown": "*",
+		"typescript": "*"
+	}
+}
