@@ -1,5 +1,5 @@
 import { select } from "@inquirer/prompts";
-import { findNestedPackage } from "src/utils/has-nested-package";
+import { findNestedPackage } from "../../utils/has-nested-package";
 
 export type UserIntent = "quit" | "continue";
 

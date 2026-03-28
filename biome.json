@@ -13,11 +13,11 @@
 			"**/*.tsx",
 			"**/*.css",
 			"**/*.json",
+			"!**/*.raw.*",
 			"!**/.next",
 			"!**/.turbo",
 			"!**/.source",
-			"!**/node_modules",
-			"!**/preamble.ts"
+			"!**/node_modules"
 		]
 	},
 	"formatter": {

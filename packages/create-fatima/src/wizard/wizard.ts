@@ -1,4 +1,4 @@
-import type { Adapter, Language, Validator } from "@/lib/types";
+import type { Adapter, Language, Validator } from "../lib/types";
 import { askAdapter } from "./prompts/adapter";
 import { askLanguage } from "./prompts/lang";
 import { askUserIntent } from "./prompts/monorepo";
@@ -14,7 +14,7 @@ export async function wizard(): Promise<WizardResult> {
 	const userIntent = await askUserIntent();
 
 	if (userIntent === "quit") {
-		throw "Exiting...";
+		throw new Error("Exiting...");
 	}
 
 	const language = (await askLanguage()) as Language;

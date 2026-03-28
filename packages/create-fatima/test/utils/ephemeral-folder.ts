@@ -48,5 +48,3 @@ export async function cleanEphemeralFolder(
 		console.error("Error cleaning up temporary ephemeral directory:", err);
 	}
 }
-
-openEphemeralFolder();

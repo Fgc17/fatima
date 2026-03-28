@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import logSymbols from "log-symbols";
-import type { Language } from "src/lib/types";
+import type { Language } from "../lib/types";
 import {
 	getPackageManager,
 	getPackageManagerInstall,

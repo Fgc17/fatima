@@ -21,25 +21,31 @@
 	"license": "MIT",
 	"type": "module",
 	"bin": {
-		"fatima": "./dist/index.cjs"
+		"fatima": "./dist/cli.cjs"
 	},
 	"main": "./dist/runtime.cjs",
 	"types": "./dist/runtime.d.cts",
 	"exports": {
 		".": "./dist/runtime.cjs",
-		"./cli": "./dist/index.cjs",
-		"./register": "./dist/register.cjs"
+		"./api": "./dist/api.cjs",
+		"./cli": "./dist/cli.cjs",
+		"./register": "./dist/register.cjs",
+		"./eslint": "./dist/eslint.cjs",
+		"./biome": "./dist/biome.grit"
 	},
 	"typesVersions": {
 		"*": {
 			".": [
 				"./dist/runtime.d.cts"
 			],
-			"cli": [
-				"./dist/index.d.cts"
+			"api": [
+				"./dist/api.d.cts"
 			],
 			"register": [
 				"./dist/register.d.cts"
+			],
+			"eslint": [
+				"./dist/eslint.d.cts"
 			]
 		}
 	},
@@ -51,7 +57,7 @@
 		"dirname": "fatima",
 		"commands": {
 			"strategy": "explicit",
-			"target": "./dist/index.cjs",
+			"target": "./dist/cli.cjs",
 			"identifier": "COMMANDS"
 		},
 		"topicSeparator": " "
@@ -67,13 +73,13 @@
 		"jiti": "2.6.1",
 		"log-symbols": "^7.0.1",
 		"oclif": "4.22.81",
-		"ora": "^9.3.0",
-		"unplugin-raw": "^0.6.4"
+		"ora": "^9.3.0"
 	},
 	"devDependencies": {
 		"@fatima/config": "workspace:*",
 		"@types/node": "24.9.1",
 		"prettier": "3.6.2",
-		"tsdown": "0.21.4"
+		"tsdown": "0.21.4",
+		"unplugin-raw": "^0.6.4"
 	}
 }

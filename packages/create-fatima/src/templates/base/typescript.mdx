@@ -1,9 +1,0 @@
-```ts
-import { config } from "fatima";
-
-type Environment = "development" | "staging" | "production";
-
-export default config({
-  environment: (processEnv) => processEnv.NODE_ENV ?? "development",
-});
-```

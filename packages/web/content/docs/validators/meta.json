@@ -1,5 +1,0 @@
-{
-	"title": "Validators",
-	"pages": ["own", "./(validators)/zod"],
-	"defaultOpen": true
-}

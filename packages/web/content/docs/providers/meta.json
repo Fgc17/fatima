@@ -1,0 +1,10 @@
+{
+	"title": "Providers",
+	"pages": [
+		"own",
+		"./(providers)/local",
+		"./(providers)/infisical",
+		"./(providers)/vercel"
+	],
+	"defaultOpen": true
+}

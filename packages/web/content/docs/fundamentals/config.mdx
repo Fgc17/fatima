@@ -1,0 +1,31 @@
+---
+title: Configuration
+description: Go further in configuring your app with Fatima
+---
+
+## env.config.ts
+
+When using CLI you rely on specifying flags like `-e`, `--public-prefix` and `--provider`.
+
+However, if you want to have more control over how secrets are loaded, you can create a `env.config.ts` file in the root of your project and export a configuration object.
+
+```ts title="env.config.ts"
+import { config, providers } from "fatima";
+import type { Environment } from "@/library/utils/environment";
+import { z } from "@/library/zod/zod";
+
+export default config({
+	environment: (processEnv) => processEnv.ENVIRONMENT ?? "development",
+	providers: {
+		development: [
+			providers.local(".env"),
+			providers.infisical({
+				environment: "development",
+			}),
+		]
+	},
+	schema: z.object({}),
+});
+```
+
+The `schema` key is optional, but it allows you to validate the loaded secrets and augment the types of `env` object.

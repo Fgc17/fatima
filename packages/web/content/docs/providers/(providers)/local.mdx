@@ -1,0 +1,26 @@
+---
+title: local
+description: Load environment variables from local .env files with no dependencies.
+---
+
+This provider loads environment variables from `.env` files with no dependencies.
+
+## Dependencies
+
+Zero.
+
+## Importing the loader
+
+```ts title="env.config.ts"
+import { config, providers } from "fatima";
+
+export default config({
+  providers: {
+    development: providers.local([".env", ".env.local"]),
+  },
+});
+```
+
+## Special thanks
+
+Special thanks to [dotenv](https://github.com/motdotla/dotenv) for the regex that reads `.env` lines, [source code can be found here.](https://github.com/motdotla/dotenv/blob/master/lib/main.js)
