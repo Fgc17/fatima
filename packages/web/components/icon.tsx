@@ -1,5 +1,5 @@
-import { createElement } from "react";
 import * as icons from "@heroicons/react/16/solid";
+import { createElement } from "react";
 
 export function Icon({
 	icon,

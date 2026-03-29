@@ -1,0 +1,73 @@
+---
+title: Building your own provider
+description: Fatima is completely agnostic on how you load your secrets.
+---
+
+## How the providers object works
+
+Inside your `env.config.ts` there's an available `providers` key that you can fill with an object of the following type:
+
+```ts title="types.d.ts"
+export type UnsafeEnvironmentVariables = Record<string, string>;
+
+export type FatimaProvider = {
+  fetch: (processEnv?: UnsafeEnvironmentVariables) => Promisable<UnsafeEnvironmentVariables>;
+};
+
+export type FatimaProviders = {
+  development: FatimaProvider | FatimaProvider[];
+  [nodeEnv: string]: FatimaProvider | FatimaProvider[];
+};
+```
+
+The development key is usually the one you will load while running the app locally.
+
+If you pass an array, Fatima executes providers in order. Provider `n + 1` receives the environment already loaded by provider `n`.
+
+And yeah, this means you can load secrets from **any** source, .env or cloud.
+
+## Creating a custom provider with the InfisicalSDK
+
+<Callout type="info" title="Info">
+  Fatima already comes with a built-in Infisical provider, this is just an example.
+</Callout>
+
+This example builds a provider directly.
+
+```ts title="env.config.ts"
+import { config, providers, UnsafeEnvironmentVariables } from "fatima";
+
+const infisicalProvider = {
+  async fetch(processEnv: UnsafeEnvironmentVariables) {
+    const client = new infisicalClient();
+
+    await client.auth().universalAuth.login({
+      clientId: processEnv.INFISICAL_CLIENT_ID!,
+      clientSecret: processEnv.INFISICAL_CLIENT_SECRET!,
+    });
+
+    const { secrets } = await client.secrets().listSecrets({
+      projectId: processEnv.INFISICAL_PROJECT_ID!,
+      environment: "dev",
+    });
+
+    const env = secrets.reduce((acc, { secretKey, secretValue }) => {
+      acc[secretKey] = secretValue;
+      return acc;
+    }, {} as UnsafeEnvironmentVariables);
+
+    return env;
+  },
+};
+
+export default config({
+  providers: {
+    development: [
+      providers.local(".env"),
+      infisicalProvider
+    ],
+  },
+});
+```
+
+Any provider will work as long as its `fetch()` returns a `UnsafeEnvironmentVariables` object.

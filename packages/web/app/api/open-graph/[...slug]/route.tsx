@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { metadataImage } from "@/lib/metadata";
+
 import { ImageResponse } from "next/og";
+import { metadataImage } from "@/lib/metadata";
 import { getFonts } from "./load-google-fonts";
 
 /* generateOGImage({
@@ -24,7 +25,6 @@ export const GET = metadataImage.createAPI(async (page) => {
 				backgroundColor: "#151515",
 			}}
 		>
-			{/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
 			<svg
 				viewBox="0 0 500.000000 500.000000"
 				preserveAspectRatio="xMidYMid meet"
@@ -32,6 +32,7 @@ export const GET = metadataImage.createAPI(async (page) => {
 				width={128}
 				height={128}
 			>
+				<title>open-graph</title>
 				<g
 					transform="translate(0.000000,500.000000) scale(0.100000,-0.100000)"
 					stroke="none"

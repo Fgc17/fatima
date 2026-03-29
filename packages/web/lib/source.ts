@@ -1,6 +1,6 @@
-import { docs, meta } from "@/.source";
-import { createMDXSource } from "fumadocs-mdx";
 import { loader } from "fumadocs-core/source";
+import { createMDXSource } from "fumadocs-mdx";
+import { docs, meta } from "@/.source";
 import { Icon } from "@/components/icon";
 
 export const source = loader({

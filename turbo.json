@@ -20,15 +20,11 @@
 		},
 		"build": {
 			"dependsOn": ["^build"],
-			"inputs": ["$TURBO_DEFAULT$", ".env*"],
-			"outputs": [".next/**", "!.next/cache/**", "dist"]
+			"outputs": [".next/**", "!.next/cache/**", "dist"],
+			"cache": true
 		},
 		"release": {
-			"dependsOn": [
-				"@fatimajs/heaven#build",
-				"fatima#build",
-				"create-fatima#build"
-			]
+			"dependsOn": ["fatima#build", "create-fatima#build"]
 		}
 	}
 }

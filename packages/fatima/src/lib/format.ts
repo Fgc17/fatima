@@ -1,0 +1,63 @@
+import { execSync } from "node:child_process";
+import { createRequire } from "node:module";
+import path from "node:path";
+
+const require = createRequire(import.meta.url);
+
+export const format = async (content: string) => {
+	let formatCode = async () => content;
+
+	const formatters = ["@biomejs/biome", "prettier"];
+
+	let userFormatter = {
+		name: "",
+		path: "",
+	};
+
+	for (const formatter of formatters) {
+		try {
+			const formatterPath = path.dirname(
+				require.resolve(formatter + "/package.json", {
+					paths: [process.cwd()],
+				}),
+			);
+
+			userFormatter = {
+				name: formatter,
+				path: formatterPath,
+			};
+
+			break;
+		} catch {}
+	}
+
+	switch (userFormatter.name) {
+		case "prettier": {
+			const prettierPath = path.join(userFormatter.path, "index.mjs");
+
+			const prettier = await import(prettierPath).then((mod) => mod.default);
+
+			formatCode = () => {
+				return prettier.format(content, {
+					parser: "typescript",
+				});
+			};
+
+			break;
+		}
+
+		case "@biomejs/biome": {
+			const biomeBinary = path.join(userFormatter.path, "bin/biome");
+
+			formatCode = async () =>
+				execSync(`${biomeBinary} format --stdin-file-path=tmp.env.ts`, {
+					input: content,
+					cwd: process.cwd(),
+				}).toString();
+
+			break;
+		}
+	}
+
+	return await formatCode();
+};

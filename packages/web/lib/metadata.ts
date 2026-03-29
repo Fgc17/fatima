@@ -1,5 +1,5 @@
-import type { Metadata } from "next/types";
 import { createMetadataImage } from "fumadocs-core/server";
+import type { Metadata } from "next/types";
 import { source } from "@/lib/source";
 
 export const baseUrl =

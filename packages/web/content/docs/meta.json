@@ -1,12 +1,3 @@
 {
-	"pages": [
-		"index",
-		"getting-started",
-		"security",
-		"public-secrets",
-		"frameworks",
-		"environment-reloading",
-		"adapters",
-		"validators"
-	]
+	"pages": ["index", "fundamentals", "public-secrets", "providers", "schemas"]
 }

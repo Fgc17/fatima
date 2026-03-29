@@ -1,11 +1,12 @@
-import { tweakUserConfig } from "src/utils/tweak-user-config";
-import type { Language } from "./types";
 import { assign } from "comment-json";
+import { tweakJsonConfig, tweakTextFile } from "../utils/tweak-user-config";
+import type { Language } from "./types";
 
 const tweakTypescript = () => {
-	tweakUserConfig("tsconfig.json", (config) => {
+	tweakJsonConfig("tsconfig.json", (config) => {
 		if (!config.compilerOptions) {
 			config.compilerOptions = {
+				baseUrl: ".",
 				paths: {
 					env: ["./env.ts"],
 				},
@@ -15,6 +16,7 @@ const tweakTypescript = () => {
 		}
 
 		config.compilerOptions = assign(config.compilerOptions, {
+			baseUrl: config.compilerOptions.baseUrl ?? ".",
 			paths: assign(config.compilerOptions?.paths, {
 				env: ["./env.ts"],
 			}),
@@ -23,7 +25,7 @@ const tweakTypescript = () => {
 		return config;
 	});
 
-	tweakUserConfig(".gitignore", (content: string) => {
+	tweakTextFile(".gitignore", (content) => {
 		const didIgnoreEnv = content.includes("env.ts");
 
 		if (didIgnoreEnv) return null;
@@ -41,9 +43,10 @@ const tweakTypescript = () => {
 };
 
 const tweakJavascript = () => {
-	tweakUserConfig("jsconfig.json", (config) => {
+	tweakJsonConfig("jsconfig.json", (config) => {
 		if (!config.compilerOptions) {
 			config.compilerOptions = {
+				baseUrl: ".",
 				paths: {
 					"#env": ["./env.js"],
 				},
@@ -53,6 +56,7 @@ const tweakJavascript = () => {
 		}
 
 		config.compilerOptions = assign(config.compilerOptions, {
+			baseUrl: config.compilerOptions.baseUrl ?? ".",
 			paths: assign(config.compilerOptions?.paths, {
 				"#env": ["./env.js"],
 			}),
@@ -61,7 +65,7 @@ const tweakJavascript = () => {
 		return config;
 	});
 
-	tweakUserConfig("package.json", (config) => {
+	tweakJsonConfig("package.json", (config) => {
 		config.imports = {
 			...config.imports,
 			"#env": "./env.js",
@@ -69,7 +73,7 @@ const tweakJavascript = () => {
 		return config;
 	});
 
-	tweakUserConfig(".gitignore", (content) => {
+	tweakTextFile(".gitignore", (content) => {
 		const didIgnoreEnv = content.includes("env.js");
 
 		if (didIgnoreEnv) return null;

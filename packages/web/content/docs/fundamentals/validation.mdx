@@ -1,0 +1,18 @@
+---
+title: Validation
+description: Go further in configuring your app with Fatima
+---
+
+## How to validate
+
+First, specify a `schema` key in your `env.config.ts` file, this should be a Standard Schema compatible schema, for example a Zod schema.
+
+Afterwards, run:
+
+```bash
+npx fatima@latest validate
+```
+
+## Validation without setup
+
+It is currently not possible to validate secrets using only the CLI, you need to have a `env.config.ts` file with a `schema` key.

@@ -1,0 +1,86 @@
+---
+title: Building your own schema
+description: Fatima is completely agnostic on how you validate your secrets.
+---
+
+## How the validate key works
+
+Inside your `env.config.ts` there's an available `validate` key that you can fill with any object that follows the Standard Schema interface:
+
+```ts title="types.d.ts"
+export interface StandardSchemaV1<Input = unknown, Output = Input> {
+  readonly "~standard": {
+    readonly version: 1;
+    readonly vendor: string;
+    readonly validate: (value: unknown) =>
+      | Promise<{ value: Output } | { issues: { message: string; path?: PropertyKey[] }[] }>
+      | { value: Output }
+      | { issues: { message: string; path?: PropertyKey[] }[] };
+  };
+}
+```
+
+## Integrating ClassValidator
+
+ClassValidator doesn't follow the Standard Schema interface, but you can easily integrate it by creating a wrapper:
+
+```ts title="env.config.ts"
+import 'reflect-metadata';
+import { config, providers, UnsafeEnvironmentVariables } from "fatima";
+import { validate, IsString, MinLength } from "class-validator";
+
+class Env {
+  @IsString()
+  @MinLength(12)
+  ADMIN_PASSWORD!: string;
+}
+
+const createClassValidatorSchema = (schema: new () => object) => ({
+  "~standard": {
+    version: 1,
+    vendor: "class-validator",
+    async validate(value: unknown) {
+      const instance = Object.assign(new schema(), value);
+      const errors = await validate(instance);
+
+      if (errors.length > 0) {
+        return {
+          issues: errors.map((error) => ({
+            message: Object.values(error.constraints ?? {}).join(", "),
+            path: error.propertyPath ? [error.propertyPath] : undefined,
+          })),
+        };
+      }
+
+      return { value: instance };
+    },
+  },
+});
+
+export default config({
+  providers: {
+    development: providers.local(".env"),
+  },
+  schema: createClassValidatorSchema(Env),
+});
+```
+
+## Validate
+
+To validate, just run the validate command:
+
+<Tabs groupId='package-manager' persist items={['npm', 'pnpm', 'yarn']}>
+
+```bash tab="npm"
+npm fatima validate
+```
+
+```bash tab="pnpm"
+pnpm fatima validate
+```
+
+```bash tab="yarn"
+yarn fatima validate
+```
+
+</Tabs>

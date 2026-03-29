@@ -2,19 +2,11 @@
 	"name": "fatima",
 	"description": "typesafe secrets for the javascript ecosystem",
 	"author": "Fernando Coelho",
-	"publishConfig": {
-		"access": "public"
-	},
-	"version": "0.0.26",
-	"license": "MIT",
+	"homepage": "https://fatimajs.vercel.app",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Fgc17/fatima.git"
 	},
-	"homepage": "https://fatimajs.vercel.app",
-	"files": [
-		"dist"
-	],
 	"keywords": [
 		"env",
 		"typesafe",
@@ -22,55 +14,72 @@
 		"environment",
 		"variable"
 	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"version": "1.0.1-rc.1",
+	"license": "MIT",
 	"type": "module",
-	"main": "./dist/core/core.cjs",
-	"types": "./dist/core/core.d.cts",
+	"bin": {
+		"fatima": "./dist/cli.cjs"
+	},
+	"main": "./dist/runtime.cjs",
+	"types": "./dist/runtime.d.cts",
 	"exports": {
-		".": "./dist/core/core.cjs",
-		"./register": "./dist/register/register.cjs"
+		".": "./dist/runtime.cjs",
+		"./api": "./dist/api.cjs",
+		"./cli": "./dist/cli.cjs",
+		"./register": "./dist/register.cjs",
+		"./eslint": "./dist/eslint.cjs",
+		"./biome": "./dist/biome.grit"
 	},
 	"typesVersions": {
 		"*": {
 			".": [
-				"./dist/core/core.d.cts"
+				"./dist/runtime.d.cts"
 			],
-			"./register": [
-				"./dist/register/register.d.cts"
+			"api": [
+				"./dist/api.d.cts"
+			],
+			"register": [
+				"./dist/register.d.cts"
+			],
+			"eslint": [
+				"./dist/eslint.d.cts"
 			]
 		}
 	},
-	"bin": {
-		"fatima": "./dist/cli/cli.cjs"
+	"files": [
+		"dist"
+	],
+	"oclif": {
+		"bin": "fatima",
+		"dirname": "fatima",
+		"commands": {
+			"strategy": "explicit",
+			"target": "./dist/cli.cjs",
+			"identifier": "COMMANDS"
+		},
+		"topicSeparator": " "
 	},
 	"scripts": {
-		"------------- toolchain -------------": "-------------",
-		"format": "biome format --write",
-		"lint": "biome lint --error-on-warnings",
 		"checktypes": "tsc --noEmit",
-		"check": "pnpm checktypes && pnpm lint",
-		"test": "vitest",
-		"------------- dev -------------": "-------------",
-		"dev": "pnpm tsup --env.mode dev",
-		"------------- build -------------": "-------------",
-		"build": "rm -rf dist && pnpm tsup --env.mode release",
-		"bundlesize": "pnpm build --metafile && npm pack --dry-run",
-		"bundlesize:dev": "pnpm tsup --metafile && npm pack --dry-run",
-		"------------- publishing -------------": "-------------",
-		"release": "pnpm check && pnpm build && pnpm publish --no-git-checks",
-		"release:rc": "pnpm check && pnpm build && pnpm version prerelease --preid=rc"
-	},
-	"devDependencies": {
-		"@types/node": "24.9.1",
-		"esbuild": "0.25.11",
-		"jiti": "2.6.1",
-		"terser": "5.44.0",
-		"tsup": "8.5.0",
-		"typescript": "5.9.3",
-		"prettier": "3.6.2",
-		"@biomejs/biome": "2.2.7"
+		"build": "rm -rf dist && tsdown",
+		"dev": "tsdown --watch"
 	},
 	"dependencies": {
-		"commander": "13.1.0",
-		"jiti": "2.4.2"
+		"@oclif/core": "^4.8.3",
+		"chalk": "^5.6.2",
+		"jiti": "2.6.1",
+		"log-symbols": "^7.0.1",
+		"oclif": "4.22.81",
+		"ora": "^9.3.0"
+	},
+	"devDependencies": {
+		"@fatima/config": "workspace:*",
+		"@types/node": "24.9.1",
+		"prettier": "3.6.2",
+		"tsdown": "0.21.4",
+		"unplugin-raw": "^0.6.4"
 	}
 }

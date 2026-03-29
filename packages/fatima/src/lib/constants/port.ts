@@ -1,1 +1,0 @@
-export const FATIMA_DEFAULT_HEAVEN_PORT = 15781;
