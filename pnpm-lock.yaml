@@ -90,9 +90,6 @@ importers:
       ora:
         specifier: ^9.3.0
         version: 9.3.0
-      unplugin-raw:
-        specifier: ^0.6.4
-        version: 0.6.4(esbuild@0.25.11)
     devDependencies:
       '@fatima/config':
         specifier: workspace:*
@@ -106,6 +103,9 @@ importers:
       tsdown:
         specifier: 0.21.4
         version: 0.21.4(@typescript/native-preview@7.0.0-dev.20260321.1)(typescript@5.9.3)
+      unplugin-raw:
+        specifier: ^0.6.4
+        version: 0.6.4(esbuild@0.25.11)
 
   packages/web:
     dependencies:
