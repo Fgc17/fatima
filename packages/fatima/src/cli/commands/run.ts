@@ -2,7 +2,6 @@ import type { RuntimeProvider } from "../../api";
 import { run } from "../../api";
 import { FatimaError } from "../../lib/error";
 import { BaseCommand } from "../base-command";
-import { logger } from "../logger";
 
 export default class Run extends BaseCommand<typeof Run> {
 	static description = "Run a command with Fatima-loaded environment variables";
@@ -10,7 +9,11 @@ export default class Run extends BaseCommand<typeof Run> {
 	static strict = false;
 
 	public async run(): Promise<void> {
-		const args = [...((this as unknown as { argv: string[] }).argv ?? [])];
+		const args = [...this.parsedArgv];
+
+		if (args[0] === "--") {
+			args.shift();
+		}
 
 		if (args.length === 0) {
 			throw new FatimaError("Missing command. Example: fatima node index.js");
@@ -20,14 +23,11 @@ export default class Run extends BaseCommand<typeof Run> {
 			config: this.flags.config,
 			debug: this.flags.debug,
 			environment: this.flags.environment,
+			log: true,
 			provider: this.flags.provider as RuntimeProvider | undefined,
 			publicPrefix: this.flags["public-prefix"],
 			processEnv: this.flags["process-env"],
 		});
-
-		logger.info(
-			`Loaded ${Object.keys(result.loadedEnv).length} vars for ${result.environment}.`,
-		);
 
 		if (result.exitCode !== 0) {
 			throw new FatimaError(`Command exited with code ${result.exitCode}.`, {

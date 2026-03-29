@@ -45,17 +45,19 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 	};
 
 	protected flags!: BaseFlags<T>;
+	protected parsedArgv: string[] = [];
 
 	public async init(): Promise<void> {
 		await super.init();
 
-		const { flags } = await this.parse({
+		const { argv, flags } = await this.parse({
 			flags: this.ctor.flags,
-			baseFlags: (super.ctor as typeof BaseCommand).baseFlags,
+			baseFlags: (super.ctor as unknown as typeof BaseCommand).baseFlags,
 			args: this.ctor.args,
 			strict: this.ctor.strict,
 		});
 
+		this.parsedArgv = argv as string[];
 		this.flags = flags as BaseFlags<T>;
 	}
 }

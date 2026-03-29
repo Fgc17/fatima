@@ -148,6 +148,10 @@ export async function generate(options?: GenerateOptions) {
 
 export async function run(command: string[], options?: RunOptions) {
 	const context = await getWorkflowContext(options);
+	context.log.info(
+		`Loaded ${Object.keys(context.result.loadedEnv).length} vars for ${context.result.environment}.`,
+	);
+	context.log.dim(`Command: ${command.join(" ")}`);
 	context.debug.debug("run:start", "Running command with Fatima environment", {
 		command: command.join(" "),
 		stdio: options?.stdio ?? "inherit",
@@ -162,10 +166,6 @@ export async function run(command: string[], options?: RunOptions) {
 		exitCode,
 		environment: context.result.environment,
 	});
-	context.log.info(
-		`Loaded ${Object.keys(context.result.loadedEnv).length} vars for ${context.result.environment}.`,
-	);
-	context.log.dim(`Command: ${command.join(" ")}`);
 
 	return {
 		...context.result,
