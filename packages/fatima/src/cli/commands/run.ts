@@ -1,4 +1,3 @@
-import type { RuntimeProvider } from "../../api";
 import { run } from "../../api";
 import { FatimaError } from "../../lib/error";
 import { BaseCommand } from "../base-command";
@@ -24,7 +23,6 @@ export default class Run extends BaseCommand<typeof Run> {
 			debug: this.flags.debug,
 			environment: this.flags.environment,
 			log: true,
-			provider: this.flags.provider as RuntimeProvider | undefined,
 			publicPrefix: this.flags["public-prefix"],
 			processEnv: this.flags["process-env"],
 		});

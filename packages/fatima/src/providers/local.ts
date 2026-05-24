@@ -1,19 +1,32 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import type { FatimaProvider } from "../config/types";
 import { parseEnvLines } from "../env/parse-env";
+import type { FatimaProvider, FatimaProviderFactory } from "../plugins/types";
 
-export type LocalProviderConfig = string | string[];
+export type LocalProviderConfig = {
+	file?: string | string[];
+	files?: string[];
+};
 
-export const local = (config: LocalProviderConfig): FatimaProvider => {
-	const files = Array.isArray(config) ? config : [config];
+export const local: FatimaProviderFactory<LocalProviderConfig | string | string[]> = (
+	config,
+): FatimaProvider => {
+	const files = Array.isArray(config)
+		? config
+		: typeof config === "string"
+			? [config]
+			: Array.isArray(config.files)
+				? config.files
+				: Array.isArray(config.file)
+					? config.file
+					: [config.file ?? ".env"];
 
 	return {
-		fetch() {
+		fetch(context) {
 			const env = {} as Record<string, string>;
 
 			for (const file of files) {
-				const resolvedPath = resolve(process.cwd(), file);
+				const resolvedPath = resolve(context.cwd, file);
 				const content = readFileSync(resolvedPath, "utf8");
 				Object.assign(env, parseEnvLines(content));
 			}

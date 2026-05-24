@@ -1,6 +1,5 @@
 import path from "node:path";
 import ora from "ora";
-import type { RuntimeProvider } from "../../api";
 import { generate } from "../../api";
 import { BaseCommand } from "../base-command";
 import { chalk, logger } from "../logger";
@@ -18,7 +17,6 @@ export default class Generate extends BaseCommand<typeof Generate> {
 			config: this.flags.config,
 			debug: this.flags.debug,
 			environment: this.flags.environment,
-			provider: this.flags.provider as RuntimeProvider | undefined,
 			publicPrefix: this.flags["public-prefix"],
 			processEnv: this.flags["process-env"],
 			strict: this.flags.strict,

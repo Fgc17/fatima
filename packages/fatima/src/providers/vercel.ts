@@ -1,29 +1,31 @@
 import { existsSync, promises as fs } from "node:fs";
 import type {
 	FatimaProvider,
-	FatimaProviderConfig,
-	UnsafeEnvironmentVariables,
-} from "../config/types";
+	FatimaProviderContext,
+	FatimaProviderFactory,
+} from "../plugins/types";
 import { parseEnvLines } from "../env/parse-env";
 import { FatimaError } from "../lib/error";
 import { runCommand } from "../lib/run-command";
 
-export type VercelLoadConfig = FatimaProviderConfig & {
+export type VercelLoadConfig = {
+	environment?: string;
 	vercelToken?: string;
 	vercelProjectId?: string;
 	vercelOrgId?: string;
 };
 
-export const vercel = (config?: VercelLoadConfig): FatimaProvider => {
+export const vercel: FatimaProviderFactory<VercelLoadConfig | undefined> = (
+	config,
+): FatimaProvider => {
 	return {
-		async fetch(processEnv = process.env as UnsafeEnvironmentVariables) {
+		async fetch({ env }: FatimaProviderContext) {
 			const auth = {
-				VERCEL_ORG_ID: config?.vercelOrgId ?? processEnv.VERCEL_ORG_ID,
-				VERCEL_PROJECT_ID:
-					config?.vercelProjectId ?? processEnv.VERCEL_PROJECT_ID,
-				VERCEL_TOKEN: config?.vercelToken ?? processEnv.VERCEL_TOKEN,
+				VERCEL_ORG_ID: config?.vercelOrgId ?? env.VERCEL_ORG_ID,
+				VERCEL_PROJECT_ID: config?.vercelProjectId ?? env.VERCEL_PROJECT_ID,
+				VERCEL_TOKEN: config?.vercelToken ?? env.VERCEL_TOKEN,
 				VERCEL_ENVIRONMENT:
-					config?.environment ?? processEnv.VERCEL_ENVIRONMENT ?? "development",
+					config?.environment ?? env.VERCEL_ENVIRONMENT ?? "development",
 			};
 
 			const args = [
@@ -51,7 +53,7 @@ export const vercel = (config?: VercelLoadConfig): FatimaProvider => {
 
 			const exitCode = await runCommand(["vercel", ...args], {
 				env: {
-					...processEnv,
+					...env,
 					VERCEL_ORG_ID: auth.VERCEL_ORG_ID,
 					VERCEL_PROJECT_ID: auth.VERCEL_PROJECT_ID,
 					VERCEL_TOKEN: auth.VERCEL_TOKEN,

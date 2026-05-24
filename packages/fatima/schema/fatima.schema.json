@@ -1,0 +1,175 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "Fatima Config",
+	"type": "object",
+	"required": ["generator"],
+	"properties": {
+		"$schema": { "type": "string" },
+		"generator": {
+			"anyOf": [
+				{ "enum": ["typescript", "javascript", "python"] },
+				{ "type": "string" }
+			]
+		},
+		"file": { "type": "string" },
+		"formatter": { "type": "string" },
+		"environment": { "type": "string" },
+		"plugins": {
+			"type": "array",
+			"items": { "type": "string" }
+		},
+		"publicPrefix": { "type": "string" },
+		"providers": { "$ref": "#/$defs/providers" },
+		"model": { "$ref": "#/$defs/models" }
+	},
+	"additionalProperties": false,
+	"$defs": {
+		"providers": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "array",
+				"items": {
+					"oneOf": [
+						{ "$ref": "#/$defs/localProvider" },
+						{ "$ref": "#/$defs/infisicalProvider" },
+						{ "$ref": "#/$defs/herokuProvider" },
+						{ "$ref": "#/$defs/vercelProvider" },
+						{ "$ref": "#/$defs/pluginProvider" }
+					]
+				}
+			}
+		},
+		"localProvider": {
+			"type": "object",
+			"required": ["provider"],
+			"properties": {
+				"provider": { "const": "local" },
+				"file": {
+					"anyOf": [
+						{ "type": "string" },
+						{ "type": "array", "items": { "type": "string" } }
+					]
+				},
+				"files": {
+					"type": "array",
+					"items": { "type": "string" }
+				}
+			},
+			"additionalProperties": false
+		},
+		"infisicalProvider": {
+			"type": "object",
+			"required": ["provider"],
+			"properties": {
+				"provider": { "const": "infisical" },
+				"environment": { "type": "string" },
+				"clientId": { "type": "string" },
+				"clientSecret": { "type": "string" },
+				"projectId": { "type": "string" },
+				"siteUrl": { "type": "string" }
+			},
+			"additionalProperties": false
+		},
+		"herokuProvider": {
+			"type": "object",
+			"required": ["provider"],
+			"properties": {
+				"provider": { "const": "heroku" },
+				"environment": { "type": "string" },
+				"app_id_or_name": { "type": "string" },
+				"bearer_token": { "type": "string" }
+			},
+			"additionalProperties": false
+		},
+		"vercelProvider": {
+			"type": "object",
+			"required": ["provider"],
+			"properties": {
+				"provider": { "const": "vercel" },
+				"environment": { "type": "string" },
+				"vercelToken": { "type": "string" },
+				"vercelProjectId": { "type": "string" },
+				"vercelOrgId": { "type": "string" }
+			},
+			"additionalProperties": false
+		},
+		"pluginProvider": {
+			"type": "object",
+			"required": ["provider"],
+			"properties": {
+				"provider": {
+					"type": "string",
+					"not": {
+						"enum": ["local", "infisical", "heroku", "vercel"]
+					}
+				}
+			},
+			"additionalProperties": true
+		},
+		"models": {
+			"type": "object",
+			"additionalProperties": {
+				"oneOf": [
+					{
+						"enum": [
+							"email",
+							"url",
+							"uuid",
+							"number",
+							"integer",
+							"boolean",
+							"string",
+							"nonempty",
+							"json",
+							"pem",
+							"sk",
+							"bearer"
+						]
+					},
+					{ "$ref": "#/$defs/enumModel" },
+					{ "$ref": "#/$defs/pluginModel" }
+				]
+			}
+		},
+		"enumModel": {
+			"type": "object",
+			"required": ["type", "values"],
+			"properties": {
+				"type": { "const": "enum" },
+				"values": {
+					"type": "array",
+					"items": { "type": "string" },
+					"minItems": 1
+				}
+			},
+			"additionalProperties": false
+		},
+		"pluginModel": {
+			"type": "object",
+			"required": ["type"],
+			"properties": {
+				"type": {
+					"type": "string",
+					"not": {
+						"enum": [
+							"email",
+							"url",
+							"uuid",
+							"number",
+							"integer",
+							"boolean",
+							"string",
+							"nonempty",
+							"json",
+							"pem",
+							"sk",
+							"bearer",
+							"enum"
+						]
+					}
+				}
+			},
+			"additionalProperties": true
+		}
+	}
+}

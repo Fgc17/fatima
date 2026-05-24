@@ -29,7 +29,9 @@
 		".": "./dist/runtime.cjs",
 		"./api": "./dist/api.cjs",
 		"./cli": "./dist/cli.cjs",
+		"./plugin": "./dist/plugin.cjs",
 		"./register": "./dist/register.cjs",
+		"./schema": "./schema/fatima.schema.json",
 		"./eslint": "./dist/eslint.cjs",
 		"./biome": "./dist/biome.grit"
 	},
@@ -38,19 +40,23 @@
 			".": [
 				"./dist/runtime.d.cts"
 			],
-			"api": [
+			"./plugin": [
+				"./dist/plugin.d.cts"
+			],
+			"./api": [
 				"./dist/api.d.cts"
 			],
-			"register": [
+			"./register": [
 				"./dist/register.d.cts"
 			],
-			"eslint": [
+			"./eslint": [
 				"./dist/eslint.d.cts"
 			]
 		}
 	},
 	"files": [
-		"dist"
+		"dist",
+		"schema"
 	],
 	"oclif": {
 		"bin": "fatima",
@@ -73,13 +79,13 @@
 		"jiti": "2.6.1",
 		"log-symbols": "^7.0.1",
 		"oclif": "4.22.81",
-		"ora": "^9.3.0"
+		"ora": "^9.3.0",
+		"zod": "^4.0.0"
 	},
 	"devDependencies": {
 		"@fatima/config": "workspace:*",
 		"@types/node": "24.9.1",
 		"prettier": "3.6.2",
-		"tsdown": "0.21.4",
-		"unplugin-raw": "^0.6.4"
+		"tsdown": "0.21.4"
 	}
 }

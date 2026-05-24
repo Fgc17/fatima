@@ -1,94 +1,30 @@
-import { existsSync, lstatSync, readdirSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { parse, resolve } from "node:path";
-
-const searchBlacklist = [
-	"node_modules",
-	".git",
-	"dist",
-	"out",
-	"build",
-	".next",
-	".nuxt",
-	".cache",
-	".tmp",
-	".temp",
-	".vscode",
-	"logs",
-	".pnpm-store",
-];
+import { FatimaError } from "../lib/error";
 
 export function resolveConfigPath(configPath?: string): string {
 	const baseDir = process.cwd();
-
-	if (configPath === "tsconfig.json") {
-		return resolve(baseDir, configPath);
-	}
-
-	const extensions = [".ts", ".mts", ".cts", ".js", ".mjs", ".cjs"];
+	const resolvedPath = resolve(baseDir, configPath ?? "fatima.json");
 
 	if (configPath) {
 		const parsed = parse(configPath);
 
 		if (!parsed.ext) {
-			throw new Error(
+			throw new FatimaError(
 				`No extension found in given config file path: ${configPath}`,
 			);
 		}
 
-		if (!extensions.includes(parsed.ext)) {
-			throw new Error(`Invalid given config file extension: ${parsed.ext}`);
+		if (parsed.ext !== ".json") {
+			throw new FatimaError(`Invalid given config file extension: ${parsed.ext}`);
 		}
-
-		const fullPath = resolve(baseDir, configPath);
-
-		if (!existsSync(fullPath)) {
-			throw new Error(`Config file doesn't exist: ${fullPath}`);
-		}
-
-		return fullPath;
 	}
 
-	const baseName = "env.config";
-
-	function searchConfig(dir: string): string | null {
-		const foundPaths: string[] = [];
-
-		for (const file of readdirSync(dir)) {
-			const fullPath = resolve(dir, file);
-
-			const workspacePath = fullPath.replace(baseDir, "");
-
-			const pathCrumbs = workspacePath.split("/").map((crumb) => crumb.trim());
-
-			if (
-				searchBlacklist.some((blacklisted) => pathCrumbs.includes(blacklisted))
-			) {
-				continue;
-			}
-
-			if (extensions.some((ext) => file === baseName + ext)) {
-				foundPaths.push(fullPath);
-			}
-
-			const stats = lstatSync(fullPath);
-			if (stats.isDirectory() && !stats.isSymbolicLink()) {
-				const nestedConfig = searchConfig(fullPath);
-				if (nestedConfig) {
-					foundPaths.push(nestedConfig);
-				}
-			}
-		}
-
-		return foundPaths[0] || null;
-	}
-
-	const configPathFound = searchConfig(baseDir);
-
-	if (!configPathFound) {
-		throw new Error(
-			"No 'env.config.{js|ts|etc}' file found in the current directory or its subdirectories.",
+	if (!existsSync(resolvedPath)) {
+		throw new FatimaError(
+			`Config file not found: ${resolvedPath}\n\nCreate a fatima.json file in your project root.`,
 		);
 	}
 
-	return configPathFound;
+	return resolvedPath;
 }

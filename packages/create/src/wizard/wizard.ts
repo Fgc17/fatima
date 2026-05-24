@@ -1,11 +1,11 @@
-import type { Adapter, Language, Validator } from "../lib/types";
+import type { Adapter, Generator, Validator } from "../lib/types";
 import { askAdapter } from "./prompts/adapter";
 import { askLanguage } from "./prompts/lang";
 import { askUserIntent } from "./prompts/monorepo";
 import { askValidator } from "./prompts/validator";
 
 export interface WizardResult {
-	language: Language;
+	generator: Generator;
 	adapter: Adapter;
 	validator: Validator;
 }
@@ -17,11 +17,11 @@ export async function wizard(): Promise<WizardResult> {
 		throw new Error("Exiting...");
 	}
 
-	const language = (await askLanguage()) as Language;
-
+	const generator = (await askLanguage()) as Generator;
 	const adapter = (await askAdapter()) as Adapter;
+	const validator = (await askValidator(
+		generator === "python" ? "javascript" : generator,
+	)) as Validator;
 
-	const validator = (await askValidator(language)) as Validator;
-
-	return { language, adapter, validator };
+	return { generator, adapter, validator };
 }

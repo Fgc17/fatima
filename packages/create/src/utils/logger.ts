@@ -1,29 +1,36 @@
 import chalk from "chalk";
 import logSymbols from "log-symbols";
-import type { Language } from "../lib/types";
+import type { Generator } from "../lib/types";
 import {
 	getPackageManager,
 	getPackageManagerInstall,
 } from "./get-package-manager";
 
-export const summary = async (language: Language, modules: string[]) => {
-	const ext = language === "typescript" ? "ts" : "js";
+export const summary = async (generator: Generator, modules: string[]) => {
+	const ext =
+		generator === "typescript"
+			? "ts"
+			: generator === "python"
+				? "py"
+				: "js";
 	const alias =
-		language === "typescript"
+		generator === "typescript"
 			? "'tsconfig.json'"
-			: "'jsconfig.json' and 'package.json'";
+			: generator === "javascript"
+				? "'jsconfig.json' and 'package.json'"
+				: null;
 
 	const packageManager = getPackageManager();
 	const packageManagerInstall = getPackageManagerInstall(packageManager);
 
-	const configFile = `env.config.${ext}`;
+	const configFile = "fatima.json";
 	const envFile = `env.${ext}`;
 
 	const message = [
 		logSymbols.success + chalk.bold(" Done! 🎉"),
 		logSymbols.warning + chalk.bold(" Here's a summary of what happened:"),
 		`   ↪ Created '${configFile}'`,
-		"   ↪ Added path alias to " + alias,
+		alias && "   ↪ Added path alias to " + alias,
 		`   ↪ Added '${envFile}' to '.gitignore'`,
 		logSymbols.info + chalk.bold(" Next steps:"),
 		modules.length &&

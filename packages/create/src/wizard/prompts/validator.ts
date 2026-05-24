@@ -1,14 +1,14 @@
 import { select } from "@inquirer/prompts";
 
-export type Validator = "zod" | "custom";
+export type Validator = "builtin" | "custom";
 
-export const askValidator = async (_language?: string) =>
+export const askValidator = async (_generator?: string) =>
 	(await select({
 		message: "Select a validator",
 		choices: [
 			{
-				name: "zod",
-				value: "zod",
+				name: "Built-in validators",
+				value: "builtin",
 			},
 			{
 				name: "I'll build my own validator",

@@ -8,15 +8,15 @@ import { wizard } from "./wizard/wizard";
 const form = async () => {
 	checkPackageJson();
 
-	const { language, adapter, validator } = await wizard();
+	const { generator, adapter, validator } = await wizard();
 
 	const result = await create({
 		adapter,
-		language,
+		generator,
 		validator,
 	});
 
-	await logger.summary(language, result.dependencies);
+	await logger.summary(generator, result.dependencies);
 };
 
 const runForm = async () =>

@@ -9,7 +9,11 @@ import type { RuntimeConfigInput } from "./types";
 export type { RuntimeConfigInput } from "./types";
 
 export const register = (...files: string[]) => {
-	const env = providers.local(files).fetch();
+	const env = providers.local(files).fetch({
+		cwd: process.cwd(),
+		environment: "development",
+		env: process.env as Record<string, string>,
+	});
 
 	if (env instanceof Promise) {
 		throw new Error("register() only supports synchronous providers.");
@@ -30,11 +34,11 @@ export async function registerAsync(options?: RuntimeConfigInput) {
 		processEnv: Boolean(options?.processEnv),
 	});
 
-	const { config, usedFallback } = await resolveRuntimeConfig(options, {
+	const { config, registry } = await resolveRuntimeConfig(options, {
 		debug,
 	});
 
-	const result = await loadEnvironment(config, {
+	const result = await loadEnvironment(config, registry, {
 		environment: options?.environment,
 		useProcessEnv: options?.processEnv,
 		debug,
@@ -42,7 +46,6 @@ export async function registerAsync(options?: RuntimeConfigInput) {
 
 	debug.debug("registerAsync:populate", "Populating process.env", {
 		variableCount: Object.keys(result.env).length,
-		usedFallback,
 	});
 	populateEnv(result.env);
 	debug.debug("registerAsync:done", "Environment loaded into process.env", {

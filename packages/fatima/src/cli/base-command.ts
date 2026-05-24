@@ -1,5 +1,4 @@
 import { Command, Flags, type Interfaces } from "@oclif/core";
-import { providers } from "../providers";
 
 export type BaseFlags<T extends typeof Command> = Interfaces.InferredFlags<
 	typeof BaseCommand.baseFlags & T["flags"]
@@ -8,19 +7,13 @@ export type BaseFlags<T extends typeof Command> = Interfaces.InferredFlags<
 export abstract class BaseCommand<T extends typeof Command> extends Command {
 	static baseFlags = {
 		config: Flags.string({
-			description: "Path to env.config.ts",
+			description: "Path to fatima.json",
 			helpGroup: "GLOBAL",
 		}),
 		environment: Flags.string({
 			description: "Override the resolved environment name",
 			helpGroup: "GLOBAL",
 			char: "e",
-		}),
-		provider: Flags.string({
-			description: "Override provider for the command",
-			helpGroup: "GLOBAL",
-			options: Object.keys(providers),
-			char: "p",
 		}),
 		"public-prefix": Flags.string({
 			description: "Override public prefix for the command",

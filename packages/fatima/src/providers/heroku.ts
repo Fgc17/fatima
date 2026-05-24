@@ -1,21 +1,23 @@
 import type {
 	FatimaProvider,
-	FatimaProviderConfig,
-	UnsafeEnvironmentVariables,
-} from "../config/types";
+	FatimaProviderContext,
+	FatimaProviderFactory,
+} from "../plugins/types";
 import { FatimaError } from "../lib/error";
 
-export type HerokuLoadOptions = FatimaProviderConfig & {
+export type HerokuLoadOptions = {
+	environment?: string;
 	app_id_or_name?: string;
 	bearer_token?: string;
 };
 
-export const heroku = (config: HerokuLoadOptions = {}): FatimaProvider => {
+export const heroku: FatimaProviderFactory<HerokuLoadOptions | undefined> = (
+	config = {},
+): FatimaProvider => {
 	return {
-		async fetch(processEnv = process.env as UnsafeEnvironmentVariables) {
-			const appIdOrName =
-				config.app_id_or_name ?? processEnv.HEROKU_APP_ID_OR_NAME;
-			const bearerToken = config.bearer_token ?? processEnv.HEROKU_API_TOKEN;
+		async fetch({ env }: FatimaProviderContext) {
+			const appIdOrName = config.app_id_or_name ?? env.HEROKU_APP_ID_OR_NAME;
+			const bearerToken = config.bearer_token ?? env.HEROKU_API_TOKEN;
 
 			if (!appIdOrName) {
 				throw new FatimaError("Missing configuration: HEROKU_APP_ID_OR_NAME");
@@ -40,7 +42,7 @@ export const heroku = (config: HerokuLoadOptions = {}): FatimaProvider => {
 				});
 			}
 
-			return (await response.json()) as UnsafeEnvironmentVariables;
+			return (await response.json()) as Record<string, string>;
 		},
 	};
 };

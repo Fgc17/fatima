@@ -26,46 +26,50 @@ describe("create-fatima", () => {
 
 	it("creates a JavaScript config and local project tweaks", async () => {
 		const result = await create({
-			language: "javascript",
+			generator: "javascript",
 			adapter: "local",
 			validator: "custom",
 		});
 
 		expect(result).toEqual({
 			dependencies: ["fatima"],
-			outputFile: "env.config.js",
+			outputFile: "fatima.json",
 		});
 
-		const configFile = await fs.readFile("env.config.js", "utf8");
+		const configFile = await fs.readFile("fatima.json", "utf8");
 		const packageJson = JSON.parse(await fs.readFile("package.json", "utf8"));
 		const jsConfig = JSON.parse(await fs.readFile("jsconfig.json", "utf8"));
 		const gitignore = await fs.readFile(".gitignore", "utf8");
 
-		expect(configFile).toContain('const { config } = require("fatima")');
-		expect(configFile).toContain('development: providers.local(".env")');
-		expect(configFile).toContain('vendor: "custom"');
+		expect(configFile).toContain('"generator": "javascript"');
+		expect(configFile).toContain('"providers"');
+		expect(configFile).toContain('"provider": "local"');
+		expect(configFile).toContain('"model"');
+		expect(configFile).toContain('"NODE_ENV": "nonempty"');
 		expect(packageJson.imports).toEqual({ "#env": "./env.js" });
 		expect(jsConfig.compilerOptions.baseUrl).toBe(".");
 		expect(jsConfig.compilerOptions.paths["#env"]).toEqual(["./env.js"]);
 		expect(gitignore).toContain("env.js");
 	});
 
-	it("creates a TypeScript config with zod dependencies", async () => {
+	it("creates a TypeScript config with built-in validators", async () => {
 		const result = await create({
-			language: "typescript",
+			generator: "typescript",
 			adapter: "infisical",
-			validator: "zod",
+			validator: "builtin",
 		});
 
-		expect(result.dependencies).toEqual(["fatima", "@infisical/sdk", "zod"]);
+		expect(result.dependencies).toEqual(["fatima", "@infisical/sdk"]);
 
-		const configFile = await fs.readFile("env.config.ts", "utf8");
+		const configFile = await fs.readFile("fatima.json", "utf8");
 		const tsConfig = JSON.parse(await fs.readFile("tsconfig.json", "utf8"));
 		const gitignore = await fs.readFile(".gitignore", "utf8");
 
-		expect(configFile).toContain('import type { EnvRecord } from "env"');
-		expect(configFile).toContain("validate: z.object(constraint)");
-		expect(configFile).toContain("providers.infisical()");
+		expect(configFile).toContain('"generator": "typescript"');
+		expect(configFile).toContain('"providers"');
+		expect(configFile).toContain('"provider": "infisical"');
+		expect(configFile).toContain('"model"');
+		expect(configFile).toContain('"type": "enum"');
 		expect(tsConfig.compilerOptions.baseUrl).toBe(".");
 		expect(tsConfig.compilerOptions.paths.env).toEqual(["./env.ts"]);
 		expect(gitignore).toContain("env.ts");

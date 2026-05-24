@@ -5,7 +5,7 @@
 	"scripts": {
 		"checktypes": "tsc --noEmit",
 		"build": "next build",
-		"dev": "next dev --turbopack",
+		"dev": "next dev --port 8000 --turbopack",
 		"start": "next start",
 		"postinstall": "fumadocs-mdx"
 	},

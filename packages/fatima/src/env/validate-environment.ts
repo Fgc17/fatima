@@ -1,59 +1,63 @@
-import type { FatimaConfig } from "../config";
-import type { UnsafeEnvironmentVariables } from "../config/types";
+import type {
+	NormalizedFatimaConfig,
+	UnsafeEnvironmentVariables,
+} from "../config/types";
 import type { FatimaDebugLogger } from "../lib/debug";
 import { FatimaError } from "../lib/error";
-import type { StandardSchemaV1 } from "../lib/standard-schema";
-
-function getIssuePath(issue: StandardSchemaV1.Issue): string {
-	if (!issue.path?.length) {
-		return "root";
-	}
-
-	return issue.path
-		.map((segment) =>
-			typeof segment === "object" && "key" in segment
-				? String(segment.key)
-				: String(segment),
-		)
-		.join(".");
-}
+import type { FatimaRegistry } from "../plugins/registry";
 
 export async function validateEnvironment(
-	config: FatimaConfig,
+	config: NormalizedFatimaConfig,
+	registry: FatimaRegistry,
 	env: UnsafeEnvironmentVariables,
 	options?: { debug?: FatimaDebugLogger },
 ): Promise<void> {
-	options?.debug?.debug("validate:run", "Running schema validation", {
+	options?.debug?.debug("validate:run", "Running model validation", {
 		variableCount: Object.keys(env).length,
-		hasSchema: Boolean(config.schema),
+		hasSchema: Boolean(config.model),
 	});
 
-	if (!config.schema) {
+	if (!config.model) {
 		throw new FatimaError(
-			"No schema defined in env.config.*. Add `schema` to use this command.",
+			"No model defined in fatima.json. Add `model` to use this command.",
 		);
 	}
 
-	const result = await config.schema["~standard"].validate(env);
+	const grouped: Record<string, string[]> = {};
 
-	if (!result.issues?.length) {
-		options?.debug?.debug("validate:success", "Schema validation succeeded");
+	for (const [key, modelConfig] of Object.entries(config.model)) {
+		const modelName =
+			typeof modelConfig === "string" ? modelConfig : modelConfig.type;
+		const model = registry.models[modelName];
+
+		if (!model) {
+			throw new FatimaError(`Unknown Fatima model: ${modelName}`);
+		}
+
+		if (!model.validate) {
+			continue;
+		}
+
+		const message = await model.validate(env[key], {
+			key,
+			env,
+			config: modelConfig,
+		});
+
+		if (message) {
+			grouped[key] ??= [];
+			grouped[key].push(message);
+		}
+	}
+
+	if (Object.keys(grouped).length === 0) {
+		options?.debug?.debug("validate:success", "Model validation succeeded");
 		return;
 	}
 
-	options?.debug?.debug("validate:failure", "Schema validation failed", {
-		issueCount: result.issues.length,
+	options?.debug?.debug("validate:failure", "Model validation failed", {
+		issueCount: Object.keys(grouped).length,
 	});
-
-	const grouped = result.issues.reduce<Record<string, string[]>>(
-		(acc, issue) => {
-			const key = getIssuePath(issue);
-			acc[key] ??= [];
-			acc[key].push(issue.message);
-			return acc;
-		},
-		{},
-	);
 
 	const message = Object.entries(grouped)
 		.map(

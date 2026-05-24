@@ -1,21 +1,21 @@
 import { createScaffoldPlan } from "./lib/presets";
 import { writeConfigFile } from "./lib/render-config-file";
 import { applyUserConfigTweaks } from "./lib/tweaks";
-import type { Adapter, Language, Validator } from "./lib/types";
+import type { Adapter, Generator, Validator } from "./lib/types";
 
 export async function create({
-	language,
+	generator,
 	adapter,
 	validator,
 }: {
-	language: Language;
+	generator: Generator;
 	adapter: Adapter;
 	validator: Validator;
 }) {
-	const plan = createScaffoldPlan({ language, adapter, validator });
+	const plan = createScaffoldPlan({ generator, adapter, validator });
 
 	await writeConfigFile(plan);
-	applyUserConfigTweaks(language);
+	applyUserConfigTweaks(generator);
 
 	return {
 		dependencies: plan.dependencies,

@@ -1,10 +1,5 @@
-import { generateClient } from "../codegen/generate-client";
-import type { FatimaConfig } from "../config";
-import {
-	hasConfigOverrides,
-	resolveEnvironmentName,
-	resolveRuntimeConfig,
-} from "../config/resolve-runtime-config";
+import { runGenerator } from "../generators/run-generator";
+import { hasConfigOverrides, resolveRuntimeConfig } from "../config/resolve-runtime-config";
 import type { LoadedEnvironment } from "../env/load-env";
 import { loadEnvironment } from "../env/load-env";
 import { validateEnvironment } from "../env/validate-environment";
@@ -14,20 +9,14 @@ import { runCommand } from "../lib/run-command";
 import type { GenerateOptions, RunOptions, RuntimeConfigInput } from "./types";
 
 export { register, registerAsync } from "./register";
-export type {
-	ApiGenerateProvider,
-	GenerateOptions,
-	RunOptions,
-	RuntimeConfigInput,
-	RuntimeProvider,
-} from "./types";
+export type { GenerateOptions, RunOptions, RuntimeConfigInput } from "./types";
 
 type WorkflowContext = {
-	config: FatimaConfig;
+	config: Awaited<ReturnType<typeof resolveRuntimeConfig>>["config"];
+	registry: Awaited<ReturnType<typeof resolveRuntimeConfig>>["registry"];
 	debug: ReturnType<typeof createDebugLogger>;
 	log: ReturnType<typeof createLog>;
 	result: LoadedEnvironment;
-	usedFallback: boolean;
 };
 
 async function getWorkflowContext(
@@ -39,17 +28,16 @@ async function getWorkflowContext(
 	debug.debug("workflow:start", "Preparing Fatima workflow", {
 		hasConfigOverride: Boolean(options?.config),
 		hasEnvironmentOverride: Boolean(options?.environment),
-		hasProviderOverride: Boolean(options?.provider),
 		hasPublicPrefixOverride: Boolean(options?.publicPrefix),
 		processEnv: Boolean(options?.processEnv),
 	});
 
-	const { config, usedFallback } = await resolveRuntimeConfig(options, {
+	const { config, registry } = await resolveRuntimeConfig(options, {
 		requireConfig: settings?.requireConfig,
 		debug,
 	});
 
-	const result = await loadEnvironment(config, {
+	const result = await loadEnvironment(config, registry, {
 		environment: options?.environment,
 		useProcessEnv: options?.processEnv,
 		debug,
@@ -59,10 +47,9 @@ async function getWorkflowContext(
 		environment: result.environment,
 		providersUsed: result.providersUsed,
 		loadedVariableCount: Object.keys(result.loadedEnv).length,
-		usedFallback,
 	});
 
-	return { config, debug, log, result, usedFallback };
+	return { config, registry, debug, log, result };
 }
 
 export async function validate(options?: RuntimeConfigInput) {
@@ -71,7 +58,7 @@ export async function validate(options?: RuntimeConfigInput) {
 		environment: context.result.environment,
 	});
 
-	await validateEnvironment(context.config, context.result.env, {
+	await validateEnvironment(context.config, context.registry, context.result.env, {
 		debug: context.debug,
 	});
 	context.debug.debug("validate:done", "Environment validation completed", {
@@ -84,27 +71,16 @@ export async function validate(options?: RuntimeConfigInput) {
 }
 
 export async function generate(options?: GenerateOptions) {
-	const context = await getWorkflowContext(options);
+	const context = await getWorkflowContext(options, { requireConfig: true });
 
-	if (context.usedFallback) {
-		context.debug.debug(
-			"generate:fallback-config",
-			"No config file found; using generated fallback config",
-			{
-				environment: resolveEnvironmentName(undefined, options),
-				outputExtension: context.config.file.extension,
-				provider: options?.provider ?? "local",
-				publicPrefix: options?.publicPrefix,
-			},
-		);
-	} else if (hasConfigOverrides(options)) {
+	if (hasConfigOverrides(options)) {
 		context.debug.debug(
 			"generate:override-config",
 			"Using generate config overrides from CLI flags",
 			{
 				environment: context.result.environment,
-				outputExtension: context.config.file.extension,
-				provider: options?.provider,
+				generator: context.config.generator,
+				file: context.config.file,
 				publicPrefix: options?.publicPrefix,
 			},
 		);
@@ -115,19 +91,22 @@ export async function generate(options?: GenerateOptions) {
 		strict: Boolean(options?.strict),
 	});
 
-	if (options?.strict && context.config.schema) {
+	if (options?.strict && context.config.model) {
 		context.debug.debug(
 			"generate:strict-validate",
 			"Running validation before code generation",
 			{ environment: context.result.environment },
 		);
-		await validateEnvironment(context.config, context.result.env, {
+		await validateEnvironment(context.config, context.registry, context.result.env, {
 			debug: context.debug,
 		});
 	}
 
-	const outputPath = await generateClient(
+	const outputPath = await runGenerator(
 		context.config,
+		context.registry,
+		context.result.environment,
+		context.result.env,
 		context.result.loadedEnv,
 		context.debug,
 	);
@@ -147,7 +126,7 @@ export async function generate(options?: GenerateOptions) {
 }
 
 export async function run(command: string[], options?: RunOptions) {
-	const context = await getWorkflowContext(options);
+	const context = await getWorkflowContext(options, { requireConfig: true });
 	context.log.info(
 		`Loaded ${Object.keys(context.result.loadedEnv).length} vars for ${context.result.environment}.`,
 	);

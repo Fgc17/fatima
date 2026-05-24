@@ -3,9 +3,11 @@ import { infisical } from "./infisical";
 import { local } from "./local";
 import { vercel } from "./vercel";
 
-export const providers = {
+export const builtinProviders = {
 	heroku,
 	infisical,
 	local,
 	vercel,
 };
+
+export const providers = builtinProviders;

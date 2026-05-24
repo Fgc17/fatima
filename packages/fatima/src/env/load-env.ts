@@ -1,11 +1,12 @@
-import type { FatimaConfig } from "../config";
+import { evaluateEnvironmentExpression } from "../config/evaluate-environment";
+import { interpolateValue } from "../config/interpolate";
 import type {
-	FatimaProvider,
-	FatimaProviderChain,
+	NormalizedFatimaConfig,
 	UnsafeEnvironmentVariables,
 } from "../config/types";
 import type { FatimaDebugLogger } from "../lib/debug";
 import { FatimaError } from "../lib/error";
+import type { FatimaRegistry } from "../plugins/registry";
 
 export type LoadedEnvironment = {
 	env: UnsafeEnvironmentVariables;
@@ -14,16 +15,9 @@ export type LoadedEnvironment = {
 	providersUsed: number;
 };
 
-function normalizeProviders(provider?: FatimaProviderChain): FatimaProvider[] {
-	if (!provider) {
-		return [];
-	}
-
-	return Array.isArray(provider) ? provider : [provider];
-}
-
 export async function loadEnvironment(
-	config: FatimaConfig,
+	config: NormalizedFatimaConfig,
+	registry: FatimaRegistry,
 	options: {
 		debug?: FatimaDebugLogger;
 		environment?: string;
@@ -34,7 +28,7 @@ export async function loadEnvironment(
 
 	const environment =
 		options.environment ??
-		config.environment(baseEnv as UnsafeEnvironmentVariables);
+		evaluateEnvironmentExpression(config.environmentExpression, baseEnv);
 
 	options.debug?.debug("env:resolve", "Resolved target environment", {
 		environment,
@@ -44,7 +38,7 @@ export async function loadEnvironment(
 
 	if (!environment) {
 		throw new FatimaError(
-			"config.environment returned an empty value. Return a concrete environment name.",
+			"fatima.json `environment` resolved to an empty value. Return a concrete environment name.",
 		);
 	}
 
@@ -65,14 +59,14 @@ export async function loadEnvironment(
 		};
 	}
 
-	const providers = normalizeProviders(config.providers[environment]);
+	const providerEntries = config.providers[environment] ?? [];
 
 	options.debug?.debug("env:providers", "Resolved providers for environment", {
 		environment,
-		providerCount: providers.length,
+		providerCount: providerEntries.length,
 	});
 
-	if (providers.length === 0) {
+	if (providerEntries.length === 0) {
 		options.debug?.debug(
 			"env:no-providers",
 			"No providers configured for environment",
@@ -92,17 +86,49 @@ export async function loadEnvironment(
 	let currentEnv = { ...baseEnv };
 	let loadedEnv = {} as UnsafeEnvironmentVariables;
 
-	for (const [index, provider] of providers.entries()) {
+	for (const [index, entry] of providerEntries.entries()) {
 		options.debug?.debug(
 			"env:provider:start",
 			"Fetching provider environment",
 			{
 				environment,
 				providerIndex: index,
-				providerCount: providers.length,
+				providerCount: providerEntries.length,
+				providerName: entry.provider,
 			},
 		);
-		const nextEnv = await provider.fetch(currentEnv);
+
+		const providerFactory = registry.providers[entry.provider];
+
+		if (!providerFactory) {
+			throw new FatimaError(`Unknown Fatima provider: ${entry.provider}`);
+		}
+
+		const providerConfig = interpolateValue(
+			Object.fromEntries(
+				Object.entries(entry).filter(([key]) => key !== "provider"),
+			),
+			currentEnv,
+		);
+
+		const provider = providerFactory(providerConfig);
+		const nextEnv = await provider.fetch({
+			cwd: config.configFile.folderPath,
+			environment,
+			env: currentEnv,
+		});
+
+		if (
+			!nextEnv ||
+			typeof nextEnv !== "object" ||
+			Array.isArray(nextEnv) ||
+			Object.values(nextEnv).some((value) => typeof value !== "string")
+		) {
+			throw new FatimaError(
+				`Fatima provider ${entry.provider} must return Record<string, string>.`,
+			);
+		}
+
 		currentEnv = { ...currentEnv, ...nextEnv };
 		loadedEnv = { ...loadedEnv, ...nextEnv };
 		options.debug?.debug("env:provider:done", "Merged provider environment", {
@@ -113,7 +139,11 @@ export async function loadEnvironment(
 		});
 	}
 
-	const resolvedEnvironment = config.environment(currentEnv);
+	const resolvedEnvironment = evaluateEnvironmentExpression(
+		config.environmentExpression,
+		currentEnv,
+	);
+
 	options.debug?.debug(
 		"env:verify",
 		"Verified resolved environment after loading",
@@ -133,6 +163,6 @@ export async function loadEnvironment(
 		env: currentEnv,
 		environment,
 		loadedEnv,
-		providersUsed: providers.length,
+		providersUsed: providerEntries.length,
 	};
 }

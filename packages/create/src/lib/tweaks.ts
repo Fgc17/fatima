@@ -1,6 +1,6 @@
 import { assign } from "comment-json";
 import { tweakJsonConfig, tweakTextFile } from "../utils/tweak-user-config";
-import type { Language } from "./types";
+import type { Generator } from "./types";
 
 const tweakTypescript = () => {
 	tweakJsonConfig("tsconfig.json", (config) => {
@@ -26,18 +26,8 @@ const tweakTypescript = () => {
 	});
 
 	tweakTextFile(".gitignore", (content) => {
-		const didIgnoreEnv = content.includes("env.ts");
-
-		if (didIgnoreEnv) return null;
-
-		const additions = [];
-
-		if (content.length > 0) {
-			additions.push("\n");
-		}
-
-		additions.push("# fatima", "\n", "env.ts");
-
+		if (content.includes("env.ts")) return null;
+		const additions = content.length > 0 ? ["\n", "# fatima", "\n", "env.ts"] : ["# fatima", "\n", "env.ts"];
 		return content + additions.join("");
 	});
 };
@@ -74,18 +64,28 @@ const tweakJavascript = () => {
 	});
 
 	tweakTextFile(".gitignore", (content) => {
-		const didIgnoreEnv = content.includes("env.js");
-
-		if (didIgnoreEnv) return null;
-
-		const additions = ["\n", "# fatima", "\n", "env.js"];
-
+		if (content.includes("env.js")) return null;
+		const additions = content.length > 0 ? ["\n", "# fatima", "\n", "env.js"] : ["# fatima", "\n", "env.js"];
 		return content + additions.join("");
 	});
 };
 
-export const applyUserConfigTweaks = (language: Language) => {
-	const tweak = language === "typescript" ? tweakTypescript : tweakJavascript;
+const tweakPython = () => {
+	tweakTextFile(".gitignore", (content) => {
+		if (content.includes("env.py")) return null;
+		const additions = content.length > 0 ? ["\n", "# fatima", "\n", "env.py"] : ["# fatima", "\n", "env.py"];
+		return content + additions.join("");
+	});
+};
 
-	tweak();
+export const applyUserConfigTweaks = (generator: Generator) => {
+	if (generator === "typescript") {
+		return tweakTypescript();
+	}
+
+	if (generator === "javascript") {
+		return tweakJavascript();
+	}
+
+	return tweakPython();
 };
