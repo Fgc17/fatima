@@ -1,0 +1,15 @@
+---
+const { type = "info", title } = Astro.props;
+
+const accentClass =
+	type === "warn"
+		? "border-l-[4px] border-l-orange-600 dark:border-l-orange-500"
+		: "border-l-[4px] border-l-blue-600 dark:border-l-blue-500";
+---
+
+<aside class:list={["my-4 rounded-lg border border-border bg-muted px-4 py-3", accentClass]}>
+	{title && <p class="mb-2 font-semibold text-foreground-strong">{title}</p>}
+	<div class="[&>:last-child]:mb-0">
+		<slot />
+	</div>
+</aside>

@@ -1,0 +1,244 @@
+@import "tailwindcss";
+
+@source "../";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+	--background: oklch(0.99 0.004 20);
+	--foreground: oklch(0.42 0.004 20);
+	--foreground-strong: oklch(0.2 0.004 20);
+	--foreground-inverted: oklch(0.99 0.004 20);
+	--muted: oklch(0.965 0.003 20);
+	--muted-hover: oklch(0.94 0.004 20);
+	--primary: oklch(0.2 0.004 20);
+	--primary-hover: oklch(0.3 0.004 20);
+	--border: oklch(0.91 0.003 20 / 0.9);
+	--ring: oklch(0.72 0.004 20);
+	--success: oklch(0.67 0.22 145);
+	--warning: oklch(0.72 0.16 72);
+	--font-sans: "Fustat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	--font-mono: "IBM Plex Mono", ui-monospace, monospace;
+	--font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+	--font-brand: var(--font-sans);
+	--radius: 0.625rem;
+	--container-max-width: 1080px;
+	--content-width: 760px;
+	--sidebar-width: 240px;
+	--section-padding-x: 48px;
+	--space-sm: 8px;
+	--space-md: 16px;
+	--space-lg: 24px;
+	--space-xl: 32px;
+	--space-2xl: 48px;
+	--header-height: 72px;
+	--shadow-2xs: 0 1px 3px 0 hsl(0 0% 0% / 0.05);
+	--shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.05);
+	--shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+	--shadow: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+	--shadow-md: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
+	--shadow-lg: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+	--shadow-xl: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
+	--shadow-2xl: 0 1px 3px 0 hsl(0 0% 0% / 0.25);
+}
+
+.dark {
+	--background: oklch(0.145 0.004 20);
+	--foreground: oklch(0.68 0.004 20);
+	--foreground-strong: oklch(0.94 0.004 20);
+	--foreground-inverted: oklch(0.145 0.004 20);
+	--muted: oklch(0.19 0.004 20);
+	--muted-hover: oklch(0.24 0.004 20);
+	--primary: oklch(0.94 0.004 20);
+	--primary-hover: oklch(0.985 0.004 20);
+	--border: oklch(0.28 0.004 20 / 0.95);
+	--ring: oklch(0.56 0.004 20);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not(.light) {
+		--background: oklch(0.145 0.004 20);
+		--foreground: oklch(0.68 0.004 20);
+		--foreground-strong: oklch(0.94 0.004 20);
+		--foreground-inverted: oklch(0.145 0.004 20);
+		--muted: oklch(0.19 0.004 20);
+		--muted-hover: oklch(0.24 0.004 20);
+		--primary: oklch(0.94 0.004 20);
+		--primary-hover: oklch(0.985 0.004 20);
+		--border: oklch(0.28 0.004 20 / 0.95);
+		--ring: oklch(0.56 0.004 20);
+	}
+}
+
+@theme inline {
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-foreground-strong: var(--foreground-strong);
+	--color-muted: var(--muted);
+	--color-muted-hover: var(--muted-hover);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--foreground-inverted);
+	--color-primary-hover: var(--primary-hover);
+	--color-border: var(--border);
+	--color-ring: var(--ring);
+	--color-success: var(--success);
+	--color-warning: var(--warning);
+
+	--font-sans: "Fustat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	--font-mono: "IBM Plex Mono", ui-monospace, monospace;
+	--font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+	--font-brand: "Fustat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+
+	--shadow-2xs: 0 1px 3px 0 hsl(0 0% 0% / 0.05);
+	--shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.05);
+	--shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+	--shadow: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+	--shadow-md: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
+	--shadow-lg: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+	--shadow-xl: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
+	--shadow-2xl: 0 1px 3px 0 hsl(0 0% 0% / 0.25);
+}
+
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+		box-sizing: border-box;
+	}
+
+	body {
+		@apply bg-background text-foreground font-sans;
+		margin: 0;
+		line-height: 1.7;
+	}
+
+	code,
+	pre {
+		@apply font-mono;
+	}
+}
+
+html {
+	font-size: 14px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+a {
+	color: var(--foreground-strong);
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.docs-content h1,
+.docs-content h2,
+.docs-content h3 {
+	color: var(--foreground-strong);
+	line-height: 1.25;
+}
+
+.docs-content h1 {
+	font-size: 30px;
+	margin: 0 0 12px;
+}
+
+.docs-content h2 {
+	font-size: 22px;
+	margin: 40px 0 12px;
+}
+
+.docs-content h3,
+.docs-content h4 {
+	font-size: 18px;
+	margin: 28px 0 10px;
+}
+
+.docs-content p,
+.docs-content ul,
+.docs-content ol,
+.docs-content blockquote {
+	margin: 0 0 16px;
+}
+
+.docs-content pre {
+	position: relative;
+	overflow-x: auto;
+	padding: 16px;
+	border-radius: 8px;
+	background: var(--muted) !important;
+	margin: 16px 0;
+	border: 1px solid var(--border);
+}
+
+.docs-content :not(pre) > code {
+	padding: 2px 6px;
+	border-radius: 4px;
+	background: var(--muted);
+	font-size: 13px;
+}
+
+.docs-content .code-tabs {
+	margin: 16px 0;
+}
+
+.code-tabs-tab {
+	font-family: var(--font-mono);
+}
+
+.code-tabs-tab[aria-selected="true"] {
+	background: var(--background);
+	color: var(--foreground-strong);
+}
+
+.code-tabs-panels > [hidden] {
+	display: none;
+}
+
+.docs-content .code-tabs [data-code-tab-panel] > :last-child {
+	margin-bottom: 0;
+}
+
+.docs-content .code-tabs pre {
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent !important;
+}
+
+.docs-content .code-tabs .expressive-code,
+.docs-content .code-tabs .astro-code {
+	margin: 0 !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+}
+
+.table-wrapper {
+	overflow-x: auto;
+	margin: 16px 0;
+}
+
+.docs-content table {
+	border-collapse: collapse;
+	min-width: 100%;
+	width: max-content;
+}
+
+.docs-content th,
+.docs-content td {
+	padding: 10px 12px;
+	border-bottom: 1px solid var(--border);
+	text-align: left;
+	white-space: nowrap;
+}
+
+.docs-content th {
+	color: var(--foreground-strong);
+	font-weight: 600;
+}

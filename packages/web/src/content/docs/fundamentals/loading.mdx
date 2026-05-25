@@ -1,0 +1,67 @@
+---
+title: Loading secrets
+description: Learn best practices on how to load secrets in your app.
+order: 2
+---
+
+### Loading secrets
+
+To load secrets in your app, you can use the `registerAsync` function from `fatima/api`.
+
+```ts
+import { env } from "env";
+
+async function main() {
+  if(env.ENVIRONMENT === "development") {
+    const { registerAsync } = await import("fatima/api")
+
+    await registerAsync();
+  }
+}
+```
+
+This will load secrets as specified in your `env.config.ts`, or from the `.env` file if you don't have anything configured.
+
+Make sure to only run this in development, for production you should load secrets through your hosting platform, or through other means, but not through fatima API or CLI.
+
+### Loading secret synchronously
+
+If you need to load secrets synchronously, you can use the `register` function from `fatima/register`.
+
+```ts
+import { register } from "fatima/api";
+
+register();
+```
+
+Or just
+
+```ts
+import "fatima/register";
+```
+
+### CI/CD
+
+Before building your app, you need to run `fatima generate`.
+
+In CI/CD environments, all needed secrets should already be available as environment variables, so all you gotta run is
+
+```bash
+npx fatima@latest generate --process-env
+```
+
+The `--process-env` flag tells Fatima to load secrets from the environment variables instead of the `.env` file, which is the default behavior.
+
+In case you need to build a secret loader, you can use `providers` object returned by `fatima` to fetch secrets.
+
+### CLI vs API
+
+Previously, Fatima had two commands: `fatima run` and `fatima dev`.
+
+Both of them were responsible for loading secrets and running your app, but they had different use cases.
+
+Fatima dev was intended for long running processes, like a your development server, while `fatima run` was intended for one-off commands, like a migration or seeding script.
+
+Ultimately the library evolved and now discourages the usage of CLI to load secrets, `fatima dev` was deprecated and `fatima run` should only be when you want to test something, or when you need to inject secrets in a process you don't control.
+
+Generally, we should avoid enveloping processes with other processes. That's why we recommend using `fatima/api` or `fatima/register` to load secrets and run your app, instead of `fatima run`.

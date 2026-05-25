@@ -1,0 +1,19 @@
+---
+import { getEntry, render } from "astro:content";
+import Callout from "@/components/Callout.astro";
+import CodeTab from "@/components/CodeTab.astro";
+import CodeTabs from "@/components/CodeTabs.astro";
+import Docs from "@/layouts/Docs.astro";
+
+const entry = await getEntry("docs", "index");
+
+if (!entry) {
+	throw new Error("Missing docs index entry");
+}
+
+const { Content } = await render(entry);
+---
+
+<Docs title={entry.data.title} description={entry.data.description}>
+	<Content components={{ Callout, CodeTab, CodeTabs }} />
+</Docs>

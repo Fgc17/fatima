@@ -10,15 +10,10 @@ node_modules
 
 # output
 dist
-.next
-.source
+.astro
 *.tsbuildinfo
 out
 .turbo
 
 # env
 .env
-
-# nextjs
-.vercel
-next-env.d.ts

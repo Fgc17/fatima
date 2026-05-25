@@ -1,0 +1,65 @@
+---
+title: vercel
+description: '"Your complete platform for the web..."'
+order: 4
+---
+
+## Dependencies
+
+<CodeTabs groupId="package-manager">
+  <CodeTab label="npm">
+
+```bash
+npm install -g vercel
+```
+
+  </CodeTab>
+  <CodeTab label="pnpm">
+
+```bash
+pnpm i -g vercel
+```
+
+  </CodeTab>
+  <CodeTab label="yarn">
+
+```bash
+yarn global add vercel
+```
+
+  </CodeTab>
+</CodeTabs>
+
+## Authenticating
+
+First, log in:
+
+```bash
+vercel login
+```
+
+Then, link your project:
+
+```bash
+vercel link
+```
+
+### Token Authenticating
+
+Fatima also supports token-based authentication, which can be useful for people running containers.
+
+Just grab your `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` from your Vercel account and set them as environment variables, or pass down as loader options.
+
+## Importing the loader
+
+```ts
+import { config, providers } from "fatima";
+
+export default config({
+  providers: {
+    development: providers.vercel({
+      // Check out here with intellisense
+    }),
+  },
+});
+```

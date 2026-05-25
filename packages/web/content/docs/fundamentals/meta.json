@@ -1,5 +1,0 @@
-{
-	"title": "Fundamentals",
-	"pages": ["quickstart", "loading", "config", "linter", "validation"],
-	"defaultOpen": true
-}

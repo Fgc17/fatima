@@ -1,0 +1,48 @@
+---
+title: infisical
+description: '"All-in-one platform to securely manage application configuration and secrets..."'
+order: 3
+---
+
+## Dependencies
+
+<CodeTabs groupId="package-manager">
+  <CodeTab label="npm">
+
+```bash
+npm install @infisical/sdk
+```
+
+  </CodeTab>
+  <CodeTab label="pnpm">
+
+```bash
+pnpm add @infisical/sdk
+```
+
+  </CodeTab>
+  <CodeTab label="yarn">
+
+```bash
+yarn add @infisical/sdk
+```
+
+  </CodeTab>
+</CodeTabs>
+
+## Importing the loader
+
+```ts
+import { config, providers } from "fatima";
+
+export default config({
+  providers: {
+    development: [
+      providers.local(".env"),
+      providers.infisical({
+        // This provider can now read auth values loaded by the previous provider
+      }),
+    ],
+  },
+});
+```

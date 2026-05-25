@@ -1,0 +1,27 @@
+---
+title: Linting
+description: Ban usage of process.env.
+order: 4
+---
+
+In order to ensure good practices when handling secrets, Fatima provides a linter plugin that bans the usage of `process.env` in your codebase.
+
+## ESlint
+
+```ts
+import { linter as fatima } from "fatima";
+
+export default [
+  fatima.eslint.plugin,
+]
+```
+
+## Biome
+
+```json
+{
+  "plugins": [
+    "node_modules/fatima/dist/biome.grit"
+  ]
+}
+```

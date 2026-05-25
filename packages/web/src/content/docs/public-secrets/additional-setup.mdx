@@ -1,0 +1,33 @@
+---
+title: Additional setup
+description: Additional setup for client secrets.
+order: 2
+---
+
+### Modifying the `isServer` function
+
+The default way fatima checks if you are on the server is currently the following:
+
+```ts
+() => typeof window === "undefined";
+```
+
+This works for 99% of the cases, but there are other ways to make the check.
+
+There's actually a library called [browser-or-node](https://www.npmjs.com/package/browser-or-node) that can help you with that.
+
+If you want to use this library or already do so, you can modify the `isServer` function anyway you want:
+
+```ts
+import { config } from "fatima";
+import * as jsEnv from "browser-or-node";
+
+const isServer = !jsEnv.isBrowser;
+
+export default config({
+  client: {
+    isServer: () => isServer,
+    publicPrefix: "NEXT_PUBLIC_",
+  },
+});
+```

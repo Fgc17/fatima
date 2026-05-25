@@ -1,0 +1,8 @@
+---
+const { class: className = "" } = Astro.props;
+---
+
+<span class={`inline-flex size-6 shrink-0 items-center justify-center ${className}`} aria-hidden="true">
+	<img src="/favicon/light.svg" alt="" class="block size-6 object-contain dark:hidden" />
+	<img src="/favicon/dark.svg" alt="" class="hidden size-6 object-contain dark:block" />
+</span>

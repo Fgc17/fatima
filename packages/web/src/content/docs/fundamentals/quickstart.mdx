@@ -1,0 +1,157 @@
+---
+title: Quickstart
+description: Get started with fatima in minutes.
+order: 1
+---
+
+## Init CLI
+
+Use this if you want to skip directly to using a config file.
+
+Next steps in this page will cover a quickstart with no config file.
+
+<CodeTabs groupId="package-manager">
+  <CodeTab label="pnpm">
+
+```bash
+pnpm add -D fatima
+```
+
+  </CodeTab>
+  <CodeTab label="npm">
+
+```bash
+npm install -D fatima
+```
+
+  </CodeTab>
+  <CodeTab label="yarn">
+
+```bash
+yarn add -D fatima
+```
+
+  </CodeTab>
+</CodeTabs>
+
+## Installation
+
+<CodeTabs groupId="package-manager">
+  <CodeTab label="pnpm">
+
+```bash
+pnpm add -D fatima
+```
+
+  </CodeTab>
+  <CodeTab label="npm">
+
+```bash
+npm install -D fatima
+```
+
+  </CodeTab>
+  <CodeTab label="yarn">
+
+```bash
+yarn add -D fatima
+```
+
+  </CodeTab>
+</CodeTabs>
+
+## Create a .env file
+
+Create a `.env` file in the root of your project:
+
+```txt
+PORT=3000
+NODE_ENV=development
+TZ=UTC
+NEXT_PUBLIC_URL=http://localhost:3000
+```
+
+## Generate types
+
+This will produce a `env.ts` file based on the variables in your `.env` file, with the correct types.
+
+```bash
+pnpm fatima generate
+```
+
+### Path Alias
+
+Make sure you can import `env` from anywhere in your project without big relative imports.
+
+<CodeTabs groupId="languages">
+  <CodeTab label="typescript">
+
+```json title="tsconfig.json"
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "env": ["./env.ts"]
+    }
+  }
+}
+```
+
+  </CodeTab>
+  <CodeTab label="javascript">
+
+```json title="package.json"
+{
+  "imports": {
+    "#env": "./env.js"
+  }
+}
+```
+
+```json title="jsconfig.json"
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "#env": ["./env.js"]
+    }
+  }
+}
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Add env to your `.gitignore`
+
+You should gitignore your `env` and always generate it before building/installing.
+
+<CodeTabs groupId="languages">
+  <CodeTab label="typescript">
+
+```txt
+env.ts
+```
+
+  </CodeTab>
+  <CodeTab label="javascript">
+
+```txt
+env.js
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Go on and use it
+
+```ts
+import { env } from "env";
+import { Response } from "server";
+
+export async function GET() {
+	const port = env.PORT;
+
+	return Response(port);
+}
+```

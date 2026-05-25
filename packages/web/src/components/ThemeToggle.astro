@@ -1,0 +1,56 @@
+<button
+	type="button"
+	data-theme-toggle
+	class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:bg-muted hover:text-foreground-strong"
+	aria-label="Toggle theme"
+	title="Toggle theme"
+>
+	<svg data-theme-icon="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="size-4">
+		<circle cx="12" cy="12" r="4" />
+		<path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07 6.7 17.3M17.3 6.7l1.77-1.77" />
+	</svg>
+	<svg data-theme-icon="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="hidden size-4">
+		<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+	</svg>
+</button>
+
+<script>
+	const storageKey = 'fatima-theme'
+
+	const applyTheme = (theme: 'light' | 'dark') => {
+		document.documentElement.classList.remove('light', 'dark')
+		document.documentElement.classList.add(theme)
+		document.documentElement.dataset.theme = theme
+		localStorage.setItem(storageKey, theme)
+
+		document.querySelectorAll<HTMLElement>('[data-theme-toggle]').forEach((button) => {
+			const sun = button.querySelector<HTMLElement>('[data-theme-icon="sun"]')
+			const moon = button.querySelector<HTMLElement>('[data-theme-icon="moon"]')
+			const isDark = theme === 'dark'
+			sun?.classList.toggle('hidden', isDark)
+			moon?.classList.toggle('hidden', !isDark)
+			button.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme')
+			button.setAttribute('title', isDark ? 'Switch to light theme' : 'Switch to dark theme')
+		})
+	}
+
+	const getPreferredTheme = (): 'light' | 'dark' => {
+		const stored = localStorage.getItem(storageKey)
+		if (stored === 'light' || stored === 'dark') return stored
+		return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+	}
+
+	if (!document.documentElement.dataset.themeToggleInitialized) {
+		document.documentElement.dataset.themeToggleInitialized = 'true'
+		applyTheme(getPreferredTheme())
+
+		document.addEventListener('click', (event) => {
+			const target = event.target as HTMLElement | null
+			const button = target?.closest<HTMLElement>('[data-theme-toggle]')
+			if (!button) return
+
+			const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+			applyTheme(currentTheme === 'dark' ? 'light' : 'dark')
+		})
+	}
+</script>

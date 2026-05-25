@@ -1,0 +1,40 @@
+---
+import Base from "@/layouts/Base.astro";
+import Logo from "@/components/Logo.astro";
+import ThemeToggle from "@/components/ThemeToggle.astro";
+---
+
+<Base title="Fatima" description="safe secrets for the javascript ecosystem">
+	<main class="flex min-h-screen justify-center">
+		<div class="min-h-screen w-full max-w-[var(--container-max-width)] border-x border-b border-border max-md:border-x-0">
+			<header class="sticky top-0 z-[100] border-b border-border bg-background">
+				<div class="flex min-h-[var(--header-height)] items-center justify-between px-[var(--section-padding-x)] py-5 max-md:px-5">
+					<a href="/" class="flex items-center gap-2 text-base font-bold text-foreground-strong no-underline hover:no-underline">
+						<Logo />
+						<span>fatima</span>
+					</a>
+					<div class="flex items-center gap-3">
+						<nav class="flex items-center gap-6 max-md:hidden">
+							<a href="https://github.com/Fgc17/fatima" target="_blank" rel="noreferrer">GitHub</a>
+							<a href="/docs">Docs</a>
+						</nav>
+						<ThemeToggle />
+					</div>
+				</div>
+			</header>
+
+			<section class="mx-auto max-w-[var(--content-width)] px-[var(--section-padding-x)] py-24 text-center max-md:px-5 max-md:py-[4.5rem]">
+				<h1 class="mb-3 text-4xl leading-tight font-bold text-foreground-strong max-md:text-3xl">
+					Safe secrets for the javascript ecosystem
+				</h1>
+				<p class="text-base text-foreground">
+					Generate typed env access, validate config, and compose local or cloud secret providers.
+				</p>
+				<div class="mt-8 flex justify-center gap-3 max-md:flex-col">
+					<a href="/docs" class="inline-flex items-center justify-center rounded-md border border-primary bg-primary px-4 py-2 font-mono text-sm text-primary-foreground no-underline transition-colors hover:bg-primary-hover hover:no-underline max-md:w-full">Read docs</a>
+					<a href="https://github.com/Fgc17/fatima" class="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 font-mono text-sm text-foreground-strong no-underline transition-colors hover:bg-muted hover:no-underline max-md:w-full" target="_blank" rel="noreferrer">GitHub</a>
+				</div>
+			</section>
+		</div>
+	</main>
+</Base>

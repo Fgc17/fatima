@@ -1,5 +1,0 @@
-{
-	"title": "Schemas",
-	"pages": ["own", "./(schemas)/zod"],
-	"defaultOpen": true
-}
