@@ -50,16 +50,20 @@ Fatima also supports token-based authentication, which can be useful for people 
 
 Just grab your `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` from your Vercel account and set them as environment variables, or pass down as loader options.
 
-## Importing the loader
+## Configuring the provider
 
-```ts
-import { config, providers } from "fatima";
-
-export default config({
-  providers: {
-    development: providers.vercel({
-      // Check out here with intellisense
-    }),
-  },
-});
+```json
+{
+  "providers": {
+    "production": [
+      {
+        "provider": "vercel",
+        "environment": "production",
+        "vercelToken": "{env:VERCEL_TOKEN}",
+        "vercelProjectId": "{env:VERCEL_PROJECT_ID}",
+        "vercelOrgId": "{env:VERCEL_ORG_ID}"
+      }
+    ]
+  }
+}
 ```

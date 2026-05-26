@@ -36,7 +36,8 @@ export function normalizeJsonConfig(
 
 	if (
 		rawConfig.providers != null &&
-		(typeof rawConfig.providers !== "object" || Array.isArray(rawConfig.providers))
+		(typeof rawConfig.providers !== "object" ||
+			Array.isArray(rawConfig.providers))
 	) {
 		throw new FatimaError("fatima.json `providers` must be an object.");
 	}
@@ -74,12 +75,12 @@ export function normalizeJsonConfig(
 		generator: rawConfig.generator,
 		file: rawConfig.file ?? defaultGeneratorFiles[rawConfig.generator] ?? "env",
 		formatter:
-			typeof rawConfig.formatter === "string"
-				? rawConfig.formatter
-				: undefined,
+			typeof rawConfig.formatter === "string" ? rawConfig.formatter : undefined,
 		environmentExpression: rawConfig.environment ?? "'development'",
 		plugins: Array.isArray(rawConfig.plugins)
-			? rawConfig.plugins.filter((item): item is string => typeof item === "string")
+			? rawConfig.plugins.filter(
+					(item): item is string => typeof item === "string",
+				)
 			: [],
 		publicPrefix:
 			typeof rawConfig.publicPrefix === "string"

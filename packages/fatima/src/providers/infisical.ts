@@ -1,10 +1,10 @@
+import { FatimaError } from "../lib/error";
+import { loadOptionalDependency } from "../lib/load-optional-dependency";
 import type {
 	FatimaProvider,
 	FatimaProviderContext,
 	FatimaProviderFactory,
 } from "../plugins/types";
-import { FatimaError } from "../lib/error";
-import { loadOptionalDependency } from "../lib/load-optional-dependency";
 
 type InfisicalClientInstance = {
 	auth: () => {

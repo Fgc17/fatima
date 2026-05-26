@@ -6,6 +6,54 @@ import type { FatimaDebugLogger } from "../lib/debug";
 import { FatimaError } from "../lib/error";
 import type { FatimaRegistry } from "../plugins/registry";
 
+function getModelArgs(modelConfig: unknown): Record<string, unknown> {
+	return modelConfig &&
+		typeof modelConfig === "object" &&
+		(modelConfig as { args?: unknown }).args &&
+		typeof (modelConfig as { args?: unknown }).args === "object" &&
+		!Array.isArray((modelConfig as { args?: unknown }).args)
+		? (modelConfig as { args: Record<string, unknown> }).args
+		: {};
+}
+
+function parseModelValue(
+	modelName: string,
+	value: string | undefined,
+): unknown {
+	if (value == null) {
+		return value;
+	}
+
+	if (modelName === "number" || modelName === "integer") {
+		return Number(value);
+	}
+
+	if (modelName === "boolean") {
+		const normalized = value.toLowerCase();
+		if (["true", "1", "yes", "on", "y", "enabled"].includes(normalized))
+			return true;
+		if (["false", "0", "no", "off", "n", "disabled"].includes(normalized))
+			return false;
+	}
+
+	return value;
+}
+
+function validateAllowedValues(
+	modelName: string,
+	value: string | undefined,
+	args: Record<string, unknown>,
+) {
+	if (!Array.isArray(args.values)) {
+		return;
+	}
+
+	const parsed = parseModelValue(modelName, value);
+	if (!args.values.includes(parsed)) {
+		return `Expected one of: ${args.values.join(", ")}`;
+	}
+}
+
 export async function validateEnvironment(
 	config: NormalizedFatimaConfig,
 	registry: FatimaRegistry,
@@ -28,6 +76,7 @@ export async function validateEnvironment(
 	for (const [key, modelConfig] of Object.entries(config.model)) {
 		const modelName =
 			typeof modelConfig === "string" ? modelConfig : modelConfig.type;
+		const modelArgs = getModelArgs(modelConfig);
 		const model = registry.models[modelName];
 
 		if (!model) {
@@ -41,12 +90,18 @@ export async function validateEnvironment(
 		const message = await model.validate(env[key], {
 			key,
 			env,
-			config: modelConfig,
+			config: modelArgs,
 		});
 
 		if (message) {
 			grouped[key] ??= [];
 			grouped[key].push(message);
+		}
+
+		const valuesMessage = validateAllowedValues(modelName, env[key], modelArgs);
+		if (valuesMessage) {
+			grouped[key] ??= [];
+			grouped[key].push(valuesMessage);
 		}
 	}
 

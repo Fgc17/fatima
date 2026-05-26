@@ -1,9 +1,0 @@
-{
-	"extends": "@fatima/config/tsconfig/build",
-	"compilerOptions": {
-		"paths": {
-			"@/*": ["./src/*"]
-		}
-	},
-	"exclude": ["node_modules", "dist"]
-}

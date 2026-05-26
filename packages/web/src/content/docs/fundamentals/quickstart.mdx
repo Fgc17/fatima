@@ -6,15 +6,14 @@ order: 1
 
 ## Init CLI
 
-Use this if you want to skip directly to using a config file.
-
-Next steps in this page will cover a quickstart with no config file.
+Fatima requires `fatima.json`. Start by installing Fatima and running the init command in your project root.
 
 <CodeTabs groupId="package-manager">
   <CodeTab label="pnpm">
 
 ```bash
 pnpm add -D fatima
+pnpm fatima init
 ```
 
   </CodeTab>
@@ -22,6 +21,7 @@ pnpm add -D fatima
 
 ```bash
 npm install -D fatima
+npx fatima init
 ```
 
   </CodeTab>
@@ -29,10 +29,29 @@ npm install -D fatima
 
 ```bash
 yarn add -D fatima
+yarn fatima init
 ```
 
   </CodeTab>
 </CodeTabs>
+
+## Configuration
+
+`fatima init` creates `fatima.json`. Fatima will ask you to run `fatima init` if this file is missing.
+
+```json title="fatima.json"
+{
+  "generator": "typescript",
+  "environment": "{env:NODE_ENV} ?? 'development'",
+  "providers": {
+    "development": [{ "provider": "local", "file": ".env" }]
+  },
+  "model": {
+    "PORT": "integer",
+    "NODE_ENV": { "type": "string", "args": { "values": ["development"] } }
+  }
+}
+```
 
 ## Installation
 

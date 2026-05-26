@@ -1,4 +1,5 @@
 import { run } from "../../api";
+import { resolveConfigPath } from "../../config/resolve-config-path";
 import { FatimaError } from "../../lib/error";
 import { BaseCommand } from "../base-command";
 
@@ -14,8 +15,10 @@ export default class Run extends BaseCommand<typeof Run> {
 			args.shift();
 		}
 
+		resolveConfigPath(this.flags.config);
+
 		if (args.length === 0) {
-			throw new FatimaError("Missing command. Example: fatima node index.js");
+			throw new FatimaError("Missing command. Example: fatima bun index.ts");
 		}
 
 		const result = await run(args, {

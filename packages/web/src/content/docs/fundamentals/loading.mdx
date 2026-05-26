@@ -6,6 +6,8 @@ order: 2
 
 ### Loading secrets
 
+Before loading or generating secrets, run `fatima init` once in the project root. Fatima requires `fatima.json` for every command except initialization.
+
 To load secrets in your app, you can use the `registerAsync` function from `fatima/api`.
 
 ```ts
@@ -20,7 +22,7 @@ async function main() {
 }
 ```
 
-This will load secrets as specified in your `env.config.ts`, or from the `.env` file if you don't have anything configured.
+This will load secrets as specified in your `fatima.json` providers.
 
 Make sure to only run this in development, for production you should load secrets through your hosting platform, or through other means, but not through fatima API or CLI.
 
@@ -52,7 +54,7 @@ npx fatima@latest generate --process-env
 
 The `--process-env` flag tells Fatima to load secrets from the environment variables instead of the `.env` file, which is the default behavior.
 
-In case you need to build a secret loader, you can use `providers` object returned by `fatima` to fetch secrets.
+In case you need custom loading behavior, define a plugin provider and reference it from `fatima.json`.
 
 ### CLI vs API
 

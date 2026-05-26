@@ -28,11 +28,15 @@ function renderJavascriptFile(params: {
 			renderBuiltinHelpers("javascript"),
 			"",
 			`const ${exportName} = Object.freeze({`,
-			...specs.map((item) => `\t${JSON.stringify(item.key)}: ${item.expression},`),
+			...specs.map(
+				(item) => `\t${JSON.stringify(item.key)}: ${item.expression},`,
+			),
 			"});",
 			"",
 			`module.exports = { ${exportName} };`,
-		].filter(Boolean).join("\n"),
+		]
+			.filter(Boolean)
+			.join("\n"),
 		{
 			cwd: params.context.cwd,
 			filePath: params.filePath,

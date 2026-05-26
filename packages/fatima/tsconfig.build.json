@@ -1,10 +1,8 @@
 {
-	"extends": "@fatima/config/tsconfig/build",
+	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"tsBuildInfoFile": ".tsbuildinfo.build",
-		"paths": {
-			"@/*": ["./src/*"]
-		}
+		"noEmit": false
 	},
 	"exclude": ["node_modules", "dist"]
 }

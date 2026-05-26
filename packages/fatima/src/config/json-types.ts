@@ -7,7 +7,7 @@ export type FatimaJsonModelConfigValue =
 	| string
 	| {
 			type: string;
-			[key: string]: unknown;
+			args?: Record<string, unknown>;
 	  };
 
 export type FatimaJsonModelConfig = Record<string, FatimaJsonModelConfigValue>;

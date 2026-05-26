@@ -3,7 +3,7 @@ import type { FatimaDebugLogger } from "../lib/debug";
 import { FatimaError } from "../lib/error";
 import type { FatimaJsonConfig } from "./json-types";
 import { normalizeJsonConfig } from "./normalize-json-config";
-import { resolveConfigPath } from "./resolve-config-path";
+import { missingConfigMessage, resolveConfigPath } from "./resolve-config-path";
 import type { NormalizedFatimaConfig } from "./types";
 
 function parseConfigFile(
@@ -11,9 +11,7 @@ function parseConfigFile(
 	debug?: FatimaDebugLogger,
 ): FatimaJsonConfig {
 	if (!fs.existsSync(configPath)) {
-		throw new FatimaError(
-			`Config file not found: ${configPath}\n\nCreate a fatima.json file in your project root.`,
-		);
+		throw new FatimaError(missingConfigMessage(configPath));
 	}
 
 	debug?.debug("config:read", "Reading fatima.json", {

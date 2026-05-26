@@ -1,6 +1,6 @@
 {
 	"name": "fatima",
-	"description": "typesafe secrets for the javascript ecosystem",
+	"description": "local-first encrypted secrets and typed environment access",
 	"author": "Fernando Coelho",
 	"homepage": "https://fatimajs.vercel.app",
 	"repository": {
@@ -21,36 +21,54 @@
 	"license": "MIT",
 	"type": "module",
 	"bin": {
-		"fatima": "./dist/cli.cjs"
+		"fatima": "./dist/fatima"
 	},
-	"main": "./dist/runtime.cjs",
-	"types": "./dist/runtime.d.cts",
+	"main": "./dist/runtime.js",
+	"types": "./dist/types/exports/runtime.d.ts",
 	"exports": {
-		".": "./dist/runtime.cjs",
-		"./api": "./dist/api.cjs",
-		"./cli": "./dist/cli.cjs",
-		"./plugin": "./dist/plugin.cjs",
-		"./register": "./dist/register.cjs",
+		".": {
+			"types": "./dist/types/exports/runtime.d.ts",
+			"import": "./dist/runtime.js"
+		},
+		"./api": {
+			"types": "./dist/types/exports/api.d.ts",
+			"import": "./dist/api.js"
+		},
+		"./cli": {
+			"types": "./dist/types/exports/cli.d.ts",
+			"import": "./dist/cli.js"
+		},
+		"./plugin": {
+			"types": "./dist/types/exports/plugin.d.ts",
+			"import": "./dist/plugin.js"
+		},
+		"./register": {
+			"types": "./dist/types/exports/register.d.ts",
+			"import": "./dist/register.js"
+		},
 		"./schema": "./schema/fatima.schema.json",
-		"./eslint": "./dist/eslint.cjs",
+		"./eslint": {
+			"types": "./dist/types/exports/eslint.d.ts",
+			"import": "./dist/eslint.js"
+		},
 		"./biome": "./dist/biome.grit"
 	},
 	"typesVersions": {
 		"*": {
 			".": [
-				"./dist/runtime.d.cts"
+				"./dist/types/exports/runtime.d.ts"
 			],
 			"./plugin": [
-				"./dist/plugin.d.cts"
+				"./dist/types/exports/plugin.d.ts"
 			],
 			"./api": [
-				"./dist/api.d.cts"
+				"./dist/types/exports/api.d.ts"
 			],
 			"./register": [
-				"./dist/register.d.cts"
+				"./dist/types/exports/register.d.ts"
 			],
 			"./eslint": [
-				"./dist/eslint.d.cts"
+				"./dist/types/exports/eslint.d.ts"
 			]
 		}
 	},
@@ -63,29 +81,35 @@
 		"dirname": "fatima",
 		"commands": {
 			"strategy": "explicit",
-			"target": "./dist/cli.cjs",
+			"target": "./dist/cli.js",
 			"identifier": "COMMANDS"
 		},
 		"topicSeparator": " "
 	},
 	"scripts": {
 		"checktypes": "tsc --noEmit",
-		"build": "rm -rf dist && tsdown",
-		"dev": "tsdown --watch"
+		"build": "bun run scripts/build.ts",
+		"dev": "bun run --watch src/exports/cli.ts"
 	},
 	"dependencies": {
+		"@inquirer/prompts": "^7.2.4",
 		"@oclif/core": "^4.8.3",
+		"@opentui/core": "0.2.15",
+		"@opentui/react": "0.2.15",
 		"chalk": "^5.6.2",
+		"comment-json": "^4.2.5",
 		"jiti": "2.6.1",
 		"log-symbols": "^7.0.1",
 		"oclif": "4.22.81",
 		"ora": "^9.3.0",
+		"react": "19.2.0",
+		"react-devtools-core": "7.0.1",
 		"zod": "^4.0.0"
 	},
 	"devDependencies": {
-		"@fatima/config": "workspace:*",
+		"@types/bun": "1.3.13",
+		"@types/react": "19.2.0",
 		"@types/node": "24.9.1",
-		"prettier": "3.6.2",
-		"tsdown": "0.21.4"
+		"prettier": "3.6.2"
 	}
 }

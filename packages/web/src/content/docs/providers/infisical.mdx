@@ -30,19 +30,21 @@ yarn add @infisical/sdk
   </CodeTab>
 </CodeTabs>
 
-## Importing the loader
+## Configuring the provider
 
-```ts
-import { config, providers } from "fatima";
-
-export default config({
-  providers: {
-    development: [
-      providers.local(".env"),
-      providers.infisical({
-        // This provider can now read auth values loaded by the previous provider
-      }),
-    ],
-  },
-});
+```json
+{
+  "providers": {
+    "development": [
+      { "provider": "local", "file": ".env" },
+      {
+        "provider": "infisical",
+        "clientId": "{env:INFISICAL_CLIENT_ID}",
+        "clientSecret": "{env:INFISICAL_CLIENT_SECRET}",
+        "projectId": "{env:INFISICAL_PROJECT_ID}",
+        "environment": "development"
+      }
+    ]
+  }
+}
 ```

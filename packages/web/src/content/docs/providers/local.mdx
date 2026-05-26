@@ -10,16 +10,16 @@ This provider loads environment variables from `.env` files with no dependencies
 
 Zero.
 
-## Importing the loader
+## Configuring the provider
 
-```ts
-import { config, providers } from "fatima";
-
-export default config({
-  providers: {
-    development: providers.local([".env", ".env.local"]),
-  },
-});
+```json
+{
+  "providers": {
+    "development": [
+      { "provider": "local", "files": [".env", ".env.local"] }
+    ]
+  }
+}
 ```
 
 ## Special thanks

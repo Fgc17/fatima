@@ -4,14 +4,14 @@ import { builtinModels } from "../models";
 import { builtinProviders } from "../providers";
 import { loadPlugin } from "./load-plugin";
 import type {
+	AnyFatimaProviderFactory,
 	FatimaGenerator,
 	FatimaModel,
 	FatimaPlugin,
-	FatimaProviderFactory,
 } from "./types";
 
 export type FatimaRegistry = {
-	providers: Record<string, FatimaProviderFactory>;
+	providers: Record<string, AnyFatimaProviderFactory>;
 	models: Record<string, FatimaModel>;
 	generators: Record<string, FatimaGenerator>;
 };
@@ -50,9 +50,19 @@ export async function createRegistry(
 	for (const specifier of pluginSpecifiers) {
 		const plugin: FatimaPlugin = await loadPlugin(specifier, baseDir);
 		const pluginName = plugin.name ?? specifier;
-		mergeRegistryRecord(registry.providers, plugin.providers, "provider", pluginName);
+		mergeRegistryRecord(
+			registry.providers,
+			plugin.providers,
+			"provider",
+			pluginName,
+		);
 		mergeRegistryRecord(registry.models, plugin.models, "model", pluginName);
-		mergeRegistryRecord(registry.generators, plugin.generators, "generator", pluginName);
+		mergeRegistryRecord(
+			registry.generators,
+			plugin.generators,
+			"generator",
+			pluginName,
+		);
 	}
 
 	return registry;

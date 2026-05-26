@@ -1,15 +1,10 @@
 import {
-	execSync,
 	type ExecSyncOptionsWithStringEncoding,
+	execSync,
 } from "node:child_process";
-import {
-	mkdtempSync,
-	readFileSync,
-	rmSync,
-	writeFileSync,
-} from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { tmpdir } from "node:os";
 import path from "node:path";
 
 const require = createRequire(import.meta.url);
@@ -43,10 +38,6 @@ function getPrettierParser(filePath?: string) {
 			return "babel";
 		case ".json":
 			return "json";
-		case ".ts":
-		case ".cts":
-		case ".mts":
-		case ".tsx":
 		default:
 			return "typescript";
 	}

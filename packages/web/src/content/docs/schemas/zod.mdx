@@ -1,58 +1,19 @@
 ---
-title: zod
-description: '"TypeScript-first schema validation with static type inference"'
+title: models
+description: Runtime parsing models for generated environment access.
 order: 2
 ---
 
-import Callout from "@/components/Callout.astro";
+## Defining models
 
-## Dependencies
-
-<CodeTabs groupId="package-manager">
-  <CodeTab label="npm">
-
-```bash
-npm install zod
-```
-
-  </CodeTab>
-  <CodeTab label="pnpm">
-
-```bash
-pnpm add zod
-```
-
-  </CodeTab>
-  <CodeTab label="yarn">
-
-```bash
-yarn add zod
-```
-
-  </CodeTab>
-</CodeTabs>
-
-## Importing the schema
-
-<Callout type="info" title="Generate your types">
-	If you generate your types before writing validation, they will be available to help you define the constraint.
-</Callout>
-
-```ts
-import { config } from "fatima";
-import { z, ZodType } from "zod";
-import { EnvKeys } from "env";
-
-type Constraint = Partial<Record<EnvKeys, ZodType>>
-
-const schema = z.object<Constraint>({
-  NODE_ENV: z.enum(["development", "production", "test"]),
-  TZ: z.string()
-});
-
-export default config({
-  schema
-});
+```json
+{
+  "model": {
+    "NODE_ENV": { "type": "string", "args": { "values": ["development", "production", "test"] } },
+    "TZ": "nonempty",
+    "PORT": "integer"
+  }
+}
 ```
 
 ## Validate

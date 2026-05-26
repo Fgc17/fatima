@@ -15,10 +15,9 @@ export function evaluateEnvironmentExpression(
 	let result: unknown;
 
 	try {
-		result = new Function(
-			"env",
-			`"use strict"; return (${jsExpression});`,
-		)(env);
+		result = new Function("env", `"use strict"; return (${jsExpression});`)(
+			env,
+		);
 	} catch (error) {
 		throw new FatimaError(
 			`Failed to evaluate fatima environment expression: ${expression}`,

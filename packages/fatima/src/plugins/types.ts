@@ -16,6 +16,8 @@ export type FatimaProviderFactory<TConfig = Record<string, unknown>> = (
 	config: TConfig,
 ) => FatimaProvider;
 
+export type AnyFatimaProviderFactory = FatimaProviderFactory<any>;
+
 export interface FatimaModelContext {
 	key: string;
 	env: FatimaEnv;
@@ -65,7 +67,7 @@ export interface FatimaGenerator {
 
 export interface FatimaPlugin {
 	name?: string;
-	providers?: Record<string, FatimaProviderFactory>;
+	providers?: Record<string, AnyFatimaProviderFactory>;
 	models?: Record<string, FatimaModel>;
 	generators?: Record<string, FatimaGenerator>;
 }

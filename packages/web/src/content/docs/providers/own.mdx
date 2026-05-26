@@ -8,19 +8,15 @@ import Callout from "@/components/Callout.astro";
 
 ## How the providers object works
 
-Inside your `env.config.ts` there's an available `providers` key that you can fill with an object of the following type:
+Inside `fatima.json`, the `providers` key maps logical environments to ordered provider entries:
 
 ```ts
 export type UnsafeEnvironmentVariables = Record<string, string>;
 
-export type FatimaProvider = {
-  fetch: (processEnv?: UnsafeEnvironmentVariables) => Promisable<UnsafeEnvironmentVariables>;
-};
-
-export type FatimaProviders = {
-  development: FatimaProvider | FatimaProvider[];
-  [nodeEnv: string]: FatimaProvider | FatimaProvider[];
-};
+export type FatimaProvidersConfig = Record<string, Array<{
+  provider: string;
+  [key: string]: unknown;
+}>>;
 ```
 
 The development key is usually the one you will load while running the app locally.
@@ -35,42 +31,55 @@ And yeah, this means you can load secrets from **any** source, .env or cloud.
 	Fatima already comes with a built-in Infisical provider, this is just an example.
 </Callout>
 
-This example builds a provider directly.
+This example registers a provider through a plugin and references it from `fatima.json`.
 
 ```ts
-import { config, providers, UnsafeEnvironmentVariables } from "fatima";
+import type { FatimaPlugin, FatimaEnv } from "fatima/plugin";
 
 const infisicalProvider = {
-  async fetch(processEnv: UnsafeEnvironmentVariables) {
+  async fetch({ env }: { env: FatimaEnv }) {
     const client = new infisicalClient();
 
     await client.auth().universalAuth.login({
-      clientId: processEnv.INFISICAL_CLIENT_ID!,
-      clientSecret: processEnv.INFISICAL_CLIENT_SECRET!,
+      clientId: env.INFISICAL_CLIENT_ID!,
+      clientSecret: env.INFISICAL_CLIENT_SECRET!,
     });
 
     const { secrets } = await client.secrets().listSecrets({
-      projectId: processEnv.INFISICAL_PROJECT_ID!,
+      projectId: env.INFISICAL_PROJECT_ID!,
       environment: "dev",
     });
 
     const env = secrets.reduce((acc, { secretKey, secretValue }) => {
       acc[secretKey] = secretValue;
       return acc;
-    }, {} as UnsafeEnvironmentVariables);
+    }, {} as FatimaEnv);
 
     return env;
   },
 };
 
-export default config({
+const plugin: FatimaPlugin = {
   providers: {
-    development: [
-      providers.local(".env"),
-      infisicalProvider,
-    ],
+    customInfisical: () => infisicalProvider,
   },
-});
+};
+
+export default plugin;
+```
+
+Then reference it from `fatima.json`:
+
+```json
+{
+  "plugins": ["./fatima.plugin.ts"],
+  "providers": {
+    "development": [
+      { "provider": "local", "file": ".env" },
+      { "provider": "customInfisical" }
+    ]
+  }
+}
 ```
 
 Any provider will work as long as its `fetch()` returns a `UnsafeEnvironmentVariables` object.

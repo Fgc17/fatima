@@ -1,0 +1,9 @@
+.fatima/
+.env
+.env.*
+!.env.example
+env.ts
+env.public.ts
+env.js
+env.public.js
+env.py

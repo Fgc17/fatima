@@ -8,9 +8,9 @@ export type LocalProviderConfig = {
 	files?: string[];
 };
 
-export const local: FatimaProviderFactory<LocalProviderConfig | string | string[]> = (
-	config,
-): FatimaProvider => {
+export const local: FatimaProviderFactory<
+	LocalProviderConfig | string | string[]
+> = (config): FatimaProvider => {
 	const files = Array.isArray(config)
 		? config
 		: typeof config === "string"

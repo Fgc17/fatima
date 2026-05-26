@@ -1,0 +1,8 @@
+{
+	"name": "playground",
+	"private": true,
+	"type": "module",
+	"dependencies": {
+		"fatima": "workspace:*"
+	}
+}

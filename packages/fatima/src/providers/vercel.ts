@@ -1,12 +1,12 @@
 import { existsSync, promises as fs } from "node:fs";
+import { parseEnvLines } from "../env/parse-env";
+import { FatimaError } from "../lib/error";
+import { runCommand } from "../lib/run-command";
 import type {
 	FatimaProvider,
 	FatimaProviderContext,
 	FatimaProviderFactory,
 } from "../plugins/types";
-import { parseEnvLines } from "../env/parse-env";
-import { FatimaError } from "../lib/error";
-import { runCommand } from "../lib/run-command";
 
 export type VercelLoadConfig = {
 	environment?: string;

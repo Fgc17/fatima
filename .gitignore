@@ -12,8 +12,11 @@ node_modules
 dist
 .astro
 *.tsbuildinfo
+.tsbuildinfo*
 out
 .turbo
+.nx
+.source
 
 # env
 .env

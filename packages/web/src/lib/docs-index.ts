@@ -54,7 +54,11 @@ export async function buildDocsIndex() {
 			if (sectionOrder !== 0) return sectionOrder;
 			if (left.order == null && right.order != null) return 1;
 			if (left.order != null && right.order == null) return -1;
-			if (left.order != null && right.order != null && left.order !== right.order) {
+			if (
+				left.order != null &&
+				right.order != null &&
+				left.order !== right.order
+			) {
 				return left.order - right.order;
 			}
 

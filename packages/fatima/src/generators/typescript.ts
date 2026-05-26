@@ -31,9 +31,13 @@ function renderTypescriptFile(params: {
 			`export type ${typeName} = {${specs.map((item) => `\n\t${JSON.stringify(item.key)}: ${item.type};`).join("")}\n};`,
 			"",
 			`export const ${exportName} = Object.freeze({`,
-			...specs.map((item) => `\t${JSON.stringify(item.key)}: ${item.expression},`),
+			...specs.map(
+				(item) => `\t${JSON.stringify(item.key)}: ${item.expression},`,
+			),
 			`}) as ${typeName};`,
-		].filter(Boolean).join("\n"),
+		]
+			.filter(Boolean)
+			.join("\n"),
 		{
 			cwd: params.context.cwd,
 			filePath: params.filePath,

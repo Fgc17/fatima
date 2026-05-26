@@ -6,7 +6,13 @@ order: 5
 
 ## How to validate
 
-First, specify a `schema` key in your `env.config.ts` file, this should be a Standard Schema compatible schema, for example a Zod schema.
+First, specify a `model` key in your `fatima.json` file. Models define how Fatima parses and validates loaded values.
+
+If you do not have `fatima.json` yet, run:
+
+```bash
+fatima init
+```
 
 Afterwards, run:
 
@@ -16,4 +22,4 @@ npx fatima@latest validate
 
 ## Validation without setup
 
-It is currently not possible to validate secrets using only the CLI, you need to have a `env.config.ts` file with a `schema` key.
+It is currently not possible to validate secrets without configuration. Add a `model` object to `fatima.json` and run `fatima validate`.

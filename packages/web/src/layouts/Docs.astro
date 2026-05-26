@@ -16,15 +16,19 @@ const isActive = (path: string) => currentPath === path || currentPath === `${pa
 ---
 
 <Base title={`${title} | Fatima`} description={description}>
-	<div class="flex min-h-screen justify-center">
-		<div class="min-h-screen w-full max-w-[var(--container-max-width)] border-x border-b border-border max-md:border-x-0">
-			<header class="sticky top-0 z-[100] border-b border-border bg-background">
+	<div class="flex h-screen justify-center overflow-hidden">
+		<div class="flex h-screen w-full max-w-[var(--container-max-width)] flex-col overflow-hidden border-x border-b border-border max-md:border-x-0">
+			<header class="z-[100] shrink-0 border-b border-border bg-background">
 				<div class="flex min-h-[var(--header-height)] items-center justify-between px-[var(--section-padding-x)] py-5 max-md:px-5">
 					<a href="/" class="flex items-center gap-2 text-base font-bold text-foreground-strong no-underline hover:no-underline">
 						<Logo />
 						<span>fatima</span>
 					</a>
 					<div class="flex items-center gap-3">
+						<nav class="flex items-center gap-6 max-md:hidden">
+							<a href="https://github.com/Fgc17/fatima" target="_blank" rel="noreferrer">GitHub</a>
+							<a href="/docs">Docs</a>
+						</nav>
 						<ThemeToggle />
 						<button
 							data-mobile-menu-button
@@ -39,36 +43,32 @@ const isActive = (path: string) => currentPath === path || currentPath === `${pa
 							<svg data-menu-icon="close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="hidden size-5">
 								<path d="m6 6 12 12M18 6 6 18" />
 							</svg>
-					</button>
-						<nav class="flex items-center gap-6 max-md:hidden">
-						<a href="https://github.com/Fgc17/fatima" target="_blank" rel="noreferrer">GitHub</a>
-						<a href="/docs">Docs</a>
-					</nav>
+						</button>
 					</div>
 				</div>
 			</header>
 
-			<main class="px-[var(--section-padding-x)] pt-6 pb-12 max-md:px-5">
+			<main class="min-h-0 flex-1 overflow-hidden px-[var(--section-padding-x)] py-6 max-md:px-5">
 				<div data-mobile-nav-overlay class="fixed inset-0 z-[90] hidden bg-black/35 opacity-0 transition-opacity max-md:block"></div>
-				<div class="grid grid-cols-[var(--sidebar-width)_minmax(0,1fr)] gap-12 max-md:grid-cols-1">
-					<aside data-docs-sidebar class="sticky top-[calc(var(--header-height)+24px)] h-fit max-h-[calc(100vh-var(--header-height)-48px)] overflow-auto pb-6 max-md:fixed max-md:top-[var(--header-height)] max-md:left-0 max-md:bottom-0 max-md:z-[101] max-md:hidden max-md:w-[min(320px,100%)] max-md:max-h-none max-md:-translate-x-full max-md:border-r max-md:border-border max-md:bg-background max-md:px-5 max-md:py-6 max-md:transition-transform">
+				<div class="grid h-full min-h-0 grid-cols-[var(--sidebar-width)_minmax(0,1fr)] gap-12 max-md:grid-cols-1">
+					<aside data-docs-sidebar class="docs-scrollbar-hidden h-full min-h-0 overflow-auto pb-6 max-md:fixed max-md:top-[var(--header-height)] max-md:left-0 max-md:bottom-0 max-md:z-[101] max-md:hidden max-md:w-[min(320px,100%)] max-md:max-h-none max-md:-translate-x-full max-md:border-r max-md:border-border max-md:bg-background max-md:px-5 max-md:py-6 max-md:transition-transform">
 						<div>
-							<div class="mb-2 text-xs font-semibold tracking-[0.04em] uppercase text-foreground-strong">Overview</div>
+							<div class="docs-sidebar-title mb-2 text-xs font-semibold tracking-[0.04em] uppercase">Overview</div>
 							<ul class="list-none p-0 m-0">
-								<li><a href="/docs" class:list={{ active: isActive("/docs") }} class="block py-1 text-[13px] text-foreground no-underline hover:text-foreground-strong hover:no-underline active:text-foreground-strong">Why Fatima?</a></li>
+								<li><a href="/docs" class:list={{ active: isActive("/docs") }} class="docs-sidebar-link block py-1 text-[13px] no-underline hover:no-underline">Why Fatima?</a></li>
 							</ul>
 						</div>
 						{
 							docsIndex.sections.map((section) => (
 								<div class="mt-5">
-									<div class="mb-2 text-xs font-semibold tracking-[0.04em] uppercase text-foreground-strong">{section.title}</div>
+									<div class="docs-sidebar-title mb-2 text-xs font-semibold tracking-[0.04em] uppercase">{section.title}</div>
 									<ul class="list-none p-0 m-0">
 										{section.pages.map((page) => (
 											<li>
 												<a
 													href={page.url}
 													class:list={{ active: isActive(page.url) }}
-													class="block py-1 text-[13px] text-foreground no-underline hover:text-foreground-strong hover:no-underline active:text-foreground-strong"
+													class="docs-sidebar-link block py-1 text-[13px] no-underline hover:no-underline"
 												>
 													{page.navTitle}
 												</a>
@@ -80,15 +80,15 @@ const isActive = (path: string) => currentPath === path || currentPath === `${pa
 						}
 					</aside>
 
-					<article class="docs-content min-w-0 max-w-[var(--content-width)] [overflow-wrap:anywhere]">
+					<article class="docs-scrollbar-hidden docs-content min-h-0 min-w-0 max-w-[var(--content-width)] overflow-y-auto pr-3 pb-6 [overflow-wrap:anywhere] max-md:max-w-none max-md:pr-0">
 						<slot />
 					</article>
 				</div>
 			</main>
 
-			<footer class="mt-8 border-t border-border px-[var(--section-padding-x)] py-5 max-md:px-5">
+			<footer class="shrink-0 border-t border-border px-[var(--section-padding-x)] py-5 max-md:px-5">
 				<div class="flex justify-between gap-4 text-[13px] text-foreground max-md:flex-col max-md:items-start">
-					<span>Fatima — safe secrets for the javascript ecosystem</span>
+					<span>Fatima — local-first encrypted secrets for projects</span>
 					<a href="https://github.com/Fgc17/fatima" target="_blank" rel="noreferrer">GitHub</a>
 				</div>
 			</footer>

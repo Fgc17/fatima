@@ -1,9 +1,9 @@
+import { FatimaError } from "../lib/error";
 import type {
 	FatimaProvider,
 	FatimaProviderContext,
 	FatimaProviderFactory,
 } from "../plugins/types";
-import { FatimaError } from "../lib/error";
 
 export type HerokuLoadOptions = {
 	environment?: string;

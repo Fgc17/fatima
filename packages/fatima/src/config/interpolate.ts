@@ -3,7 +3,7 @@ import type { UnsafeEnvironmentVariables } from "./types";
 
 const envTokenRegex = /\{env:([A-Za-z_][A-Za-z0-9_]*)\}/g;
 
-function interpolateString(
+export function interpolateString(
 	value: string,
 	env: UnsafeEnvironmentVariables,
 ): string {
@@ -12,7 +12,7 @@ function interpolateString(
 
 		if (resolved == null) {
 			throw new FatimaError(
-				`Missing environment variable referenced in fatima.json: ${key}`,
+				`Missing environment variable referenced by interpolation: ${key}`,
 			);
 		}
 

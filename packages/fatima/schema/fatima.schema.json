@@ -1,106 +1,255 @@
 {
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"title": "Fatima Config",
+	"description": "Configuration for Fatima providers, generators, models, and formatters. Fatima uses fatima.json as its project configuration file.",
 	"type": "object",
 	"required": ["generator"],
 	"properties": {
-		"$schema": { "type": "string" },
+		"$schema": {
+			"type": "string",
+			"description": "Optional JSON Schema URL used by editors to provide validation and autocomplete.",
+			"examples": ["https://unpkg.com/fatima/schema/fatima.schema.json"]
+		},
 		"generator": {
+			"description": "Generator used to produce typed environment access files. Built-ins are language-agnostic targets: TypeScript, JavaScript, and Python. Plugins may register additional generators.",
 			"anyOf": [
 				{ "enum": ["typescript", "javascript", "python"] },
 				{ "type": "string" }
-			]
+			],
+			"examples": ["typescript", "javascript", "python"]
 		},
-		"file": { "type": "string" },
-		"formatter": { "type": "string" },
-		"environment": { "type": "string" },
+		"file": {
+			"type": "string",
+			"description": "Output file path for generated typed environment access. Defaults depend on the selected generator, such as env.ts, env.js, or env.py.",
+			"examples": ["env.ts", "src/env.py"]
+		},
+		"formatter": {
+			"type": "string",
+			"description": "Optional command used to format generated files. Use $1 as the generated file path placeholder.",
+			"examples": ["biome format $1", "prettier --write $1"]
+		},
+		"environment": {
+			"type": "string",
+			"description": "Expression used to resolve the active logical environment. Supports {env:NAME} interpolation, for example {env:NODE_ENV} ?? 'development'.",
+			"examples": ["{env:NODE_ENV} ?? 'development'", "'production'"]
+		},
 		"plugins": {
 			"type": "array",
-			"items": { "type": "string" }
+			"description": "Plugin module specifiers or relative paths. Plugins can add providers, generators, and models.",
+			"items": {
+				"type": "string",
+				"description": "Plugin module specifier or path.",
+				"examples": ["./fatima.plugin.ts", "fatima-provider-example"]
+			}
 		},
-		"publicPrefix": { "type": "string" },
-		"providers": { "$ref": "#/$defs/providers" },
-		"model": { "$ref": "#/$defs/models" }
+		"publicPrefix": {
+			"type": "string",
+			"description": "Prefix used to split public/client-safe variables from private variables in generators that support public outputs.",
+			"examples": ["PUBLIC_", "NEXT_PUBLIC_", "VITE_"]
+		},
+		"providers": {
+			"$ref": "#/$defs/providers",
+			"description": "Environment-specific provider chains. Each key is a logical environment and each value is the ordered list of providers used to load variables for that environment."
+		},
+		"model": {
+			"$ref": "#/$defs/models",
+			"description": "Runtime parsing and typing model for environment variables. Models validate, parse, and inform generator output."
+		}
 	},
 	"additionalProperties": false,
 	"$defs": {
 		"providers": {
 			"type": "object",
+			"description": "Provider chains keyed by logical environment name, such as development, staging, production, or preview.",
 			"additionalProperties": {
 				"type": "array",
+				"description": "Ordered provider chain. Later providers can override or use values loaded by previous providers through {env:NAME} interpolation.",
 				"items": {
 					"oneOf": [
 						{ "$ref": "#/$defs/localProvider" },
+						{ "$ref": "#/$defs/fatimaLocalVaultProvider" },
 						{ "$ref": "#/$defs/infisicalProvider" },
 						{ "$ref": "#/$defs/herokuProvider" },
 						{ "$ref": "#/$defs/vercelProvider" },
 						{ "$ref": "#/$defs/pluginProvider" }
 					]
 				}
-			}
+			},
+			"examples": [
+				{
+					"development": [{ "provider": "local", "file": ".env" }],
+					"production": [
+						{ "provider": "vercel", "vercelToken": "{env:VERCEL_TOKEN}" }
+					]
+				}
+			]
 		},
 		"localProvider": {
 			"type": "object",
+			"description": "Loads variables from one or more local .env files. The source files are not managed or encrypted by Fatima.",
 			"required": ["provider"],
 			"properties": {
-				"provider": { "const": "local" },
+				"provider": {
+					"const": "local",
+					"description": "Use the built-in local .env provider."
+				},
 				"file": {
+					"description": "A single .env file or list of .env files to read.",
 					"anyOf": [
 						{ "type": "string" },
 						{ "type": "array", "items": { "type": "string" } }
-					]
+					],
+					"examples": [".env", [".env", ".env.local"]]
 				},
 				"files": {
 					"type": "array",
-					"items": { "type": "string" }
+					"description": "List of .env files to read. Equivalent to passing an array through file.",
+					"items": { "type": "string" },
+					"examples": [[".env", ".env.production"]]
+				}
+			},
+			"additionalProperties": false
+		},
+		"fatimaLocalVaultProvider": {
+			"type": "object",
+			"description": "Loads variables from the local encrypted Fatima vault.",
+			"required": ["provider"],
+			"properties": {
+				"provider": {
+					"const": "fatima-local-vault",
+					"description": "Use the built-in local encrypted Fatima vault provider."
+				},
+				"auth": {
+					"enum": ["password", "key"],
+					"description": "Authentication mode. Defaults to key when key is provided, otherwise password."
+				},
+				"password": {
+					"type": "string",
+					"description": "Vault password. Supports {env:NAME} interpolation."
+				},
+				"key": {
+					"type": "string",
+					"description": "Fatima access key. Supports {env:NAME} interpolation."
+				},
+				"environment": {
+					"type": "string",
+					"description": "Vault environment to read. Defaults to the active Fatima environment."
+				},
+				"config": {
+					"type": "string",
+					"description": "Optional fatima.json path used to locate .fatima."
+				},
+				"cwd": {
+					"type": "string",
+					"description": "Optional working directory used to resolve config or storePath."
+				},
+				"storePath": {
+					"type": "string",
+					"description": "Optional direct path to a .fatima store directory."
 				}
 			},
 			"additionalProperties": false
 		},
 		"infisicalProvider": {
 			"type": "object",
+			"description": "Loads variables from Infisical using the optional Infisical SDK.",
 			"required": ["provider"],
 			"properties": {
-				"provider": { "const": "infisical" },
-				"environment": { "type": "string" },
-				"clientId": { "type": "string" },
-				"clientSecret": { "type": "string" },
-				"projectId": { "type": "string" },
-				"siteUrl": { "type": "string" }
+				"provider": {
+					"const": "infisical",
+					"description": "Use the built-in Infisical provider."
+				},
+				"environment": {
+					"type": "string",
+					"description": "Infisical environment name. Supports {env:NAME} interpolation."
+				},
+				"clientId": {
+					"type": "string",
+					"description": "Infisical machine identity client ID. Supports {env:NAME} interpolation."
+				},
+				"clientSecret": {
+					"type": "string",
+					"description": "Infisical machine identity client secret. Supports {env:NAME} interpolation."
+				},
+				"projectId": {
+					"type": "string",
+					"description": "Infisical project ID. Supports {env:NAME} interpolation."
+				},
+				"siteUrl": {
+					"type": "string",
+					"description": "Optional Infisical site URL for self-hosted instances."
+				}
 			},
 			"additionalProperties": false
 		},
 		"herokuProvider": {
 			"type": "object",
+			"description": "Loads config vars from a Heroku app.",
 			"required": ["provider"],
 			"properties": {
-				"provider": { "const": "heroku" },
-				"environment": { "type": "string" },
-				"app_id_or_name": { "type": "string" },
-				"bearer_token": { "type": "string" }
+				"provider": {
+					"const": "heroku",
+					"description": "Use the built-in Heroku provider."
+				},
+				"environment": {
+					"type": "string",
+					"description": "Logical or remote environment label. Supports {env:NAME} interpolation."
+				},
+				"app_id_or_name": {
+					"type": "string",
+					"description": "Heroku app ID or app name."
+				},
+				"bearer_token": {
+					"type": "string",
+					"description": "Heroku API bearer token. Supports {env:NAME} interpolation."
+				}
 			},
 			"additionalProperties": false
 		},
 		"vercelProvider": {
 			"type": "object",
+			"description": "Loads environment variables from a Vercel project.",
 			"required": ["provider"],
 			"properties": {
-				"provider": { "const": "vercel" },
-				"environment": { "type": "string" },
-				"vercelToken": { "type": "string" },
-				"vercelProjectId": { "type": "string" },
-				"vercelOrgId": { "type": "string" }
+				"provider": {
+					"const": "vercel",
+					"description": "Use the built-in Vercel provider."
+				},
+				"environment": {
+					"type": "string",
+					"description": "Vercel environment name, such as development, preview, or production."
+				},
+				"vercelToken": {
+					"type": "string",
+					"description": "Vercel API token. Supports {env:NAME} interpolation."
+				},
+				"vercelProjectId": {
+					"type": "string",
+					"description": "Vercel project ID. Supports {env:NAME} interpolation."
+				},
+				"vercelOrgId": {
+					"type": "string",
+					"description": "Vercel team/org ID. Supports {env:NAME} interpolation."
+				}
 			},
 			"additionalProperties": false
 		},
 		"pluginProvider": {
 			"type": "object",
+			"description": "Provider supplied by a plugin. Additional plugin-specific properties are allowed.",
 			"required": ["provider"],
 			"properties": {
 				"provider": {
 					"type": "string",
+					"description": "Plugin provider name.",
 					"not": {
-						"enum": ["local", "infisical", "heroku", "vercel"]
+						"enum": [
+							"local",
+							"fatima-local-vault",
+							"infisical",
+							"heroku",
+							"vercel"
+						]
 					}
 				}
 			},
@@ -108,9 +257,11 @@
 		},
 		"models": {
 			"type": "object",
+			"description": "Model map keyed by variable name. Models define runtime parsing behavior and generated typing.",
 			"additionalProperties": {
 				"oneOf": [
 					{
+						"description": "Built-in model name.",
 						"enum": [
 							"email",
 							"url",
@@ -126,30 +277,181 @@
 							"bearer"
 						]
 					},
-					{ "$ref": "#/$defs/enumModel" },
+					{ "$ref": "#/$defs/builtinModelObject" },
 					{ "$ref": "#/$defs/pluginModel" }
 				]
-			}
+			},
+			"examples": [
+				{
+					"DATABASE_URL": "url",
+					"PORT": { "type": "integer", "args": { "values": [3000] } },
+					"NODE_ENV": {
+						"type": "string",
+						"args": { "values": ["development", "production"] }
+					}
+				}
+			]
 		},
-		"enumModel": {
+		"builtinModelObject": {
 			"type": "object",
-			"required": ["type", "values"],
+			"description": "Built-in model with model-specific arguments. Use args.values to restrict the parsed value to a finite set.",
+			"required": ["type"],
 			"properties": {
-				"type": { "const": "enum" },
+				"type": {
+					"enum": [
+						"email",
+						"url",
+						"uuid",
+						"number",
+						"integer",
+						"boolean",
+						"string",
+						"nonempty",
+						"json",
+						"pem",
+						"sk",
+						"bearer"
+					],
+					"description": "Built-in model type."
+				},
+				"args": {
+					"type": "object",
+					"description": "Arguments for the selected model. Editors autocomplete these based on the model type."
+				}
+			},
+			"additionalProperties": false,
+			"allOf": [
+				{
+					"if": {
+						"properties": {
+							"type": {
+								"enum": [
+									"string",
+									"nonempty",
+									"email",
+									"url",
+									"uuid",
+									"pem",
+									"sk",
+									"bearer"
+								]
+							}
+						},
+						"required": ["type"]
+					},
+					"then": {
+						"properties": { "args": { "$ref": "#/$defs/stringModelArgs" } }
+					}
+				},
+				{
+					"if": {
+						"properties": { "type": { "const": "integer" } },
+						"required": ["type"]
+					},
+					"then": {
+						"properties": { "args": { "$ref": "#/$defs/integerModelArgs" } }
+					}
+				},
+				{
+					"if": {
+						"properties": { "type": { "const": "number" } },
+						"required": ["type"]
+					},
+					"then": {
+						"properties": { "args": { "$ref": "#/$defs/numberModelArgs" } }
+					}
+				},
+				{
+					"if": {
+						"properties": { "type": { "const": "boolean" } },
+						"required": ["type"]
+					},
+					"then": {
+						"properties": { "args": { "$ref": "#/$defs/booleanModelArgs" } }
+					}
+				},
+				{
+					"if": {
+						"properties": { "type": { "const": "json" } },
+						"required": ["type"]
+					},
+					"then": {
+						"properties": { "args": { "$ref": "#/$defs/jsonModelArgs" } }
+					}
+				}
+			]
+		},
+		"stringModelArgs": {
+			"type": "object",
+			"description": "Arguments for string-like models.",
+			"properties": {
 				"values": {
 					"type": "array",
+					"description": "Allowed parsed string values.",
 					"items": { "type": "string" },
 					"minItems": 1
 				}
 			},
 			"additionalProperties": false
 		},
+		"integerModelArgs": {
+			"type": "object",
+			"description": "Arguments for integer models.",
+			"properties": {
+				"values": {
+					"type": "array",
+					"description": "Allowed parsed integer values.",
+					"items": { "type": "integer" },
+					"minItems": 1
+				}
+			},
+			"additionalProperties": false
+		},
+		"numberModelArgs": {
+			"type": "object",
+			"description": "Arguments for number models.",
+			"properties": {
+				"values": {
+					"type": "array",
+					"description": "Allowed parsed numeric values.",
+					"items": { "type": "number" },
+					"minItems": 1
+				}
+			},
+			"additionalProperties": false
+		},
+		"booleanModelArgs": {
+			"type": "object",
+			"description": "Arguments for boolean models.",
+			"properties": {
+				"values": {
+					"type": "array",
+					"description": "Allowed parsed boolean values.",
+					"items": { "type": "boolean" },
+					"minItems": 1
+				}
+			},
+			"additionalProperties": false
+		},
+		"jsonModelArgs": {
+			"type": "object",
+			"description": "Arguments for JSON models.",
+			"properties": {
+				"values": {
+					"type": "array",
+					"description": "Allowed parsed JSON values."
+				}
+			},
+			"additionalProperties": false
+		},
 		"pluginModel": {
 			"type": "object",
+			"description": "Model supplied by a plugin. Additional plugin-specific properties are allowed.",
 			"required": ["type"],
 			"properties": {
 				"type": {
 					"type": "string",
+					"description": "Plugin model name.",
 					"not": {
 						"enum": [
 							"email",
@@ -163,11 +465,11 @@
 							"json",
 							"pem",
 							"sk",
-							"bearer",
-							"enum"
+							"bearer"
 						]
 					}
-				}
+				},
+				"args": { "type": "object", "description": "Plugin model arguments." }
 			},
 			"additionalProperties": true
 		}

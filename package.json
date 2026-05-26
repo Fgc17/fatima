@@ -4,9 +4,9 @@
 	"scripts": {
 		"lint": "biome check",
 		"format": "biome format",
-		"dev": "turbo dev",
-		"build": "turbo build",
-		"checktypes": "turbo checktypes",
+		"dev": "nx run-many -t dev",
+		"build": "nx run-many -t build",
+		"checktypes": "nx run-many -t checktypes",
 		"change": "changeset",
 		"bump": "changeset version",
 		"release": "changeset release"
@@ -14,10 +14,13 @@
 	"devDependencies": {
 		"@biomejs/biome": "2.4.15",
 		"@changesets/cli": "2.31.0",
-		"turbo": "2.9.14",
+		"nx": "22.1.0",
 		"typescript": "6.0.3"
 	},
-	"packageManager": "pnpm@9.0.0",
+	"packageManager": "bun@1.3.14",
+	"workspaces": [
+		"packages/*"
+	],
 	"engines": {
 		"node": ">=18"
 	}

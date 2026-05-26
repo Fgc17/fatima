@@ -17,7 +17,10 @@ function createValidator(schema: z.ZodType<unknown>): FatimaModelValidator {
 	return (value) => getFirstIssueMessage(schema.safeParse(value));
 }
 
-function createBuiltinGeneratorSpec(type: string, wrap: string): Record<string, FatimaModelGeneratorSpec> {
+function createBuiltinGeneratorSpec(
+	type: string,
+	wrap: string,
+): Record<string, FatimaModelGeneratorSpec> {
 	return {
 		typescript: { type, wrap },
 		javascript: { wrap },
@@ -59,9 +62,11 @@ const validateJson = createValidator(
 	}),
 );
 const validatePem = createValidator(
-	z.string().regex(/-----BEGIN [A-Z0-9 ]+-----[\s\S]+-----END [A-Z0-9 ]+-----/, {
-		message: "Expected a valid PEM value",
-	}),
+	z
+		.string()
+		.regex(/-----BEGIN [A-Z0-9 ]+-----[\s\S]+-----END [A-Z0-9 ]+-----/, {
+			message: "Expected a valid PEM value",
+		}),
 );
 const validateSk = createValidator(
 	z.string().regex(/^sk[-_][A-Za-z0-9._-]+$/, {
@@ -73,25 +78,6 @@ const validateBearer = createValidator(
 		message: "Expected a valid bearer token",
 	}),
 );
-
-const validateEnum: FatimaModelValidator = (value, context) => {
-	const values =
-		context.config && typeof context.config === "object"
-			? (context.config as { values?: unknown }).values
-			: undefined;
-
-	const valuesResult = z.array(z.string()).min(1).safeParse(values);
-
-	if (!valuesResult.success) {
-		return "Expected model `values` to be a non-empty string array";
-	}
-
-	const schema = z.enum(valuesResult.data as [string, ...string[]], {
-		error: `Expected one of: ${valuesResult.data.join(", ")}`,
-	});
-
-	return getFirstIssueMessage(schema.safeParse(value));
-};
 
 function createModel(
 	validate: FatimaModelValidator,
@@ -115,29 +101,10 @@ export const builtinModels: Record<string, FatimaModel> = {
 	url: createModel(validateUrl, "string", "__fatimaUrl($1, $key)"),
 	uuid: createModel(validateUuid, "string", "__fatimaUuid($1, $key)"),
 	number: createModel(validateNumber, "number", "__fatimaNumber($1, $key)"),
-	integer: createModel(
-		validateInteger,
-		"number",
-		"__fatimaInteger($1, $key)",
-	),
-	boolean: createModel(
-		validateBoolean,
-		"boolean",
-		"__fatimaBoolean($1, $key)",
-	),
+	integer: createModel(validateInteger, "number", "__fatimaInteger($1, $key)"),
+	boolean: createModel(validateBoolean, "boolean", "__fatimaBoolean($1, $key)"),
 	json: createModel(validateJson, "unknown", "__fatimaJson($1, $key)"),
-	enum: {
-		validate: validateEnum,
-		generators: createBuiltinGeneratorSpec(
-			"string",
-			"__fatimaEnum($1, $key, $values)",
-		),
-	},
 	pem: createModel(validatePem, "string", "__fatimaPem($1, $key)"),
 	sk: createModel(validateSk, "string", "__fatimaSk($1, $key)"),
-	bearer: createModel(
-		validateBearer,
-		"string",
-		"__fatimaBearer($1, $key)",
-	),
+	bearer: createModel(validateBearer, "string", "__fatimaBearer($1, $key)"),
 };

@@ -10,7 +10,9 @@ function resolvePythonType(model: unknown) {
 	const modelName =
 		typeof model === "string"
 			? model
-			: model && typeof model === "object" && typeof (model as { type?: unknown }).type === "string"
+			: model &&
+					typeof model === "object" &&
+					typeof (model as { type?: unknown }).type === "string"
 				? (model as { type: string }).type
 				: undefined;
 
@@ -38,11 +40,15 @@ export const pythonGenerator: FatimaGenerator = {
 			"",
 			"class Env(TypedDict):",
 			...keys.map(
-				(key) => `    ${toPythonIdentifier(key)}: ${resolvePythonType(context.model?.[key])}`,
+				(key) =>
+					`    ${toPythonIdentifier(key)}: ${resolvePythonType(context.model?.[key])}`,
 			),
 			"",
 			"env: Env = {",
-			...keys.map((key) => `    ${JSON.stringify(key)}: os.environ[${JSON.stringify(key)}],`),
+			...keys.map(
+				(key) =>
+					`    ${JSON.stringify(key)}: os.environ[${JSON.stringify(key)}],`,
+			),
 			"}",
 		].join("\n");
 

@@ -2,9 +2,15 @@
 import Base from "@/layouts/Base.astro";
 import Logo from "@/components/Logo.astro";
 import ThemeToggle from "@/components/ThemeToggle.astro";
+
+const features = [
+	"typed env access",
+	"schema validation",
+	"encrypted local vault",
+];
 ---
 
-<Base title="Fatima" description="safe secrets for the javascript ecosystem">
+<Base title="Fatima" description="local-first encrypted secrets for projects">
 	<main class="flex min-h-screen justify-center">
 		<div class="min-h-screen w-full max-w-[var(--container-max-width)] border-x border-b border-border max-md:border-x-0">
 			<header class="sticky top-0 z-[100] border-b border-border bg-background">
@@ -23,16 +29,60 @@ import ThemeToggle from "@/components/ThemeToggle.astro";
 				</div>
 			</header>
 
-			<section class="mx-auto max-w-[var(--content-width)] px-[var(--section-padding-x)] py-24 text-center max-md:px-5 max-md:py-[4.5rem]">
-				<h1 class="mb-3 text-4xl leading-tight font-bold text-foreground-strong max-md:text-3xl">
-					Safe secrets for the javascript ecosystem
-				</h1>
-				<p class="text-base text-foreground">
-					Generate typed env access, validate config, and compose local or cloud secret providers.
-				</p>
-				<div class="mt-8 flex justify-center gap-3 max-md:flex-col">
-					<a href="/docs" class="inline-flex items-center justify-center rounded-md border border-primary bg-primary px-4 py-2 font-mono text-sm text-primary-foreground no-underline transition-colors hover:bg-primary-hover hover:no-underline max-md:w-full">Read docs</a>
-					<a href="https://github.com/Fgc17/fatima" class="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 font-mono text-sm text-foreground-strong no-underline transition-colors hover:bg-muted hover:no-underline max-md:w-full" target="_blank" rel="noreferrer">GitHub</a>
+			<section class="px-[var(--section-padding-x)] py-20 max-md:px-5 max-md:py-12">
+				<div class="grid min-h-[calc(100vh-var(--header-height)-160px)] items-center gap-12 lg:grid-cols-[minmax(0,1fr)_400px]">
+					<div>
+						<a href="/" class="flex items-center gap-2 text-base font-bold text-foreground-strong no-underline hover:no-underline">
+							<Logo />
+							<span>fatima</span>
+						</a>
+
+						<p class="mb-4 font-mono text-sm text-foreground">local-first encrypted secrets, typed when you need them</p>
+
+						<h1 class="max-w-3xl text-5xl leading-tight font-bold tracking-[-0.03em] text-foreground-strong max-md:text-4xl">
+							Secrets that feel like types, not runtime surprises.
+						</h1>
+
+						<p class="mt-6 max-w-2xl text-lg leading-8 text-foreground max-md:text-base">
+							Fatima manages encrypted project secrets, formats them for CI, and can generate typed env access across languages.
+						</p>
+
+						<div class="mt-8 flex gap-3 max-sm:flex-col">
+							<a href="/docs" class="inline-flex items-center justify-center rounded-md border border-foreground-strong bg-foreground-strong px-5 py-3 font-mono text-sm text-background no-underline shadow-sm transition-colors hover:bg-primary-hover hover:no-underline max-sm:w-full">Read docs</a>
+							<a href="https://github.com/Fgc17/fatima" class="inline-flex items-center justify-center rounded-md border border-border bg-background/70 px-5 py-3 font-mono text-sm text-foreground-strong no-underline shadow-sm backdrop-blur transition-colors hover:bg-muted hover:no-underline max-sm:w-full" target="_blank" rel="noreferrer">View on GitHub</a>
+						</div>
+
+						<div class="mt-8 flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs text-foreground">
+							{features.map((feature) => <span>/{feature}</span>)}
+						</div>
+					</div>
+
+					<div class="rounded-lg border border-code-border bg-code-background">
+						<div class="flex items-center justify-between border-b border-code-border bg-code-tab-background px-4 py-3">
+							<div class="flex gap-1.5">
+								<span class="size-2.5 rounded-full bg-warning"></span>
+								<span class="size-2.5 rounded-full bg-success"></span>
+								<span class="size-2.5 rounded-full bg-foreground/35"></span>
+							</div>
+							<span class="font-mono text-xs text-foreground">fatima.json</span>
+						</div>
+						<pre class="overflow-x-auto p-5 font-mono text-sm leading-7 text-code-foreground"><code>{`{
+  "$schema": "https://unpkg.com/fatima/schema/fatima.schema.json",
+  "generator": "typescript",
+  "environment": "{env:NODE_ENV} ?? 'development'",
+  "vault": {
+    "mode": "local",
+    "environments": ["development", "staging", "production"]
+  },
+  "providers": {
+    "development": [{ "provider": "local", "file": ".env" }]
+  },
+  "model": {
+    "DATABASE_URL": "url",
+    "PORT": "integer"
+  }
+}`}</code></pre>
+					</div>
 				</div>
 			</section>
 		</div>

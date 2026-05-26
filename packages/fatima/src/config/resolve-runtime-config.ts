@@ -1,8 +1,8 @@
 import type { RuntimeConfigInput } from "../api/types";
-import type { NormalizedFatimaConfig } from "../config/types";
 import type { FatimaDebugLogger } from "../lib/debug";
 import { createRegistry } from "../plugins/registry";
 import { loadConfig } from "./read-config";
+import type { NormalizedFatimaConfig } from "./types";
 
 export function hasConfigOverrides(options?: RuntimeConfigInput) {
 	return Boolean(options?.environment || options?.publicPrefix);

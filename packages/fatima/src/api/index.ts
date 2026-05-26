@@ -1,8 +1,11 @@
-import { runGenerator } from "../generators/run-generator";
-import { hasConfigOverrides, resolveRuntimeConfig } from "../config/resolve-runtime-config";
+import {
+	hasConfigOverrides,
+	resolveRuntimeConfig,
+} from "../config/resolve-runtime-config";
 import type { LoadedEnvironment } from "../env/load-env";
 import { loadEnvironment } from "../env/load-env";
 import { validateEnvironment } from "../env/validate-environment";
+import { runGenerator } from "../generators/run-generator";
 import { createDebugLogger } from "../lib/debug";
 import { createLog } from "../lib/log";
 import { runCommand } from "../lib/run-command";
@@ -58,9 +61,14 @@ export async function validate(options?: RuntimeConfigInput) {
 		environment: context.result.environment,
 	});
 
-	await validateEnvironment(context.config, context.registry, context.result.env, {
-		debug: context.debug,
-	});
+	await validateEnvironment(
+		context.config,
+		context.registry,
+		context.result.env,
+		{
+			debug: context.debug,
+		},
+	);
 	context.debug.debug("validate:done", "Environment validation completed", {
 		environment: context.result.environment,
 	});
@@ -97,9 +105,14 @@ export async function generate(options?: GenerateOptions) {
 			"Running validation before code generation",
 			{ environment: context.result.environment },
 		);
-		await validateEnvironment(context.config, context.registry, context.result.env, {
-			debug: context.debug,
-		});
+		await validateEnvironment(
+			context.config,
+			context.registry,
+			context.result.env,
+			{
+				debug: context.debug,
+			},
+		);
 	}
 
 	const outputPath = await runGenerator(

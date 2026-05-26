@@ -13,32 +13,38 @@ function getModelConfigType(value: unknown) {
 	return typeof value === "string"
 		? value
 		: value &&
-			  typeof value === "object" &&
-			  typeof (value as { type?: unknown }).type === "string"
+				typeof value === "object" &&
+				typeof (value as { type?: unknown }).type === "string"
 			? (value as { type: string }).type
 			: undefined;
 }
 
-function replaceTemplate(template: string, params: Record<string, string>): string {
+function getModelArgs(value: unknown): Record<string, unknown> {
+	return value &&
+		typeof value === "object" &&
+		(value as { args?: unknown }).args &&
+		typeof (value as { args?: unknown }).args === "object" &&
+		!Array.isArray((value as { args?: unknown }).args)
+		? (value as { args: Record<string, unknown> }).args
+		: {};
+}
+
+function replaceTemplate(
+	template: string,
+	params: Record<string, string>,
+): string {
 	return Object.entries(params).reduce(
 		(result, [key, value]) => result.replaceAll(key, value),
 		template,
 	);
 }
 
-function getEnumValues(config: unknown) {
-	const values =
-		config && typeof config === "object"
-			? (config as { values?: unknown }).values
-			: undefined;
-
-	if (!Array.isArray(values) || !values.every((item) => typeof item === "string")) {
-		throw new FatimaError(
-			"Model `enum` requires a non-empty string array in `values`.",
-		);
+function getAllowedValues(args: Record<string, unknown>) {
+	if (!Array.isArray(args.values)) {
+		return;
 	}
 
-	return values;
+	return args.values;
 }
 
 export function resolveModelSpecs(
@@ -52,6 +58,7 @@ export function resolveModelSpecs(
 	return keys.map((key) => {
 		const modelConfig = context.model?.[key];
 		const modelName = getModelConfigType(modelConfig);
+		const modelArgs = getModelArgs(modelConfig);
 
 		if (!modelName) {
 			return {
@@ -76,19 +83,22 @@ export function resolveModelSpecs(
 			);
 		}
 
-		const values =
-			modelName === "enum" ? JSON.stringify(getEnumValues(modelConfig)) : "undefined";
+		const allowedValues = getAllowedValues(modelArgs);
+		const values = allowedValues ? JSON.stringify(allowedValues) : "undefined";
 		const expression = replaceTemplate(generatorSpec.wrap, {
-			"$1": params.rawValueExpression(key),
-			"$key": JSON.stringify(key),
-			"$values": values,
+			$1: params.rawValueExpression(key),
+			$key: JSON.stringify(key),
+			$values: values,
 		});
+		const wrappedExpression = allowedValues
+			? `__fatimaOneOf(${expression}, ${JSON.stringify(key)}, ${values})`
+			: expression;
 
 		return {
 			key,
 			type: generatorSpec.type ?? params.defaultType,
 			imports: generatorSpec.imports ?? [],
-			expression,
+			expression: wrappedExpression,
 		};
 	});
 }
@@ -125,7 +135,7 @@ export function renderBuiltinHelpers(language: "typescript" | "javascript") {
 			"function __fatimaRequireString(value, key) {",
 			"function __fatimaRequireString(value: unknown, key: string): string {",
 		),
-		"\tif (typeof value !== \"string\") {",
+		'\tif (typeof value !== "string") {',
 		"\t\tthrow new Error(`Missing environment variable: ${key}`);",
 		"\t}",
 		"",
@@ -213,10 +223,10 @@ export function renderBuiltinHelpers(language: "typescript" | "javascript") {
 			"function __fatimaBoolean(value: unknown, key: string): boolean {",
 		),
 		"\tconst nextValue = __fatimaRequireString(value, key).toLowerCase();",
-		"\tif ([\"true\", \"1\", \"yes\", \"on\", \"y\", \"enabled\"].includes(nextValue)) {",
+		'\tif (["true", "1", "yes", "on", "y", "enabled"].includes(nextValue)) {',
 		"\t\treturn true;",
 		"\t}",
-		"\tif ([\"false\", \"0\", \"no\", \"off\", \"n\", \"disabled\"].includes(nextValue)) {",
+		'\tif (["false", "0", "no", "off", "n", "disabled"].includes(nextValue)) {',
 		"\t\treturn false;",
 		"\t}",
 		"\tthrow new Error(`Expected a boolean for ${key}`);",
@@ -240,9 +250,19 @@ export function renderBuiltinHelpers(language: "typescript" | "javascript") {
 		),
 		"\tconst nextValue = __fatimaRequireString(value, key);",
 		"\tif (!values.includes(nextValue)) {",
-		"\t\tthrow new Error(`Expected one of ${values.join(\", \")} for ${key}`);",
+		'\t\tthrow new Error(`Expected one of ${values.join(", ")} for ${key}`);',
 		"\t}",
 		"\treturn nextValue;",
+		"}",
+		"",
+		typed(
+			"function __fatimaOneOf(value, key, values) {",
+			"function __fatimaOneOf<T>(value: T, key: string, values: T[]): T {",
+		),
+		"\tif (!values.includes(value)) {",
+		'\t\tthrow new Error(`Expected one of ${values.join(", ")} for ${key}`);',
+		"\t}",
+		"\treturn value;",
 		"}",
 		"",
 		typed(

@@ -1,6 +1,9 @@
 import { writeFileSync } from "node:fs";
 import path from "node:path";
-import type { NormalizedFatimaConfig, UnsafeEnvironmentVariables } from "../config/types";
+import type {
+	NormalizedFatimaConfig,
+	UnsafeEnvironmentVariables,
+} from "../config/types";
 import type { FatimaDebugLogger } from "../lib/debug";
 import { FatimaError } from "../lib/error";
 import type { FatimaRegistry } from "../plugins/registry";
@@ -41,5 +44,8 @@ export async function runGenerator(
 		writeFileSync(outputPath, item.content);
 	}
 
-	return path.resolve(config.configFile.folderPath, files[0]?.path ?? config.file);
+	return path.resolve(
+		config.configFile.folderPath,
+		files[0]?.path ?? config.file,
+	);
 }

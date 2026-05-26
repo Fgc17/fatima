@@ -1,32 +1,37 @@
 ---
 title: Configuration
-description: Go further in configuring your app with Fatima.
+description: Configure Fatima with fatima.json.
 order: 3
 ---
 
-## env.config.ts
+## fatima.json
 
-When using CLI you rely on specifying flags like `-e`, `--public-prefix` and `--provider`.
+Fatima uses `fatima.json` as its only project configuration file. It is JSON on purpose: Fatima is a project secret tool, not a JavaScript-only library.
 
-However, if you want to have more control over how secrets are loaded, you can create a `env.config.ts` file in the root of your project and export a configuration object.
+Create it with `fatima init`:
 
-```ts
-import { config, providers } from "fatima";
-import type { Environment } from "@/library/utils/environment";
-import { z } from "@/library/zod/zod";
-
-export default config({
-	environment: (processEnv) => processEnv.ENVIRONMENT ?? "development",
-	providers: {
-		development: [
-			providers.local(".env"),
-			providers.infisical({
-				environment: "development",
-			}),
-		],
-	},
-	schema: z.object({}),
-});
+```bash
+fatima init
 ```
 
-The `schema` key is optional, but it allows you to validate the loaded secrets and augment the types of `env` object.
+Or create `fatima.json` manually in the root of your project:
+
+```json
+{
+  "$schema": "https://unpkg.com/fatima/schema/fatima.schema.json",
+  "generator": "typescript",
+  "environment": "{env:NODE_ENV} ?? 'development'",
+  "providers": {
+    "development": [
+      { "provider": "local", "file": ".env" },
+      { "provider": "infisical", "environment": "development" }
+    ]
+  },
+  "model": {
+    "DATABASE_URL": "url",
+    "NODE_ENV": { "type": "string", "args": { "values": ["development", "production"] } }
+  }
+}
+```
+
+The `model` key is optional, but it allows Fatima to parse loaded values and augment generated types.
