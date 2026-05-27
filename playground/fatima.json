@@ -1,0 +1,31 @@
+{
+	"$schema": "../packages/deprecated-old-fatima/schema/schema.json",
+	"generator": "typescript",
+	"environment": "{env:NODE_ENV} ?? 'development'",
+	"public-prefix": "PUBLIC_",
+	"providers": {
+		"development": [
+			{
+				"provider": "file",
+				"file": ".env",
+				"format": "env"
+			},
+			{
+				"provider": "fatima-vault",
+				"key": "{env:FATIMA_ACCESS_KEY}"
+			}
+		]
+	},
+	"model": {
+		"NODE_ENV": {
+			"type": "string",
+			"args": {
+				"values": ["development"]
+			}
+		},
+		"DATABASE_URL": "url",
+		"PORT": "integer",
+		"PUBLIC_BASE_URL": "url",
+		"FEATURE_ENABLED": "boolean"
+	}
+}

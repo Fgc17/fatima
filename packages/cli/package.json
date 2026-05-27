@@ -1,0 +1,30 @@
+{
+	"name": "@fatima.dev/cli",
+	"version": "1.0.1-rc.1",
+	"private": true,
+	"scripts": {
+		"build": "cargo build -p fatima-cli --bin fatima",
+		"checktypes": "cargo check -p fatima-cli --bin fatima",
+		"test": "cargo test -p fatima-cli",
+		"lint": "cargo fmt --all --check"
+	},
+	"nx": {
+		"targets": {
+			"build": {
+				"cache": true,
+				"outputs": ["{workspaceRoot}/target"]
+			},
+			"checktypes": {
+				"cache": true,
+				"outputs": ["{workspaceRoot}/target"]
+			},
+			"test": {
+				"cache": true,
+				"outputs": ["{workspaceRoot}/target"]
+			},
+			"lint": {
+				"cache": true
+			}
+		}
+	}
+}

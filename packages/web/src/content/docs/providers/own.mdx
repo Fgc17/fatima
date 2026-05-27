@@ -34,7 +34,7 @@ And yeah, this means you can load secrets from **any** source, .env or cloud.
 This example registers a provider through a plugin and references it from `fatima.json`.
 
 ```ts
-import type { FatimaPlugin, FatimaEnv } from "fatima/plugin";
+import type { FatimaPlugin, FatimaEnv } from "@fatimajs/plugin-dev-kit";
 
 const infisicalProvider = {
   async fetch({ env }: { env: FatimaEnv }) {

@@ -20,14 +20,13 @@ Inside `fatima.json`, the `model` key maps variables to built-in or plugin-provi
 Plugins can provide the runtime parser and generator-specific wrappers for those models.
 
 ```ts
-import type { FatimaPlugin } from "fatima/plugin";
+import type { FatimaPlugin } from "@fatimajs/plugin-dev-kit";
 
 const plugin: FatimaPlugin = {
   models: {
     strongPassword: {
       validate(value) {
-        if (!value || value.length < 12) return undefined;
-        return value;
+        if (!value || value.length < 12) return "Expected at least 12 characters";
       },
       generators: {
         typescript: { type: "string", wrap: "$1" },

@@ -6,10 +6,15 @@
 		"format": "biome format",
 		"dev": "nx run-many -t dev",
 		"build": "nx run-many -t build",
+		"build:rust": "cargo build --release -p fatima-cli --bin fatima",
+		"build:binaries": "cargo build --release -p fatima-cli --bin fatima",
+		"build:vault:binaries": "bun --cwd packages/vault run build:binaries",
 		"checktypes": "nx run-many -t checktypes",
+		"check:rust": "cargo check --workspace",
 		"change": "changeset",
 		"bump": "changeset version",
-		"release": "changeset release"
+		"release": "changeset release",
+		"ci:release": "bun run build && bun run release"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.15",
@@ -18,9 +23,7 @@
 		"typescript": "6.0.3"
 	},
 	"packageManager": "bun@1.3.14",
-	"workspaces": [
-		"packages/*"
-	],
+	"workspaces": ["packages/cli", "packages/core", "packages/js", "packages/vault", "packages/web"],
 	"engines": {
 		"node": ">=18"
 	}

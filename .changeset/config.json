@@ -5,7 +5,7 @@
 	"updateInternalDependencies": "patch",
 	"commit": false,
 	"prettier": false,
-	"access": "restricted",
+	"access": "public",
 	"baseBranch": "fatima",
 	"fixed": [],
 	"linked": [],

@@ -14,9 +14,13 @@ dist
 *.tsbuildinfo
 .tsbuildinfo*
 out
+target
 .turbo
 .nx
 .source
 
 # env
 .env
+
+# temp
+.tmp

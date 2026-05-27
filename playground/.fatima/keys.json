@@ -1,0 +1,70 @@
+{
+  "primary": {
+    "salt": "mhd18StN6lmLSKIbPz60bQ"
+  },
+  "environmentKeys": {
+    "development": {
+      "iv": "de1ID2ayN5fC_Ngr",
+      "tag": "Vrs-sbsA1P83gewqipqazA",
+      "ciphertext": "_yreiklALJ9EE_GtH41wKFkWrltd6MCJh0AqP9UJCrY"
+    },
+    "production": {
+      "iv": "5-4tc0GSuU7JUjDX",
+      "tag": "3g74thRtyqvQYS4O-ra_Vw",
+      "ciphertext": "7yJe-LQy_vl4Orgat_JZUNiRvwS3lJ-yf7qDv2X99tk"
+    },
+    "staging": {
+      "iv": "9QeJb9WCaq_rTIg0",
+      "tag": "rKFIPsZmpguOJVIGm21BrA",
+      "ciphertext": "ceMPi2iXNTPgXPr07nSmxNHxMV1EMD9a5X_aAUk1_VQ"
+    }
+  },
+  "accessKeys": [
+    {
+      "id": "_q_5gRFYJd4",
+      "name": "access-key",
+      "salt": "OCgfGH7T_l3xia1WV5gfPw",
+      "wrappedEnvironmentKeys": {
+        "development": {
+          "iv": "cWtVG5H0miraIMDO",
+          "tag": "aGCi5gEigSDNXl13wafX7w",
+          "ciphertext": "eN9OBg5pJflixCDPRORhUbc_vNsL-VZud2iozPfpfa4"
+        }
+      }
+    },
+    {
+      "id": "RiZ7sBHSW-k",
+      "name": "accesskey2",
+      "salt": "1dV4k77faBVNiA_YrEWdSA",
+      "wrappedEnvironmentKeys": {
+        "development": {
+          "iv": "URU3-aJB7vLMJan5",
+          "tag": "eq0-i1rdCrqCirlnEfdQfQ",
+          "ciphertext": "dQCzOI7kjb_qBb_H4bFZpz8iJBQPi50BCJCMBf6_m-A"
+        },
+        "production": {
+          "iv": "sxbNmXyS6QMf3yIf",
+          "tag": "_hUk_dA-SwUzvqVzFjgSGg",
+          "ciphertext": "jFG2so6o1daZfo_dltl0HnoNxj5jGUMJTYEsFmnzKhw"
+        },
+        "staging": {
+          "iv": "uLWeiwxnBwEeiM-3",
+          "tag": "uQuzRjpd0sR8DfBLkzBOPg",
+          "ciphertext": "tP6keWr2W7Nsqt-DOVS4WUvUM3ZXXfPzuhb03_l3EnA"
+        }
+      }
+    },
+    {
+      "id": "F-1Qet9mz_U",
+      "name": "key  ",
+      "salt": "YPkpfMQWdtc2pB2RcHUNqQ",
+      "wrappedEnvironmentKeys": {
+        "development": {
+          "iv": "J9YRaU9aab2vC_lr",
+          "tag": "RRSzgrbfuQPqSX5apWyRbA",
+          "ciphertext": "OBJNkRZWwjBiekgq1qnB6C4KEYN8XENLSW1x0oUoUKE"
+        }
+      }
+    }
+  ]
+}

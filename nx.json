@@ -1,5 +1,5 @@
 {
-	"$schema": "./node_modules/nx/schemas/nx-schema.json",
+	"$schema": "node_modules/nx/schemas/nx-schema.json",
 	"targetDefaults": {
 		"build": {
 			"dependsOn": ["^build"],
@@ -11,6 +11,10 @@
 			"cache": true
 		},
 		"lint": {
+			"cache": true
+		},
+		"test": {
+			"dependsOn": ["^test"],
 			"cache": true
 		},
 		"dev": {

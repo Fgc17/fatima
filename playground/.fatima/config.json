@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "mode": "local",
+  "createdAt": "2026-05-27T12:56:04.058010438Z",
+  "updatedAt": "2026-05-27T18:04:07.524296174Z",
+  "defaultEnvironment": "development",
+  "environments": [
+    "development",
+    "staging",
+    "production"
+  ],
+  "store": ".fatima"
+}

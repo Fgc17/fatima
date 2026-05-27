@@ -1,0 +1,23 @@
+[package]
+name = "fatima-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+default-run = "fatima"
+
+[[bin]]
+name = "fatima"
+path = "src/main.rs"
+
+[dependencies]
+base64.workspace = true
+clap.workspace = true
+crossterm.workspace = true
+fatima-core.workspace = true
+indicatif.workspace = true
+inquire.workspace = true
+miette.workspace = true
+ratatui.workspace = true
+serde_json.workspace = true
+unicode-width.workspace = true

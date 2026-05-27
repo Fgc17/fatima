@@ -1,8 +1,0 @@
-{
-	"extends": "./tsconfig.json",
-	"compilerOptions": {
-		"tsBuildInfoFile": ".tsbuildinfo.build",
-		"noEmit": false
-	},
-	"exclude": ["node_modules", "dist"]
-}
