@@ -33,6 +33,8 @@ pub struct VaultAppState {
     pub field_confirm_password: TextFieldState,
     pub access_environment_cursor: usize,
     pub access_environments: Vec<String>,
+    pub output_environment_cursor: usize,
+    pub output_format_cursor: usize,
     pub generated_access_key: Option<String>,
     pub access_key_copied: bool,
     pub editing_secret_id: Option<String>,
@@ -68,6 +70,8 @@ impl VaultAppState {
             field_confirm_password: TextFieldState::default(),
             access_environment_cursor: 0,
             access_environments: Vec::new(),
+            output_environment_cursor: 0,
+            output_format_cursor: 0,
             generated_access_key: None,
             access_key_copied: false,
             editing_secret_id: None,
@@ -86,44 +90,41 @@ impl VaultAppState {
     }
 
     pub fn vault_map(&self) -> BTreeMap<String, Vec<SecretRecord>> {
-        self.session
-            .as_ref()
-            .map(|session| session.vault.clone())
-            .unwrap_or_default()
+        let mut map = BTreeMap::new();
+        let Some(session) = &self.session else {
+            return map;
+        };
+        for environment in &session.config.environments {
+            map.insert(
+                environment.clone(),
+                self.secrets_for_environment(environment),
+            );
+        }
+        map
     }
 
     pub fn selected_secrets(&self) -> Vec<SecretRecord> {
-        let mut secrets = self
-            .session
-            .as_ref()
-            .and_then(|session| session.vault.get(&self.selected_environment).cloned())
-            .unwrap_or_default();
-        secrets.sort_by(|left, right| left.key.cmp(&right.key));
-        secrets
+        self.secrets_for_environment(&self.selected_environment)
     }
 
     pub fn total_secret_count(&self) -> usize {
         self.session
             .as_ref()
-            .map(|session| session.vault.values().map(Vec::len).sum())
+            .map(|session| session.secrets.len())
             .unwrap_or(0)
     }
 
     pub fn matrix_keys(&self) -> Vec<String> {
-        let mut keys = self
-            .session
+        self.session
             .as_ref()
             .map(|session| {
                 session
-                    .vault
-                    .values()
-                    .flat_map(|secrets| secrets.iter().map(|secret| secret.key.clone()))
-                    .collect::<Vec<_>>()
+                    .secrets
+                    .iter()
+                    .map(|secret| secret.key.clone())
+                    .collect()
             })
-            .unwrap_or_default();
-        keys.sort();
-        keys.dedup();
-        keys
+            .unwrap_or_default()
     }
 
     pub fn focused_environment(&self) -> String {
@@ -138,8 +139,58 @@ impl VaultAppState {
     }
 
     pub fn active_secret(&self) -> Option<SecretRecord> {
+        if self.view == BrowseView::Matrix {
+            return self.active_matrix_secret();
+        }
         let secrets = self.selected_secrets();
         secrets.get(self.selected_index).cloned()
+    }
+
+    fn active_matrix_secret(&self) -> Option<SecretRecord> {
+        self.session.as_ref()?.secrets.get(self.matrix_row).cloned()
+    }
+
+    pub fn active_matrix_key(&self) -> Option<String> {
+        self.matrix_keys().get(self.matrix_row).cloned()
+    }
+
+    pub fn secret_key_exists(&self, key: &str) -> bool {
+        self.session
+            .as_ref()
+            .map(|session| session.secrets.iter().any(|secret| secret.key == key))
+            .unwrap_or(false)
+    }
+
+    pub fn secret_key_for_id(&self, id: &str) -> Option<String> {
+        self.session
+            .as_ref()?
+            .secrets
+            .iter()
+            .find(|secret| secret.id == id)
+            .map(|secret| secret.key.clone())
+    }
+
+    pub fn active_matrix_value(&self) -> Option<String> {
+        let environments = self.environment_list();
+        let environment = environments.get(self.matrix_column)?;
+        self.active_matrix_secret()?
+            .values
+            .get(environment)
+            .cloned()
+    }
+
+    fn secrets_for_environment(&self, environment: &str) -> Vec<SecretRecord> {
+        self.session
+            .as_ref()
+            .map(|session| {
+                session
+                    .secrets
+                    .iter()
+                    .filter(|secret| secret.values.contains_key(environment))
+                    .cloned()
+                    .collect()
+            })
+            .unwrap_or_default()
     }
 
     pub fn reset_modal_fields(&mut self) {
@@ -151,6 +202,8 @@ impl VaultAppState {
         self.field_confirm_password.clear();
         self.access_environment_cursor = 0;
         self.access_environments.clear();
+        self.output_environment_cursor = 0;
+        self.output_format_cursor = 0;
         self.generated_access_key = None;
         self.access_key_copied = false;
         self.editing_secret_id = None;

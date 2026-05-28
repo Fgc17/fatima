@@ -1,6 +1,6 @@
 use miette::{miette, Result};
 
-use crate::vault::models::{Modal, ModalFocus};
+use crate::vault::models::{BrowseView, Modal, ModalFocus};
 use crate::vault::runtime::clipboard;
 use crate::vault::state::VaultAppState;
 
@@ -13,9 +13,18 @@ pub fn open_modal(state: &mut VaultAppState, modal: Modal) {
             if let Some(secret) = state.active_secret() {
                 state.field_key.value = secret.key;
                 state.field_key.cursor = state.field_key.value.len();
-                state.field_value.value = secret.value;
+                state.field_value.value = if state.view == BrowseView::Matrix {
+                    state.active_matrix_value().unwrap_or_default()
+                } else {
+                    secret
+                        .values
+                        .get(&state.selected_environment)
+                        .cloned()
+                        .unwrap_or_default()
+                };
                 state.field_value.cursor = state.field_value.value.len();
                 state.editing_secret_id = Some(secret.id);
+                state.modal_focus = ModalFocus::Value;
             } else {
                 state.error = Some("No secret selected.".to_string());
                 return;
@@ -31,6 +40,18 @@ pub fn open_modal(state: &mut VaultAppState, modal: Modal) {
             state.field_path.value = ".env".to_string();
             state.field_path.cursor = state.field_path.value.len();
             state.modal_focus = ModalFocus::Path;
+        }
+        Modal::OutputEnv => {
+            state.field_path.value = ".env".to_string();
+            state.field_path.cursor = state.field_path.value.len();
+            let focused = state.focused_environment();
+            state.output_environment_cursor = state
+                .environment_list()
+                .iter()
+                .position(|environment| environment == &focused)
+                .unwrap_or(0);
+            state.output_format_cursor = 0;
+            state.modal_focus = ModalFocus::EnvironmentList;
         }
         Modal::AccessKey => {
             state.modal_focus = ModalFocus::Name;

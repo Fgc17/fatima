@@ -19,6 +19,7 @@ pub enum Modal {
     EditSecret,
     DeleteSecret,
     ImportEnv,
+    OutputEnv,
     AccessKey,
     CreateEnvironment,
     RenameEnvironment,
@@ -34,6 +35,7 @@ pub enum Command {
     ToggleReveal,
     ToggleView,
     ImportEnv,
+    OutputEnv,
     GenerateAccessKey,
     CreateEnvironment,
     RenameEnvironment,
@@ -57,4 +59,26 @@ pub enum ModalFocus {
     Password,
     ConfirmPassword,
     EnvironmentList,
+    FormatList,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum OutputFormat {
+    Dotenv,
+    Json,
+    Yml,
+    BashExport,
+}
+
+impl OutputFormat {
+    pub const ALL: [Self; 4] = [Self::Dotenv, Self::Json, Self::Yml, Self::BashExport];
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Dotenv => "dotenv",
+            Self::Json => "json",
+            Self::Yml => "yml",
+            Self::BashExport => "bash export",
+        }
+    }
 }

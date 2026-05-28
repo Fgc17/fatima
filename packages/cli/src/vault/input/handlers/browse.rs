@@ -22,6 +22,7 @@ pub fn handle_key(state: &mut VaultAppState, event: KeyEvent) -> Result<()> {
         KeyCode::Char('e') => open_modal(state, Modal::EditSecret),
         KeyCode::Char('d') => open_modal(state, Modal::DeleteSecret),
         KeyCode::Char('i') => open_modal(state, Modal::ImportEnv),
+        KeyCode::Char('o') => open_modal(state, Modal::OutputEnv),
         KeyCode::Char('k') => open_modal(state, Modal::AccessKey),
         KeyCode::Char('n') => open_modal(state, Modal::CreateEnvironment),
         KeyCode::Char('R') => open_modal(state, Modal::RenameEnvironment),

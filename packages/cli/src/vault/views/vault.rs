@@ -2,6 +2,7 @@ use crate::vault::components::command_bar::render_command_bar;
 use crate::vault::models::BrowseView;
 use crate::vault::state::VaultAppState;
 use crate::vault::ui::atoms::panel::{fill, render_panel_header};
+use crate::vault::ui::atoms::toast::ToastTone;
 use crate::vault::view_models::vault::use_vault;
 use crate::vault::view_partials::vault::{
     render_environment_tabs, render_secret_matrix, render_secret_table,
@@ -15,6 +16,7 @@ pub fn render(area: Rect, buffer: &mut Buffer, state: &VaultAppState) {
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Min(0),
+            Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(1),
         ])
@@ -38,7 +40,7 @@ pub fn render(area: Rect, buffer: &mut Buffer, state: &VaultAppState) {
         columns[0],
         buffer,
         "vault",
-        &format!("{} envs", vm.environment_list.len()),
+        &format!("{} environments", vm.environment_list.len()),
         !vm.overlay_open && vm.view == BrowseView::Environment,
         vm.overlay_open,
     );
@@ -74,6 +76,7 @@ pub fn render(area: Rect, buffer: &mut Buffer, state: &VaultAppState) {
         BrowseView::Environment => render_secret_table(
             right_body,
             buffer,
+            &state.selected_environment,
             &state.selected_secrets(),
             state.selected_index,
             vm.revealed,
@@ -92,5 +95,23 @@ pub fn render(area: Rect, buffer: &mut Buffer, state: &VaultAppState) {
         ),
     }
 
-    render_command_bar(rows[1], buffer);
+    render_command_bar(rows[2], buffer, toast(state));
+}
+
+fn toast(state: &VaultAppState) -> Option<(&str, ToastTone)> {
+    if let Some(error) = &state.error {
+        Some((error.as_str(), ToastTone::Error))
+    } else if let Some(message) = &state.message {
+        Some((message.as_str(), message_tone(message)))
+    } else {
+        None
+    }
+}
+
+fn message_tone(message: &str) -> ToastTone {
+    if message.to_lowercase().contains("copied") {
+        ToastTone::Info
+    } else {
+        ToastTone::Success
+    }
 }

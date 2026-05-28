@@ -41,7 +41,7 @@ pub enum Command {
     Secrets {
         #[arg(short, long)]
         environment: Option<String>,
-        #[arg(short, long, default_value = "env")]
+        #[arg(short, long, default_value = "dotenv")]
         format: String,
         #[arg(short, long, default_value = "fatima.json")]
         config: PathBuf,

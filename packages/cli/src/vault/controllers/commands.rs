@@ -15,7 +15,11 @@ pub struct CommandItem {
 
 pub fn command_items(state: &VaultAppState) -> Vec<CommandItem> {
     let env = state.focused_environment();
-    let active = state.active_secret();
+    let active = state.active_secret().map(|secret| secret.key).or_else(|| {
+        (state.view == BrowseView::Matrix)
+            .then(|| state.active_matrix_key())
+            .flatten()
+    });
     vec![
         CommandItem {
             key: 'a',
@@ -29,16 +33,16 @@ pub fn command_items(state: &VaultAppState) -> Vec<CommandItem> {
             title: "Edit selected secret".into(),
             description: active
                 .as_ref()
-                .map(|s| s.key.clone())
+                .cloned()
                 .unwrap_or_else(|| "No secret selected".into()),
         },
         CommandItem {
             key: 'd',
             command: Command::DeleteSecret,
             title: "Delete selected secret".into(),
-            description: active
-                .as_ref()
-                .map(|s| s.key.clone())
+            description: state
+                .active_secret()
+                .map(|secret| secret.key)
                 .unwrap_or_else(|| "No secret selected".into()),
         },
         CommandItem {
@@ -68,6 +72,12 @@ pub fn command_items(state: &VaultAppState) -> Vec<CommandItem> {
             command: Command::ImportEnv,
             title: "Import .env file".into(),
             description: format!("Into {env}"),
+        },
+        CommandItem {
+            key: 'o',
+            command: Command::OutputEnv,
+            title: "Output environment".into(),
+            description: format!("Export {env}"),
         },
         CommandItem {
             key: 'k',
@@ -131,6 +141,7 @@ pub fn run(state: &mut VaultAppState, command: Command) {
             state.modal = None;
         }
         Command::ImportEnv => open_modal(state, Modal::ImportEnv),
+        Command::OutputEnv => open_modal(state, Modal::OutputEnv),
         Command::GenerateAccessKey => open_modal(state, Modal::AccessKey),
         Command::CreateEnvironment => open_modal(state, Modal::CreateEnvironment),
         Command::RenameEnvironment => open_modal(state, Modal::RenameEnvironment),

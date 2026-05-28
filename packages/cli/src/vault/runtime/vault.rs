@@ -1,8 +1,11 @@
+use std::fs;
+
+use fatima_core::env::SecretFormat;
 use fatima_core::vault::{
     FatimaVault, FatimaVaultSnapshot, GeneratedAccessKey, ProjectSecretManagerSettings,
     VaultOptions,
 };
-use fatima_core::Result;
+use fatima_core::{FatimaError, Result};
 
 pub struct VaultRuntime {
     options: VaultOptions,
@@ -84,6 +87,22 @@ impl VaultRuntime {
     ) -> Result<(usize, FatimaVaultSnapshot)> {
         let count = vault.import_env(environment, path)?;
         Ok((count, self.save_snapshot(vault)?))
+    }
+
+    pub fn output_env(
+        &self,
+        vault: &FatimaVault,
+        environment: &str,
+        path: &str,
+        format: SecretFormat,
+    ) -> Result<usize> {
+        let secrets = vault.get_secrets(Some(environment))?;
+        let output = vault.format_secrets(Some(environment), format)?;
+        fs::write(path, output).map_err(|source| FatimaError::WriteFile {
+            path: path.to_string(),
+            source,
+        })?;
+        Ok(secrets.len())
     }
 
     pub fn create_environment(

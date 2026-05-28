@@ -2,6 +2,7 @@ mod access_key;
 mod change_password;
 mod environment;
 mod import_env;
+mod output_env;
 mod secret;
 mod shared;
 
@@ -17,6 +18,7 @@ pub fn render(area: Rect, buffer: &mut Buffer, state: &VaultAppState) {
         Some(Modal::EditSecret) => secret::render_form(area, buffer, state, "Edit secret", "save"),
         Some(Modal::DeleteSecret) => secret::render_delete(area, buffer, state),
         Some(Modal::ImportEnv) => import_env::render(area, buffer, state),
+        Some(Modal::OutputEnv) => output_env::render(area, buffer, state),
         Some(Modal::AccessKey) => access_key::render(area, buffer, state),
         Some(Modal::CreateEnvironment) => environment::render_name_form(
             area,

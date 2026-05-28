@@ -77,10 +77,12 @@ fn render(frame: &mut Frame, state: &VaultAppState) {
         Mode::Vault => views::vault::render(shell.body, frame.buffer_mut(), state),
     }
 
-    if let Some(error) = &state.error {
-        render_toast(shell.body, frame.buffer_mut(), error, true);
-    } else if let Some(message) = &state.message {
-        render_toast(shell.body, frame.buffer_mut(), message, false);
+    if state.mode != Mode::Vault {
+        if let Some(error) = &state.error {
+            render_toast(shell.body, frame.buffer_mut(), error, true);
+        } else if let Some(message) = &state.message {
+            render_toast(shell.body, frame.buffer_mut(), message, false);
+        }
     }
 
     match state.modal {

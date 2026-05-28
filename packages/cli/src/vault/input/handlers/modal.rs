@@ -11,6 +11,10 @@ pub fn handle_key(
     runtime: &VaultRuntime,
     event: KeyEvent,
 ) -> Result<()> {
+    if state.modal == Some(Modal::OutputEnv) {
+        return handle_output_env_key(state, runtime, event);
+    }
+
     if state.modal == Some(Modal::AccessKey) && state.generated_access_key.is_some() {
         return handle_generated_access_key_key(state, event);
     }
@@ -81,6 +85,83 @@ fn active_modal_field(state: &mut VaultAppState) -> Option<&mut TextFieldState> 
         ModalFocus::Password => Some(&mut state.field_password),
         ModalFocus::ConfirmPassword => Some(&mut state.field_confirm_password),
         ModalFocus::EnvironmentList => None,
+        ModalFocus::FormatList => None,
+    }
+}
+
+fn handle_output_env_key(
+    state: &mut VaultAppState,
+    runtime: &VaultRuntime,
+    event: KeyEvent,
+) -> Result<()> {
+    match event.code {
+        KeyCode::Esc => close_modal(state),
+        KeyCode::Enter => submit_modal_safely(state, runtime)?,
+        KeyCode::Tab => cycle_output_focus(state, 1),
+        KeyCode::BackTab => cycle_output_focus(state, -1),
+        KeyCode::Down => move_output_selection(state, 1),
+        KeyCode::Up => move_output_selection(state, -1),
+        KeyCode::Backspace if state.modal_focus == ModalFocus::Path => state.field_path.backspace(),
+        KeyCode::Delete if state.modal_focus == ModalFocus::Path => state.field_path.clear(),
+        KeyCode::Left if state.modal_focus == ModalFocus::Path => {
+            state.field_path.cursor = state.field_path.cursor.saturating_sub(1);
+        }
+        KeyCode::Right if state.modal_focus == ModalFocus::Path => {
+            state.field_path.cursor =
+                (state.field_path.cursor + 1).min(state.field_path.value.len());
+        }
+        KeyCode::Char(value)
+            if state.modal_focus == ModalFocus::Path
+                && !event.modifiers.contains(KeyModifiers::CONTROL) =>
+        {
+            state.field_path.insert(&value.to_string());
+        }
+        _ => {}
+    }
+    Ok(())
+}
+
+fn cycle_output_focus(state: &mut VaultAppState, direction: isize) {
+    let current = match state.modal_focus {
+        ModalFocus::EnvironmentList => 0,
+        ModalFocus::Path => 1,
+        ModalFocus::FormatList => 2,
+        _ => 0,
+    };
+    let next = (current + direction).rem_euclid(3);
+    state.modal_focus = match next {
+        0 => ModalFocus::EnvironmentList,
+        1 => ModalFocus::Path,
+        _ => ModalFocus::FormatList,
+    };
+}
+
+fn move_output_selection(state: &mut VaultAppState, direction: isize) {
+    match state.modal_focus {
+        ModalFocus::EnvironmentList => {
+            let max = state.environment_list().len().saturating_sub(1);
+            state.output_environment_cursor =
+                move_cursor(state.output_environment_cursor, max, direction);
+        }
+        ModalFocus::FormatList => {
+            state.output_format_cursor = move_cursor(
+                state.output_format_cursor,
+                crate::vault::models::OutputFormat::ALL
+                    .len()
+                    .saturating_sub(1),
+                direction,
+            );
+        }
+        ModalFocus::Path => cycle_output_focus(state, direction),
+        _ => {}
+    }
+}
+
+fn move_cursor(current: usize, max: usize, direction: isize) -> usize {
+    if direction < 0 {
+        current.saturating_sub(1)
+    } else {
+        (current + 1).min(max)
     }
 }
 

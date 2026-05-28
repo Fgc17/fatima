@@ -15,9 +15,14 @@ pub fn render_panel_header(
     focused: bool,
     dimmed: bool,
 ) -> Rect {
-    let [header, body] = Layout::default()
+    let [top_gap, header, gap, body] = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([Constraint::Length(2), Constraint::Min(0)])
+        .constraints([
+            Constraint::Length(1),
+            Constraint::Length(2),
+            Constraint::Length(1),
+            Constraint::Min(0),
+        ])
         .areas(area);
     let style = if focused {
         theme::bold()
@@ -25,14 +30,26 @@ pub fn render_panel_header(
         theme::muted()
     };
     let panel_style = panel_style(dimmed);
-    let header_content = inset(header);
-    Paragraph::new(Line::from(vec![
-        Span::styled(title.to_string(), style),
-        Span::raw(" "),
-        Span::styled(subtitle.to_string(), theme::muted()),
-    ]))
+    Paragraph::new("")
+        .style(panel_style)
+        .render(top_gap, buffer);
+    let [title_row, subtitle_row] = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([Constraint::Length(1), Constraint::Length(1)])
+        .areas(inset(header));
+    Paragraph::new(Line::from(Span::styled(
+        title.to_uppercase(),
+        style.add_modifier(ratatui::style::Modifier::BOLD),
+    )))
     .style(panel_style)
-    .render(header_content, buffer);
+    .render(title_row, buffer);
+    Paragraph::new(Line::from(Span::styled(
+        subtitle.to_string(),
+        theme::faint(),
+    )))
+    .style(panel_style)
+    .render(subtitle_row, buffer);
+    Paragraph::new("").style(panel_style).render(gap, buffer);
     body
 }
 

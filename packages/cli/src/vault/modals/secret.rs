@@ -16,19 +16,35 @@ pub fn render_form(
     title: &str,
     action: &str,
 ) {
-    let area = modal_area(area, 15);
+    let has_error = state.error.is_some();
+    let area = modal_area(area, if has_error { 17 } else { 15 });
     let body = render_modal_body(area, buffer, title);
+    let constraints = if has_error {
+        vec![
+            Constraint::Length(1),
+            Constraint::Length(1),
+            Constraint::Length(3),
+            Constraint::Length(1),
+            Constraint::Length(3),
+            Constraint::Length(1),
+            Constraint::Length(1),
+            Constraint::Length(1),
+            Constraint::Length(1),
+        ]
+    } else {
+        vec![
+            Constraint::Length(1),
+            Constraint::Length(1),
+            Constraint::Length(3),
+            Constraint::Length(1),
+            Constraint::Length(3),
+            Constraint::Length(1),
+            Constraint::Length(1),
+        ]
+    };
     let rows = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([
-            Constraint::Length(1),
-            Constraint::Length(1),
-            Constraint::Length(3),
-            Constraint::Length(1),
-            Constraint::Length(3),
-            Constraint::Length(1),
-            Constraint::Length(1),
-        ])
+        .constraints(constraints)
         .split(body);
     Paragraph::new(format!("Environment: {}", state.focused_environment()))
         .style(theme::modal_muted())
@@ -49,7 +65,15 @@ pub fn render_form(
         state.modal_focus == ModalFocus::Value,
         None,
     );
-    render_footer(rows[6], buffer, action);
+    let footer_row = if let Some(error) = &state.error {
+        Paragraph::new(error.as_str())
+            .style(theme::modal_fg())
+            .render(rows[6], buffer);
+        8
+    } else {
+        6
+    };
+    render_footer(rows[footer_row], buffer, action);
 }
 
 pub fn render_delete(area: Rect, buffer: &mut Buffer, state: &VaultAppState) {

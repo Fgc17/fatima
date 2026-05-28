@@ -2,7 +2,7 @@ use miette::{miette, Result};
 
 use crate::vault::controllers::modal::{close_modal, copy_generated_access_key};
 use crate::vault::controllers::selection::clamp_selection;
-use crate::vault::models::Modal;
+use crate::vault::models::{Modal, OutputFormat};
 use crate::vault::runtime::VaultRuntime;
 use crate::vault::state::VaultAppState;
 
@@ -16,6 +16,7 @@ pub fn submit_modal(state: &mut VaultAppState, runtime: &VaultRuntime) -> Result
         }
         Modal::DeleteSecret => delete_secret(state, runtime),
         Modal::ImportEnv => import_env(state, runtime),
+        Modal::OutputEnv => output_env(state, runtime),
         Modal::CreateEnvironment => create_environment(state, runtime),
         Modal::RenameEnvironment => rename_environment(state, runtime),
         Modal::DeleteEnvironment => delete_environment(state, runtime),
@@ -46,22 +47,53 @@ fn with_vault<T>(
 
 fn save_secret(state: &mut VaultAppState, runtime: &VaultRuntime, edit: bool) -> Result<()> {
     let environment = state.focused_environment();
-    let key = state.field_key.value.clone();
+    let key = state.field_key.value.trim().to_string();
     let value = state.field_value.value.clone();
     let id = if edit {
         state.editing_secret_id.clone()
     } else {
         None
     };
+    if !can_save_secret_key(state, edit, id.as_deref(), &key) {
+        state.error = Some(format!("Secret key `{key}` already exists."));
+        return Ok(());
+    }
     if let Some(snapshot) = with_vault(state, |vault, _| {
         runtime.set_secret(vault, &environment, &key, &value, id.as_deref())
     })? {
         refresh_snapshot(state, snapshot);
         state.selected_environment = environment;
+        if !edit {
+            state.selected_index = state.selected_secrets().len().saturating_sub(1);
+        }
+        if let Some(index) = state.matrix_keys().iter().position(|item| item == &key) {
+            state.matrix_row = index;
+        }
         state.message = Some("Saved secret.".to_string());
         close_modal(state);
     }
     Ok(())
+}
+
+fn can_save_secret_key(
+    state: &VaultAppState,
+    edit: bool,
+    editing_id: Option<&str>,
+    key: &str,
+) -> bool {
+    if key.trim().is_empty() {
+        return true;
+    }
+    if let Some(id) = editing_id {
+        if state.secret_key_for_id(id).as_deref() == Some(key) {
+            return true;
+        }
+        return !state.secret_key_exists(key);
+    }
+    if edit && state.active_matrix_key().as_deref() == Some(key) {
+        return true;
+    }
+    !state.secret_key_exists(key)
 }
 
 fn delete_secret(state: &mut VaultAppState, runtime: &VaultRuntime) -> Result<()> {
@@ -92,6 +124,42 @@ fn import_env(state: &mut VaultAppState, runtime: &VaultRuntime) -> Result<()> {
         state.message = Some(format!("Imported {count} secrets."));
         close_modal(state);
     }
+    Ok(())
+}
+
+fn output_env(state: &mut VaultAppState, runtime: &VaultRuntime) -> Result<()> {
+    let environment = state
+        .environment_list()
+        .get(state.output_environment_cursor)
+        .cloned()
+        .unwrap_or_else(|| state.focused_environment());
+    let path = state.field_path.value.trim().to_string();
+    if path.is_empty() {
+        state.error = Some("File path cannot be empty.".to_string());
+        return Ok(());
+    }
+    let format = OutputFormat::ALL
+        .get(state.output_format_cursor)
+        .copied()
+        .unwrap_or(OutputFormat::Dotenv);
+    let secret_format = match format {
+        OutputFormat::Dotenv => fatima_core::SecretFormat::Dotenv,
+        OutputFormat::Json => fatima_core::SecretFormat::Json,
+        OutputFormat::Yml => fatima_core::SecretFormat::Yml,
+        OutputFormat::BashExport => fatima_core::SecretFormat::BashExport,
+    };
+    let Some(vault) = state.vault.as_ref() else {
+        state.error = Some("Vault is not unlocked.".to_string());
+        return Ok(());
+    };
+    let count = runtime
+        .output_env(vault, &environment, &path, secret_format)
+        .map_err(|error| miette!(error.to_string()))?;
+    state.selected_environment = environment.clone();
+    state.message = Some(format!(
+        "Output {count} secrets from {environment} to {path}."
+    ));
+    close_modal(state);
     Ok(())
 }
 
