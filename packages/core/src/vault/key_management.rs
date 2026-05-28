@@ -1,7 +1,7 @@
 use crate::{FatimaError, Result};
 
-use super::access_key::create_access_key_record;
-use super::domain::{assert_environment, dedupe};
+use super::access_key::{assert_access_environments, create_access_key_record};
+use super::domain::dedupe;
 use super::types::GeneratedAccessKey;
 use super::vault::FatimaVault;
 
@@ -23,11 +23,9 @@ impl FatimaVault {
                 "Select at least one environment for the Fatima key.",
             ));
         }
-        for environment in &environments {
-            assert_environment(&unlocked.config, environment)?;
-        }
-        let generated = create_access_key_record(name, &environments, &unlocked.environment_keys)?;
-        unlocked.keys.access_keys.push(generated.record.clone());
+        assert_access_environments(&unlocked.data.environments, &environments)?;
+        let generated = create_access_key_record(name, &environments, &unlocked.password_key)?;
+        unlocked.access_keys.push(generated.record.clone());
         Ok(generated)
     }
 }

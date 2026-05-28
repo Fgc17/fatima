@@ -101,18 +101,16 @@ impl FatimaVault {
 
     pub fn list_environments(&self) -> Result<Vec<String>> {
         match self.require_session()? {
-            FatimaVaultSession::Password(unlocked) => Ok(unlocked.config.environments.clone()),
+            FatimaVaultSession::Password(unlocked) => Ok(unlocked.data.environments.clone()),
             FatimaVaultSession::Key { environments, .. } => Ok(environments.clone()),
         }
     }
 
     pub fn get_default_environment(&self) -> Result<String> {
         match self.require_session()? {
-            FatimaVaultSession::Password(unlocked) => {
-                Ok(unlocked.config.default_environment.clone())
-            }
+            FatimaVaultSession::Password(unlocked) => Ok(unlocked.data.default_environment.clone()),
             FatimaVaultSession::Key { .. } => {
-                Ok(read_store(Some(&self.options))?.config.default_environment)
+                Ok(read_store(Some(&self.options))?.file.default_environment)
             }
         }
     }

@@ -1,8 +1,6 @@
 use crate::{FatimaError, Result};
 
-use super::crypto::{encrypt_bytes, random_bytes};
-use super::domain::{assert_environment, rename_key};
-use super::types::KEY_LENGTH;
+use super::domain::assert_environment;
 use super::vault::FatimaVault;
 
 impl FatimaVault {
@@ -13,7 +11,7 @@ impl FatimaVault {
             return Err(FatimaError::message("Environment name cannot be empty."));
         }
         if unlocked
-            .config
+            .data
             .environments
             .iter()
             .any(|value| value == environment)
@@ -22,17 +20,8 @@ impl FatimaVault {
                 "Fatima environment already exists: {environment}"
             )));
         }
-        let key = random_bytes(KEY_LENGTH);
-        unlocked.keys.environment_keys.insert(
-            environment.to_string(),
-            encrypt_bytes(&key, &unlocked.password_key)?,
-        );
-        unlocked
-            .environment_keys
-            .insert(environment.to_string(), key);
-        unlocked.vault.insert(environment.to_string(), Vec::new());
-        unlocked.config.environments.push(environment.to_string());
-        unlocked.project.environments = unlocked.config.environments.clone();
+        unlocked.data.environments.push(environment.to_string());
+        sync_project(unlocked);
         Ok(())
     }
 
@@ -40,70 +29,79 @@ impl FatimaVault {
         let unlocked = self.require_unlocked_mut()?;
         let current = current.trim();
         let next = next.trim();
-        assert_environment(&unlocked.config, current)?;
+        assert_environment(&unlocked.data.environments, current)?;
         if next.is_empty() {
             return Err(FatimaError::message("Environment name cannot be empty."));
         }
         if current == next {
             return Ok(());
         }
-        if unlocked
-            .config
-            .environments
-            .iter()
-            .any(|value| value == next)
-        {
+        if unlocked.data.environments.iter().any(|value| value == next) {
             return Err(FatimaError::message(format!(
                 "Fatima environment already exists: {next}"
             )));
         }
-        rename_key(&mut unlocked.vault, current, next);
-        rename_key(&mut unlocked.environment_keys, current, next);
-        rename_key(&mut unlocked.keys.environment_keys, current, next);
-        for record in &mut unlocked.keys.access_keys {
-            rename_key(&mut record.wrapped_environment_keys, current, next);
-        }
-        for environment in &mut unlocked.config.environments {
+        for environment in &mut unlocked.data.environments {
             if environment == current {
                 *environment = next.to_string();
             }
         }
-        if unlocked.config.default_environment == current {
-            unlocked.config.default_environment = next.to_string();
+        for secret in &mut unlocked.data.secrets {
+            if let Some(value) = secret.values.remove(current) {
+                secret.values.insert(next.to_string(), value);
+            }
         }
-        unlocked.project.environments = unlocked.config.environments.clone();
-        unlocked.project.default_environment = unlocked.config.default_environment.clone();
+        for record in &mut unlocked.access_keys {
+            for environment in &mut record.environments {
+                if environment == current {
+                    *environment = next.to_string();
+                }
+            }
+        }
+        if unlocked.data.default_environment == current {
+            unlocked.data.default_environment = next.to_string();
+        }
+        sync_project(unlocked);
         Ok(())
     }
 
     pub fn delete_environment(&mut self, environment: &str) -> Result<String> {
         let unlocked = self.require_unlocked_mut()?;
         let environment = environment.trim();
-        assert_environment(&unlocked.config, environment)?;
-        if unlocked.config.environments.len() <= 1 {
+        assert_environment(&unlocked.data.environments, environment)?;
+        if unlocked.data.environments.len() <= 1 {
             return Err(FatimaError::message(
                 "Fatima vault must keep at least one environment.",
             ));
         }
-        unlocked.vault.remove(environment);
-        unlocked.environment_keys.remove(environment);
-        unlocked.keys.environment_keys.remove(environment);
         unlocked
-            .config
+            .data
             .environments
             .retain(|value| value != environment);
-        for record in &mut unlocked.keys.access_keys {
-            record.wrapped_environment_keys.remove(environment);
+        for secret in &mut unlocked.data.secrets {
+            secret.values.remove(environment);
         }
         unlocked
-            .keys
-            .access_keys
-            .retain(|record| !record.wrapped_environment_keys.is_empty());
-        if unlocked.config.default_environment == environment {
-            unlocked.config.default_environment = unlocked.config.environments[0].clone();
+            .data
+            .secrets
+            .retain(|secret| !secret.values.is_empty());
+        for record in &mut unlocked.access_keys {
+            record.environments.retain(|value| value != environment);
         }
-        unlocked.project.environments = unlocked.config.environments.clone();
-        unlocked.project.default_environment = unlocked.config.default_environment.clone();
-        Ok(unlocked.config.default_environment.clone())
+        unlocked
+            .access_keys
+            .retain(|record| !record.environments.is_empty());
+        if unlocked.data.default_environment == environment {
+            unlocked.data.default_environment = unlocked.data.environments[0].clone();
+        }
+        sync_project(unlocked);
+        Ok(unlocked.data.default_environment.clone())
     }
+}
+
+fn sync_project(unlocked: &mut super::types::UnlockedVault) {
+    unlocked.project.environments = unlocked.data.environments.clone();
+    unlocked.project.default_environment = unlocked.data.default_environment.clone();
+    unlocked.config.environments = unlocked.data.environments.clone();
+    unlocked.config.default_environment = unlocked.data.default_environment.clone();
 }

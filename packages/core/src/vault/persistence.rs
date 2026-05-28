@@ -19,8 +19,8 @@ impl FatimaVault {
         Ok(FatimaVaultSnapshot {
             project: unlocked.project.clone(),
             config: unlocked.config.clone(),
-            keys: unlocked.keys.clone(),
-            vault: unlocked.vault.clone(),
+            secrets: unlocked.data.secrets.clone(),
+            access_keys: unlocked.access_keys.clone(),
         })
     }
 }

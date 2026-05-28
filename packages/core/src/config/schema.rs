@@ -16,7 +16,7 @@ pub struct FatimaConfig {
     pub file: Option<String>,
     #[serde(default)]
     pub formatter: Option<String>,
-    #[serde(default, alias = "environmentExpression")]
+    #[serde(default)]
     pub environment: Option<String>,
     #[serde(default)]
     pub providers: BTreeMap<String, Vec<ProviderConfig>>,

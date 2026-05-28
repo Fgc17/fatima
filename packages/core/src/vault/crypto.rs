@@ -74,7 +74,7 @@ fn cipher(key: &[u8]) -> Result<Aes256Gcm> {
         .map_err(|_| FatimaError::message("Invalid Fatima vault encryption key."))
 }
 
-fn encode_b64(value: &[u8]) -> String {
+pub(crate) fn encode_b64(value: &[u8]) -> String {
     URL_SAFE_NO_PAD.encode(value)
 }
 

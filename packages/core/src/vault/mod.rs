@@ -11,8 +11,8 @@ mod types;
 mod vault;
 
 pub use types::{
-    AccessKeyRecord, EncryptedBlob, FatimaVaultSnapshot, GeneratedAccessKey, PrimaryKeyRecord,
-    ProjectSecretManagerSettings, SecretRecord, StoredKeys, StoredProjectConfig, StoredVault,
-    VaultOptions,
+    AccessKeyRecord, EncryptedBlob, FatimaVaultSnapshot, GeneratedAccessKey,
+    ProjectSecretManagerSettings, SecretRecord, StoredProjectConfig, StoredVaultData,
+    StoredVaultFile, VaultOptions,
 };
 pub use vault::FatimaVault;

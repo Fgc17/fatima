@@ -1,6 +1,6 @@
 {
 	"name": "@fatima.dev/core",
-	"version": "1.0.1-rc.1",
+	"version": "0.0.1",
 	"private": true,
 	"scripts": {
 		"build": "cargo build -p fatima-core --lib",

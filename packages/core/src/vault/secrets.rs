@@ -13,11 +13,9 @@ impl FatimaVault {
     pub fn get_secrets(&self, environment: Option<&str>) -> Result<Secrets> {
         match self.require_session()? {
             FatimaVaultSession::Password(unlocked) => {
-                let environment = environment.unwrap_or(&unlocked.config.default_environment);
-                assert_environment(&unlocked.config, environment)?;
-                Ok(to_environment_map(
-                    unlocked.vault.get(environment).cloned().unwrap_or_default(),
-                ))
+                let environment = environment.unwrap_or(&unlocked.data.default_environment);
+                assert_environment(&unlocked.data.environments, environment)?;
+                Ok(to_environment_map(&unlocked.data.secrets, environment))
             }
             FatimaVaultSession::Key { raw_key, .. } => {
                 list_secrets_with_access_key(raw_key, environment, Some(&self.options))
@@ -45,32 +43,69 @@ impl FatimaVault {
         id: Option<&str>,
     ) -> Result<()> {
         let unlocked = self.require_unlocked_mut()?;
-        assert_environment(&unlocked.config, environment)?;
-        if key.trim().is_empty() {
+        let environment = environment.trim();
+        let key = key.trim();
+        assert_environment(&unlocked.data.environments, environment)?;
+        if key.is_empty() {
             return Err(FatimaError::message("Secret key cannot be empty."));
         }
-        let secrets = unlocked.vault.entry(environment.to_string()).or_default();
+
         if let Some(id) = id {
-            if let Some(secret) = secrets.iter_mut().find(|secret| secret.id == id) {
-                secret.key = key.to_string();
-                secret.value = value.to_string();
-                return Ok(());
+            let key_owner = unlocked
+                .data
+                .secrets
+                .iter()
+                .find(|secret| secret.key == key)
+                .map(|secret| secret.id.clone());
+            if key_owner.as_deref().is_some_and(|owner| owner != id) {
+                return Err(FatimaError::message(format!(
+                    "Secret key `{key}` already exists."
+                )));
             }
+            let secret = unlocked
+                .data
+                .secrets
+                .iter_mut()
+                .find(|secret| secret.id == id)
+                .ok_or_else(|| FatimaError::message("Secret not found."))?;
+            secret.key = key.to_string();
+            secret
+                .values
+                .insert(environment.to_string(), value.to_string());
+            return Ok(());
         }
-        secrets.push(SecretRecord {
+
+        if unlocked.data.secrets.iter().any(|secret| secret.key == key) {
+            return Err(FatimaError::message(format!(
+                "Secret key `{key}` already exists."
+            )));
+        }
+        let mut values = std::collections::BTreeMap::new();
+        values.insert(environment.to_string(), value.to_string());
+        unlocked.data.secrets.push(SecretRecord {
             id: uuid::Uuid::new_v4().to_string(),
             key: key.to_string(),
-            value: value.to_string(),
+            values,
         });
         Ok(())
     }
 
     pub fn delete_secret(&mut self, environment: &str, id: &str) -> Result<()> {
         let unlocked = self.require_unlocked_mut()?;
-        assert_environment(&unlocked.config, environment)?;
-        if let Some(secrets) = unlocked.vault.get_mut(environment) {
-            secrets.retain(|secret| secret.id != id);
+        let environment = environment.trim();
+        assert_environment(&unlocked.data.environments, environment)?;
+        if let Some(secret) = unlocked
+            .data
+            .secrets
+            .iter_mut()
+            .find(|secret| secret.id == id)
+        {
+            secret.values.remove(environment);
         }
+        unlocked
+            .data
+            .secrets
+            .retain(|secret| !secret.values.is_empty());
         Ok(())
     }
 
@@ -94,15 +129,25 @@ impl FatimaVault {
         value: &str,
     ) -> Result<()> {
         let unlocked = self.require_unlocked_mut()?;
-        assert_environment(&unlocked.config, environment)?;
-        let secrets = unlocked.vault.entry(environment.to_string()).or_default();
-        if let Some(secret) = secrets.iter_mut().find(|secret| secret.key == key) {
-            secret.value = value.to_string();
+        let environment = environment.trim();
+        let key = key.trim();
+        assert_environment(&unlocked.data.environments, environment)?;
+        if let Some(secret) = unlocked
+            .data
+            .secrets
+            .iter_mut()
+            .find(|secret| secret.key == key)
+        {
+            secret
+                .values
+                .insert(environment.to_string(), value.to_string());
         } else {
-            secrets.push(SecretRecord {
+            let mut values = std::collections::BTreeMap::new();
+            values.insert(environment.to_string(), value.to_string());
+            unlocked.data.secrets.push(SecretRecord {
                 id: uuid::Uuid::new_v4().to_string(),
                 key: key.to_string(),
-                value: value.to_string(),
+                values,
             });
         }
         Ok(())

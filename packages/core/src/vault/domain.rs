@@ -1,19 +1,22 @@
-use std::collections::BTreeMap;
-
 use crate::env::Secrets;
 use crate::{FatimaError, Result};
 
-use super::types::{SecretRecord, StoredProjectConfig};
+use super::types::SecretRecord;
 
-pub(crate) fn to_environment_map(secrets: Vec<SecretRecord>) -> Secrets {
+pub(crate) fn to_environment_map(secrets: &[SecretRecord], environment: &str) -> Secrets {
     secrets
-        .into_iter()
-        .map(|secret| (secret.key, secret.value))
+        .iter()
+        .filter_map(|secret| {
+            secret
+                .values
+                .get(environment)
+                .map(|value| (secret.key.clone(), value.clone()))
+        })
         .collect()
 }
 
-pub(crate) fn assert_environment(config: &StoredProjectConfig, environment: &str) -> Result<()> {
-    if !config.environments.iter().any(|value| value == environment) {
+pub(crate) fn assert_environment(environments: &[String], environment: &str) -> Result<()> {
+    if !environments.iter().any(|value| value == environment) {
         return Err(FatimaError::message(format!(
             "Unknown Fatima environment: {environment}"
         )));
@@ -37,10 +40,4 @@ pub(crate) fn dedupe(values: Vec<String>) -> Vec<String> {
         }
         output
     })
-}
-
-pub(crate) fn rename_key<T>(map: &mut BTreeMap<String, T>, current: &str, next: &str) {
-    if let Some(value) = map.remove(current) {
-        map.insert(next.to_string(), value);
-    }
 }
