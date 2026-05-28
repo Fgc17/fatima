@@ -10,6 +10,7 @@ node_modules
 
 # output
 dist
+.binaries
 .astro
 *.tsbuildinfo
 .tsbuildinfo*
