@@ -1,0 +1,285 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://cdn.fatima.dev/schema.json",
+	"title": "Fatima configuration",
+	"description": "Schema for fatima.json.",
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"$schema": {
+			"type": "string"
+		},
+		"generator": {
+			"description": "SDK/runtime generator to use.",
+			"type": "string",
+			"enum": ["typescript", "javascript", "python"],
+			"default": "typescript"
+		},
+		"file": {
+			"description": "Output file for generated code, relative to this config file.",
+			"type": "string"
+		},
+		"formatter": {
+			"description": "Optional formatter command or formatter name for generated output.",
+			"type": "string"
+		},
+		"environment": {
+			"description": "Environment expression, for example `{env:NODE_ENV} ?? 'development'`.",
+			"type": "string",
+			"default": "'development'"
+		},
+		"providers": {
+			"description": "Provider chains by Fatima environment name.",
+			"type": "object",
+			"additionalProperties": {
+				"type": "array",
+				"items": {
+					"$ref": "#/$defs/provider"
+				}
+			},
+			"default": {}
+		},
+		"model": {
+			"description": "Environment variable validation model keyed by variable name.",
+			"type": "object",
+			"additionalProperties": {
+				"$ref": "#/$defs/model"
+			},
+			"default": {}
+		},
+		"publicPrefix": {
+			"description": "Prefix for variables emitted to the generated public output.",
+			"type": "string"
+		},
+		"public-prefix": {
+			"description": "Alias for publicPrefix.",
+			"type": "string"
+		},
+		"plugins": {
+			"description": "Plugin module specifiers.",
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": []
+		}
+	},
+	"$defs": {
+		"provider": {
+			"anyOf": [
+				{
+					"$ref": "#/$defs/fileProvider"
+				},
+				{
+					"$ref": "#/$defs/fatimaProvider"
+				},
+				{
+					"$ref": "#/$defs/vercelProvider"
+				},
+				{
+					"$ref": "#/$defs/infisicalProvider"
+				},
+				{
+					"$ref": "#/$defs/customProvider"
+				}
+			]
+		},
+		"providerBase": {
+			"type": "object",
+			"required": ["provider"],
+			"properties": {
+				"provider": {
+					"type": "string"
+				}
+			}
+		},
+		"fileProvider": {
+			"allOf": [
+				{
+					"$ref": "#/$defs/providerBase"
+				},
+				{
+					"type": "object",
+					"additionalProperties": true,
+					"properties": {
+						"provider": {
+							"enum": ["file", "local"]
+						},
+						"file": {
+							"description": "Single env file path, relative to the config file.",
+							"$ref": "#/$defs/stringOrStringArray"
+						},
+						"files": {
+							"description": "Env file paths, relative to the config file.",
+							"$ref": "#/$defs/stringOrStringArray"
+						},
+						"format": {
+							"enum": ["env"]
+						}
+					}
+				}
+			]
+		},
+		"fatimaProvider": {
+			"allOf": [
+				{
+					"$ref": "#/$defs/providerBase"
+				},
+				{
+					"type": "object",
+					"additionalProperties": true,
+					"properties": {
+						"provider": {
+							"enum": ["fatima", "fatima-vault"]
+						},
+						"source": {
+							"enum": ["e2e", "cloud"],
+							"default": "e2e"
+						},
+						"key": {
+							"type": "string"
+						},
+						"environment": {
+							"type": "string"
+						},
+						"cwd": {
+							"type": "string"
+						},
+						"storePath": {
+							"type": "string"
+						},
+						"store-path": {
+							"type": "string"
+						}
+					}
+				}
+			]
+		},
+		"vercelProvider": {
+			"allOf": [
+				{
+					"$ref": "#/$defs/providerBase"
+				},
+				{
+					"type": "object",
+					"additionalProperties": true,
+					"properties": {
+						"provider": {
+							"const": "vercel"
+						},
+						"environment": {
+							"type": "string"
+						},
+						"vercel-token": {
+							"type": "string"
+						},
+						"vercel-org-id": {
+							"type": "string"
+						},
+						"vercel-project-id": {
+							"type": "string"
+						}
+					}
+				}
+			]
+		},
+		"infisicalProvider": {
+			"allOf": [
+				{
+					"$ref": "#/$defs/providerBase"
+				},
+				{
+					"type": "object",
+					"additionalProperties": true,
+					"properties": {
+						"provider": {
+							"const": "infisical"
+						},
+						"environment": {
+							"type": "string"
+						},
+						"client-id": {
+							"type": "string"
+						},
+						"client-secret": {
+							"type": "string"
+						},
+						"project-id": {
+							"type": "string"
+						},
+						"site-url": {
+							"type": "string",
+							"format": "uri"
+						}
+					}
+				}
+			]
+		},
+		"customProvider": {
+			"type": "object",
+			"required": ["provider"],
+			"additionalProperties": true,
+			"properties": {
+				"provider": {
+					"type": "string"
+				}
+			}
+		},
+		"model": {
+			"oneOf": [
+				{
+					"$ref": "#/$defs/modelType"
+				},
+				{
+					"type": "object",
+					"additionalProperties": true,
+					"properties": {
+						"type": {
+							"$ref": "#/$defs/modelType"
+						},
+						"args": {
+							"type": "object",
+							"additionalProperties": true,
+							"properties": {
+								"values": {
+									"type": "array",
+									"items": {}
+								}
+							}
+						}
+					}
+				}
+			]
+		},
+		"modelType": {
+			"type": "string",
+			"enum": [
+				"string",
+				"nonempty",
+				"email",
+				"url",
+				"uuid",
+				"number",
+				"integer",
+				"boolean",
+				"json",
+				"pem",
+				"sk",
+				"bearer"
+			]
+		},
+		"stringOrStringArray": {
+			"oneOf": [
+				{
+					"type": "string"
+				},
+				{
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				}
+			]
+		}
+	}
+}
