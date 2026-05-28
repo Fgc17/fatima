@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "mode": "local",
+  "createdAt": "2026-05-28T12:41:41.462967273Z",
+  "updatedAt": "2026-05-28T12:41:41.462967273Z",
+  "defaultEnvironment": "development",
+  "environments": [
+    "development",
+    "staging",
+    "production"
+  ],
+  "accessKeys": [],
+  "kdf": {
+    "algorithm": "scrypt",
+    "salt": "vG3HWYYkOi61ypThIZTlUg"
+  },
+  "encryption": {
+    "algorithm": "aes-256-gcm"
+  },
+  "data": {
+    "iv": "4eUn5PlzSr-EnALf",
+    "tag": "yVfZdSjkbS9Vb4nvp_oiFA",
+    "ciphertext": "1wU2iaj44zbziLATmOfhcdX7sXGiwpQ_XH3OTfVPH0w13DGa0JaN1_IPdfyInixhvpKotiY4yvCElyTJAXGhOTB06mCftRw-FeQVrsvR2MUl4zGrrk2NrfkOP5NNvV_GZogr6_pu5A"
+  }
+}

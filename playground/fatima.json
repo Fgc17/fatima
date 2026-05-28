@@ -1,5 +1,5 @@
 {
-	"$schema": "../packages/deprecated-old-fatima/schema/schema.json",
+	"$schema": "../static/schema.json",
 	"generator": "typescript",
 	"environment": "{env:NODE_ENV} ?? 'development'",
 	"public-prefix": "PUBLIC_",
