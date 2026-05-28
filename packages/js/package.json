@@ -1,7 +1,7 @@
 {
 	"name": "@fatima.dev/js",
 	"description": "JavaScript bindings for the Fatima native CLI",
-	"version": "1.0.1-rc.1",
+	"version": "0.0.1",
 	"license": "MIT",
 	"type": "module",
 	"exports": {

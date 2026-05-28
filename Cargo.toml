@@ -1,16 +1,17 @@
 [workspace]
-members = ["packages/cli", "packages/core"]
+members = ["packages/cli", "packages/core", "task"]
 default-members = ["packages/cli"]
 resolver = "2"
 
 [workspace.package]
-version = "1.0.1-rc.1"
+version = "0.0.1"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/Fgc17/fatima"
+description = "Safe secrets and environment management for JavaScript and Rust projects"
 
 [workspace.dependencies]
-fatima-core = { path = "packages/core" }
+fatima-core = { path = "packages/core", version = "0.0.1" }
 clap = { version = "4.6.1", features = ["derive", "env", "wrap_help"] }
 aes-gcm = "0.10"
 base64 = "0.22"
@@ -23,6 +24,7 @@ reqwest = { version = "0.12", default-features = false, features = ["blocking", 
 scrypt = "0.11"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+serde_yaml = "0.9"
 thiserror = "2"
 time = { version = "0.3", features = ["formatting"] }
 unicode-width = "0.2"
