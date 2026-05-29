@@ -24,6 +24,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       tag: ${{ steps.version.outputs.tag }}
+      release_exists: ${{ steps.release.outputs.exists }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -42,6 +43,21 @@ jobs:
           VERSION="${VERSION#v}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check GitHub release
+        id: release
+        shell: bash
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "GitHub release $TAG already exists"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "GitHub release $TAG does not exist"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -102,7 +118,7 @@ jobs:
         shell: bash
         run: |
           VERSION="${{ needs.prepare.outputs.version }}"
-          if cargo search fatima-core --limit 1 | grep -q "^fatima-core = \"$VERSION\""; then
+          if cargo search fatima-core --limit 1 --color never | grep -q "^fatima-core = \"$VERSION\""; then
             echo "fatima-core $VERSION already published, skipping"
           else
             cargo publish -p fatima-core
@@ -117,7 +133,7 @@ jobs:
         shell: bash
         run: |
           VERSION="${{ needs.prepare.outputs.version }}"
-          if cargo search fatima-cli --limit 1 | grep -q "^fatima-cli = \"$VERSION\""; then
+          if cargo search fatima-cli --limit 1 --color never | grep -q "^fatima-cli = \"$VERSION\""; then
             echo "fatima-cli $VERSION already published, skipping"
           else
             cargo publish -p fatima-cli
@@ -128,6 +144,7 @@ jobs:
   build-binaries:
     name: Build ${{ matrix.target }}
     needs: prepare
+    if: needs.prepare.outputs.release_exists != 'true'
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
@@ -233,7 +250,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 11.3.0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -279,6 +296,7 @@ jobs:
     needs:
       - prepare
       - build-binaries
+    if: needs.prepare.outputs.release_exists != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -296,11 +314,7 @@ jobs:
         run: |
           TAG="${{ needs.prepare.outputs.tag }}"
           VERSION="${{ needs.prepare.outputs.version }}"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" .release-assets/* --clobber
-          else
-            gh release create "$TAG" .release-assets/* --title "Fatima v$VERSION" --generate-notes
-          fi
+          gh release create "$TAG" .release-assets/* --title "Fatima v$VERSION" --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -309,22 +323,47 @@ jobs:
     needs:
       - prepare
       - github-release
+    if: always() && needs.prepare.result == 'success' && (needs.prepare.outputs.release_exists == 'true' || needs.github-release.result == 'success')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Upload static files to Cloudflare CDN
-        uses: cloudflare/wrangler-action@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: |
-            r2 object put ${{ secrets.CLOUDFLARE_R2_BUCKET }}/install --file static/install.sh
-            r2 object put ${{ secrets.CLOUDFLARE_R2_BUCKET }}/install.sh --file static/install.sh
-            r2 object put ${{ secrets.CLOUDFLARE_R2_BUCKET }}/install/latest --file static/install.sh
-            r2 object put ${{ secrets.CLOUDFLARE_R2_BUCKET }}/install/latest/install.sh --file static/install.sh
-            r2 object put ${{ secrets.CLOUDFLARE_R2_BUCKET }}/install/v${{ needs.prepare.outputs.version }}/install.sh --file static/install.sh
-            r2 object put ${{ secrets.CLOUDFLARE_R2_BUCKET }}/schema.json --file static/schema.json
-            r2 object put ${{ secrets.CLOUDFLARE_R2_BUCKET }}/schema/latest/schema.json --file static/schema.json
-            r2 object put ${{ secrets.CLOUDFLARE_R2_BUCKET }}/schema/v${{ needs.prepare.outputs.version }}/schema.json --file static/schema.json
+          version: 11.3.0
+
+      - name: Upload missing static files to Cloudflare CDN
+        shell: bash
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          BUCKET="${{ secrets.CLOUDFLARE_R2_BUCKET }}"
+
+          put_if_missing() {
+            local key="$1"
+            local file="$2"
+            local object="$BUCKET/$key"
+            local check_file
+            check_file="$(mktemp)"
+
+            if pnpm dlx wrangler@latest r2 object get "$object" --file "$check_file" >/dev/null 2>&1; then
+              echo "$key already exists, skipping"
+            else
+              pnpm dlx wrangler@latest r2 object put "$object" --file "$file"
+            fi
+
+            rm -f "$check_file"
+          }
+
+          put_if_missing "install" static/install.sh
+          put_if_missing "install.sh" static/install.sh
+          put_if_missing "install/latest" static/install.sh
+          put_if_missing "install/latest/install.sh" static/install.sh
+          put_if_missing "install/v$VERSION/install.sh" static/install.sh
+          put_if_missing "schema.json" static/schema.json
+          put_if_missing "schema/latest/schema.json" static/schema.json
+          put_if_missing "schema/v$VERSION/schema.json" static/schema.json
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
