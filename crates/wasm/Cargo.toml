@@ -1,0 +1,23 @@
+[package]
+name = "fatima-wasm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description.workspace = true
+publish = false
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+async-trait.workspace = true
+fatima-core = { path = "../core", default-features = false, features = ["wasm"] }
+js-sys.workspace = true
+serde_json.workspace = true
+serde-wasm-bindgen.workspace = true
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true

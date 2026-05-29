@@ -14,7 +14,9 @@
 		"dist"
 	],
 	"scripts": {
-		"build": "tsc -p tsconfig.build.json --declaration --emitDeclarationOnly false --outDir dist --declarationMap false",
+		"build:wasm": "cargo run -p task -- build-binaries --target wasm",
+		"copy:wasm": "mkdir -p dist/wasm && cp ../../.release/raw/wasm-pack/fatima_wasm.js ../../.release/raw/wasm-pack/fatima_wasm.d.ts ../../.release/raw/wasm/fatima_wasm_bg.wasm dist/wasm/",
+		"build": "pnpm run build:wasm && tsc -p tsconfig.build.json --declaration --emitDeclarationOnly false --outDir dist --declarationMap false && pnpm run copy:wasm",
 		"checktypes": "tsc --noEmit"
 	},
 	"devDependencies": {

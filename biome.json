@@ -14,12 +14,20 @@
 			"**/*.css",
 			"**/*.json",
 			"!**/*.raw.*",
+			"!**/.astro",
 			"!**/.next",
 			"!**/.nx",
+			"!**/.release",
+			"!**/.tmp",
 			"!**/.turbo",
 			"!**/.opencode",
 			"!**/.source",
-			"!**/node_modules"
+			"!**/crates",
+			"!**/dist",
+			"!**/node_modules",
+			"!playground",
+			"!packages/js/src/wasm",
+			"!**/target"
 		]
 	},
 	"formatter": {

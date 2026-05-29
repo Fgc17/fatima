@@ -10,7 +10,7 @@ node_modules
 
 # output
 dist
-.binaries
+.release
 .astro
 *.tsbuildinfo
 .tsbuildinfo*
@@ -19,6 +19,11 @@ target
 .turbo
 .nx
 .source
+
+# generated wasm-pack output; keep declarations for TypeScript
+packages/js/src/wasm/*
+!packages/js/src/wasm/
+!packages/js/src/wasm/fatima_wasm.d.ts
 
 # env
 .env

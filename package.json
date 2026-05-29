@@ -4,25 +4,24 @@
 	"scripts": {
 		"lint": "biome check",
 		"format": "biome format",
-		"dev": "nx run-many -t dev",
-		"build": "nx run-many -t build",
+		"dev": "turbo run dev --parallel",
+		"build": "turbo run build",
 		"build:rust": "cargo build --release -p fatima-cli --bin fatima",
 		"build:binaries": "cargo run -p task -- build-binaries",
-		"checktypes": "nx run-many -t checktypes",
+		"checktypes": "turbo run checktypes",
 		"check:rust": "cargo check --workspace",
 		"test:rust": "cargo test --workspace",
 		"version": "cargo run -p task -- set-version",
 		"verify:release": "cargo run -p task -- verify-release",
-		"publish:npm": "bun run --cwd packages/js build && npm publish packages/js --access public --provenance",
+		"publish:npm": "turbo run build --filter=@fatima.dev/js && npm publish packages/js --access public --provenance",
 		"publish:crates": "cargo publish -p fatima-core && cargo publish -p fatima-cli"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.15",
-		"nx": "22.1.0",
+		"turbo": "^2.6.1",
 		"typescript": "6.0.3"
 	},
-	"packageManager": "bun@1.3.14",
-	"workspaces": ["packages/cli", "packages/core", "packages/js", "packages/web"],
+	"packageManager": "pnpm@10.24.0",
 	"engines": {
 		"node": ">=18"
 	}

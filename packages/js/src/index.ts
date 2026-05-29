@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { handleApiRequest } from "./wasm.js";
 
 export type ProviderConfig = {
 	provider: string;
@@ -114,7 +114,9 @@ export class Fatima {
 		return this;
 	}
 
-	async loadEnvironment(environment = "development"): Promise<LoadedEnvironment> {
+	async loadEnvironment(
+		environment = "development",
+	): Promise<LoadedEnvironment> {
 		return this.#call<LoadedEnvironment>("loadEnvironment", { environment });
 	}
 
@@ -126,13 +128,15 @@ export class Fatima {
 		return this.#call<{ valid: true }>("validate", { environment });
 	}
 
-	async generate(options: { environment?: string; strict?: boolean } = {}): Promise<GenerateResult> {
+	async generate(
+		options: { environment?: string; strict?: boolean } = {},
+	): Promise<GenerateResult> {
 		return this.#call<GenerateResult>("generate", options);
 	}
 
 	async #call<T>(method: string, params: Record<string, unknown>): Promise<T> {
 		return callFatimaApi<T>(
-			{ method, params: { ...params, config: this.#config } },
+			{ method, params: { ...params, config: this.#config, cwd: this.#cwd } },
 			{ bin: this.#bin, cwd: this.#cwd },
 		);
 	}
@@ -150,16 +154,35 @@ export class FatimaVault {
 		this.#options = { cwd: options.cwd, storePath: options.storePath };
 	}
 
-	static async hasStore(options: FatimaOptions & { storePath?: string } = {}): Promise<boolean> {
-		return vaultCall<boolean>("vault.hasStore", { options: toVaultOptions(options) }, options);
+	static async hasStore(
+		options: FatimaOptions & { storePath?: string } = {},
+	): Promise<boolean> {
+		return vaultCall<boolean>(
+			"vault.hasStore",
+			{ options: toVaultOptions(options) },
+			options,
+		);
 	}
 
-	static async getSettings(options: FatimaOptions & { storePath?: string } = {}): Promise<ProjectSecretManagerSettings> {
-		return vaultCall<ProjectSecretManagerSettings>("vault.getSettings", { options: toVaultOptions(options) }, options);
+	static async getSettings(
+		options: FatimaOptions & { storePath?: string } = {},
+	): Promise<ProjectSecretManagerSettings> {
+		return vaultCall<ProjectSecretManagerSettings>(
+			"vault.getSettings",
+			{ options: toVaultOptions(options) },
+			options,
+		);
 	}
 
-	static async initialize(password: string, options: FatimaOptions & { storePath?: string } = {}): Promise<FatimaVault> {
-		await vaultCall("vault.initialize", { password, options: toVaultOptions(options) }, options);
+	static async initialize(
+		password: string,
+		options: FatimaOptions & { storePath?: string } = {},
+	): Promise<FatimaVault> {
+		await vaultCall(
+			"vault.initialize",
+			{ password, options: toVaultOptions(options) },
+			options,
+		);
 		return new FatimaVault(options).unlockWithPassword(password);
 	}
 
@@ -181,12 +204,25 @@ export class FatimaVault {
 		return this.#call<string[]>("vault.listEnvironments", {});
 	}
 
-	async generateAccessKey(name: string, environments: string[]): Promise<{ key: string; record: AccessKeyRecord }> {
+	async generateAccessKey(
+		name: string,
+		environments: string[],
+	): Promise<{ key: string; record: AccessKeyRecord }> {
 		return this.#call("vault.generateAccessKey", { name, environments });
 	}
 
-	async setSecret(environment: string, key: string, value: string, options: { id?: string } = {}): Promise<void> {
-		await this.#call("vault.setSecret", { environment, secretKey: key, value, id: options.id });
+	async setSecret(
+		environment: string,
+		key: string,
+		value: string,
+		options: { id?: string } = {},
+	): Promise<void> {
+		await this.#call("vault.setSecret", {
+			environment,
+			secretKey: key,
+			value,
+			id: options.id,
+		});
 	}
 
 	async deleteSecret(environment: string, id: string): Promise<void> {
@@ -201,11 +237,16 @@ export class FatimaVault {
 		await this.#call("vault.renameEnvironment", { environment, name });
 	}
 
-	async deleteEnvironment(environment: string): Promise<{ defaultEnvironment: string }> {
+	async deleteEnvironment(
+		environment: string,
+	): Promise<{ defaultEnvironment: string }> {
 		return this.#call("vault.deleteEnvironment", { environment });
 	}
 
-	async importEnv(environment: string, filePath: string): Promise<{ count: number }> {
+	async importEnv(
+		environment: string,
+		filePath: string,
+	): Promise<{ count: number }> {
 		return this.#call("vault.importEnv", { environment, filePath });
 	}
 
@@ -227,53 +268,27 @@ export class FatimaVault {
 	}
 }
 
-function toVaultOptions(options: FatimaOptions & { storePath?: string }): VaultOptions {
+function toVaultOptions(
+	options: FatimaOptions & { storePath?: string },
+): VaultOptions {
 	return { cwd: options.cwd, storePath: options.storePath };
 }
 
-function vaultCall<T>(method: string, params: unknown, options: ApiClientOptions): Promise<T> {
+function vaultCall<T>(
+	method: string,
+	params: unknown,
+	options: ApiClientOptions,
+): Promise<T> {
 	return callFatimaApi<T>({ method, params }, options);
 }
 
-async function callFatimaApi<T>(request: ApiRequest, options: ApiClientOptions): Promise<T> {
-	const response = await runFatimaApi<T>(options.bin ?? "fatima", request, { cwd: options.cwd });
+async function callFatimaApi<T>(
+	request: ApiRequest,
+	options: ApiClientOptions,
+): Promise<T> {
+	const response = JSON.parse(
+		await handleApiRequest(JSON.stringify(request), { cwd: options.cwd }),
+	) as ApiResponse<T>;
 	if (!response.ok) throw new Error(response.error);
 	return response.data;
-}
-
-function runFatimaApi<T>(
-	bin: string,
-	request: ApiRequest,
-	options: { cwd?: string },
-): Promise<ApiResponse<T>> {
-	return new Promise((resolve, reject) => {
-		const child = spawn(bin, ["api", JSON.stringify(request)], {
-			cwd: options.cwd,
-			stdio: ["ignore", "pipe", "pipe"],
-		});
-
-		let stdout = "";
-		let stderr = "";
-
-		child.stdout.setEncoding("utf8");
-		child.stderr.setEncoding("utf8");
-		child.stdout.on("data", (chunk: string) => {
-			stdout += chunk;
-		});
-		child.stderr.on("data", (chunk: string) => {
-			stderr += chunk;
-		});
-		child.on("error", reject);
-		child.on("close", () => {
-			try {
-				resolve(JSON.parse(stdout) as ApiResponse<T>);
-			} catch (error) {
-				reject(
-					new Error(
-						`Failed to parse fatima api response: ${error instanceof Error ? error.message : String(error)}${stderr ? `\n${stderr}` : ""}`,
-					),
-				);
-			}
-		});
-	});
 }

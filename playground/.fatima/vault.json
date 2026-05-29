@@ -1,25 +1,108 @@
 {
   "version": 1,
   "mode": "local",
-  "createdAt": "2026-05-28T12:41:41.462967273Z",
-  "updatedAt": "2026-05-28T12:41:41.462967273Z",
+  "createdAt": "2026-05-28T18:18:16.864978455Z",
+  "updatedAt": "2026-05-28T18:18:17.50335431Z",
   "defaultEnvironment": "development",
   "environments": [
-    "development",
-    "staging",
-    "production"
+    {
+      "name": "development",
+      "wrappedEnvironmentSecret": {
+        "iv": "N2mmKlFhMHBkUj13",
+        "tag": "12Cjn8ahidMe3rPlVAdJ5g",
+        "ciphertext": "uYKnJvbdViPB9xgrCJ8WUdQSKKzs_X7ONowYjsQtxpI"
+      }
+    },
+    {
+      "name": "staging",
+      "wrappedEnvironmentSecret": {
+        "iv": "xi3V8_5FX2Lmh0cc",
+        "tag": "pEyyDJEVm93_CyIEILPVig",
+        "ciphertext": "I6c7CwARUqy1KLhpUFrNLOR__A3BXzH7nimkokNUBFY"
+      }
+    },
+    {
+      "name": "production",
+      "wrappedEnvironmentSecret": {
+        "iv": "GzcKB7gCoL16qHBW",
+        "tag": "I2bt7RTj4tBPh5DyC6yBFw",
+        "ciphertext": "IDgSqRgZgWOonoIGau3VLyAGMlhsZG7glMJxqIKoZ0o"
+      }
+    }
   ],
-  "accessKeys": [],
+  "userKeys": [
+    {
+      "id": "WpM8iIMxg2M",
+      "name": "development",
+      "salt": "xd89RKvDQ4FeJJ3C54wh-Q",
+      "secretHash": "PlKk01NkS0vwZO2aqf4ir3nZurScisgFU8BsQvDQgyk",
+      "wrappedEnvironmentSecrets": {
+        "development": {
+          "iv": "qph8v7cfIN3P7dct",
+          "tag": "UgYqZIKEx0vxttGTe1-QdQ",
+          "ciphertext": "bJC9fJWP3LzPCzh3M3zYXhFUe3tNaaX-6OHwKaCF0I8"
+        }
+      },
+      "wrappedUserEnvironmentSecrets": {
+        "development": {
+          "byMasterPassword": {
+            "iv": "5t-daymbQATaBAyb",
+            "tag": "p3wRc46iPO_tVSr8ft3SRw",
+            "ciphertext": "_X3fG9QwdORl1ZkOxecymKYrDZyfaWF-O-LNR70Hseo"
+          },
+          "byUserKey": {
+            "iv": "iBgqZ1WEUJ8sUEY8",
+            "tag": "Qj8GFAjBOuGDo5Kj8Bqd7A",
+            "ciphertext": "6m8qeYDSaMqrXeHN0PeefIrb6vfPIo8ILs5VD-drzpo"
+          }
+        }
+      }
+    }
+  ],
   "kdf": {
     "algorithm": "scrypt",
-    "salt": "vG3HWYYkOi61ypThIZTlUg"
+    "salt": "bypCJi0zshKJDYlzwl7BpA"
   },
   "encryption": {
     "algorithm": "aes-256-gcm"
   },
-  "data": {
-    "iv": "4eUn5PlzSr-EnALf",
-    "tag": "yVfZdSjkbS9Vb4nvp_oiFA",
-    "ciphertext": "1wU2iaj44zbziLATmOfhcdX7sXGiwpQ_XH3OTfVPH0w13DGa0JaN1_IPdfyInixhvpKotiY4yvCElyTJAXGhOTB06mCftRw-FeQVrsvR2MUl4zGrrk2NrfkOP5NNvV_GZogr6_pu5A"
-  }
+  "secrets": [
+    {
+      "id": "9d5084c0-7527-4910-8f14-2319756cc6ac",
+      "keys": {
+        "development": {
+          "iv": "iwRoDV1lWcB-LTym",
+          "tag": "Kvp4mkIyZ4Cv8hiJtPFSgw",
+          "ciphertext": "VNrxQi2UwiwDqxjO"
+        }
+      },
+      "values": {
+        "development": {
+          "iv": "b4O_DY_IiTDKmxEb",
+          "tag": "YS1pM2dblMdodT5z2bPB-Q",
+          "ciphertext": "q3ynlpYgmOJqAc7gGg2oom5RGdUTSTXgu9Rs"
+        }
+      }
+    }
+  ],
+  "userSecrets": [
+    {
+      "id": "f50ce002-19c8-41cc-b353-4641a19ce5a1",
+      "ownerUserKeyId": "WpM8iIMxg2M",
+      "keys": {
+        "development": {
+          "iv": "i5WU0M6D-Pd4BcgO",
+          "tag": "e8qXXi7U4Aw07Xzzmq2FtA",
+          "ciphertext": "Ew5mqrIZqYO4xxuo97U"
+        }
+      },
+      "values": {
+        "development": {
+          "iv": "WfvLfgV06HOBnKFF",
+          "tag": "b9I6UwHjo69UiIeRdLi2Wg",
+          "ciphertext": "rz2TUyFfHtGP"
+        }
+      }
+    }
+  ]
 }
