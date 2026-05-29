@@ -206,6 +206,7 @@ jobs:
             .release/*.zip
             .release/*.tar.gz
           if-no-files-found: error
+          include-hidden-files: true
 
       - name: Upload WASM npm artifact
         if: matrix.target == 'wasm'
@@ -217,6 +218,7 @@ jobs:
             .release/raw/wasm-pack/fatima_wasm.d.ts
             .release/raw/wasm/fatima_wasm_bg.wasm
           if-no-files-found: error
+          include-hidden-files: true
 
   publish-npm:
     name: Publish npm
