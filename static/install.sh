@@ -2,7 +2,7 @@
 set -euo pipefail
 
 APP=fatima
-REPO=Fgc17/fatima
+REPO=fgcoelho/fatima
 
 MUTED='\033[0;2m'
 RED='\033[0;31m'
