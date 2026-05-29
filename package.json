@@ -13,7 +13,7 @@
 		"test:rust": "cargo test --workspace",
 		"bump": "cargo run -p task -- bump",
 		"revert-bump": "cargo run -p task -- revert-bump",
-		"commit-tags": "cargo run -p task -- commit-tags",
+		"commit-release": "cargo run -p task -- commit-release",
 		"version": "cargo run -p task -- set-version",
 		"verify:release": "cargo run -p task -- verify-release",
 		"publish:npm": "turbo run build:prebuilt --filter=@fatima.dev/js && npm publish packages/js --access public --provenance",

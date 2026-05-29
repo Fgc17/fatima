@@ -172,7 +172,7 @@ fn run() -> Result<(), String> {
         }
         "bump" => bump(),
         "revert-bump" => revert_bump(),
-        "commit-tags" => commit_tags(),
+        "commit-release" => commit_release(),
         "verify-release" => {
             let version = parse_version_arg(args.collect())?;
             verify_release(&version)
@@ -187,7 +187,7 @@ fn run() -> Result<(), String> {
 
 fn usage() {
     eprintln!(
-        "Usage:\n  cargo run -p task -- bump\n  cargo run -p task -- revert-bump\n  cargo run -p task -- commit-tags\n  cargo run -p task -- build-binaries [--target <asset>|--host|--all]\n  cargo run -p task -- set-version --version <version>\n  cargo run -p task -- verify-release --version <version>\n\nTargets: linux-x64, linux-arm64, linux-x64-musl, linux-arm64-musl, darwin-x64, darwin-arm64, windows-x64, windows-arm64, wasm"
+        "Usage:\n  cargo run -p task -- bump\n  cargo run -p task -- revert-bump\n  cargo run -p task -- commit-release\n  cargo run -p task -- build-binaries [--target <asset>|--host|--all]\n  cargo run -p task -- set-version --version <version>\n  cargo run -p task -- verify-release --version <version>\n\nTargets: linux-x64, linux-arm64, linux-x64-musl, linux-arm64-musl, darwin-x64, darwin-arm64, windows-x64, windows-arm64, wasm"
     );
 }
 
@@ -813,7 +813,7 @@ fn revert_bump() -> Result<(), String> {
     Ok(())
 }
 
-fn commit_tags() -> Result<(), String> {
+fn commit_release() -> Result<(), String> {
     let version = current_version()?;
     let tag = format!("v{version}");
     verify_release(&version)?;
@@ -837,7 +837,7 @@ fn commit_tags() -> Result<(), String> {
         let mut add_args = vec!["add"];
         add_args.extend(existing_files.iter().copied());
         run_command("git", &add_args)?;
-        run_command("git", &["commit", "-m", &format!("chore: release {tag}")])?;
+        run_command("git", &["commit", "-m", &format!("release: {tag}")])?;
     } else {
         println!("no release file changes to commit");
     }
