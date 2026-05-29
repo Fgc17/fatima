@@ -176,6 +176,15 @@ jobs:
       - name: Build binary archive
         run: cargo run -p task -- build-binaries --target ${{ matrix.target }}
 
+      - name: Inspect release outputs
+        shell: bash
+        run: |
+          pwd
+          ls -la
+          ls -la .release || true
+          ls -la .release/raw || true
+          find .release -maxdepth 3 -type f -print || true
+
       - name: Save Docker build dependencies
         if: always() && runner.os == 'Linux' && (matrix.target == 'linux-x64-musl' || matrix.target == 'linux-arm64-musl' || startsWith(matrix.target, 'darwin-')) && steps.cache-docker-build.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4

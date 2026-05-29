@@ -484,7 +484,9 @@ fn package_target(target: Target, raw_dir: &Path) -> Result<(), String> {
             write_zip(&archive, &raw_dir.join(target.binary), target.binary)?;
             Ok(())
         }
-    }
+    }?;
+
+    ensure_archive_created(&archive)
 }
 
 fn write_zip(archive: &Path, source: &Path, name: &str) -> Result<(), String> {
@@ -511,7 +513,20 @@ fn package_wasm(raw_dir: &Path) -> Result<(), String> {
         &archive,
         &raw_dir.join("fatima_wasm_bg.wasm"),
         "fatima_wasm_bg.wasm",
-    )
+    )?;
+
+    ensure_archive_created(&archive)
+}
+
+fn ensure_archive_created(archive: &Path) -> Result<(), String> {
+    let metadata = archive
+        .metadata()
+        .map_err(|error| format!("archive was not created `{}`: {error}", archive.display()))?;
+    if metadata.len() == 0 {
+        return Err(format!("archive is empty `{}`", archive.display()));
+    }
+    println!("created {} ({} bytes)", archive.display(), metadata.len());
+    Ok(())
 }
 
 fn archive_path(path: &Path) -> Result<String, String> {
