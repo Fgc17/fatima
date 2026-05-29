@@ -136,21 +136,19 @@ jobs:
           - target: linux-x64
             runner: ubuntu-latest
           - target: linux-arm64
-            runner: ubuntu-24.04-arm
+            runner: ubuntu-latest
           - target: linux-x64-musl
             runner: ubuntu-latest
           - target: linux-arm64-musl
-            runner: ubuntu-24.04-arm
+            runner: ubuntu-latest
           - target: darwin-x64
-            runner: macos-13
+            runner: ubuntu-latest
           - target: darwin-arm64
-            runner: macos-14
+            runner: ubuntu-latest
           - target: windows-x64
-            runner: windows-latest
-            msvc_arch: x64
+            runner: ubuntu-latest
           - target: windows-arm64
-            runner: windows-latest
-            msvc_arch: amd64_arm64
+            runner: ubuntu-latest
           - target: wasm
             runner: ubuntu-latest
     steps:
@@ -168,7 +166,7 @@ jobs:
 
       - name: Restore Docker build dependencies
         id: cache-docker-build
-        if: runner.os == 'Linux' && (matrix.target == 'linux-x64-musl' || matrix.target == 'linux-arm64-musl' || startsWith(matrix.target, 'darwin-'))
+        if: matrix.target != 'linux-x64' && matrix.target != 'wasm'
         uses: actions/cache/restore@v4
         with:
           path: target/fatima-build-cache
@@ -176,12 +174,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-docker-build-${{ matrix.target }}-
             ${{ runner.os }}-docker-build-
-
-      - name: Setup MSVC
-        if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: ${{ matrix.msvc_arch }}
 
       - name: Setup wasm-pack
         if: matrix.target == 'wasm'
@@ -200,7 +192,7 @@ jobs:
           find .release -maxdepth 3 -type f -print || true
 
       - name: Save Docker build dependencies
-        if: always() && runner.os == 'Linux' && (matrix.target == 'linux-x64-musl' || matrix.target == 'linux-arm64-musl' || startsWith(matrix.target, 'darwin-')) && steps.cache-docker-build.outputs.cache-hit != 'true'
+        if: always() && matrix.target != 'linux-x64' && matrix.target != 'wasm' && steps.cache-docker-build.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: target/fatima-build-cache
