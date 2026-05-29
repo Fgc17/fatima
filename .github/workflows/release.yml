@@ -347,10 +347,11 @@ jobs:
             local check_file
             check_file="$(mktemp)"
 
-            if pnpm dlx wrangler@latest r2 object get "$object" --file "$check_file" >/dev/null 2>&1; then
-              echo "$key already exists, skipping"
+            if pnpm dlx wrangler@latest r2 object get "$object" --remote --file "$check_file" >/dev/null 2>&1; then
+              echo "$key already exists in bucket, skipping"
             else
-              pnpm dlx wrangler@latest r2 object put "$object" --file "$file"
+              echo "$key missing in bucket, uploading"
+              pnpm dlx wrangler@latest r2 object put "$object" --remote --file "$file"
             fi
 
             rm -f "$check_file"
