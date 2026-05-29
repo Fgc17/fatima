@@ -34,11 +34,68 @@ const RELEASE_PACKAGES: &[ReleasePackage] = &[
         path: "packages/js",
     },
 ];
+const STATIC_ASSETS: &[StaticAsset] = &[
+    StaticAsset {
+        path: "static/install.sh",
+        content_type: "text/x-shellscript; charset=utf-8",
+        versioned_key: "install/v{version}/install.sh",
+        alias_keys: &[
+            "install",
+            "install.sh",
+            "install/latest",
+            "install/latest/install.sh",
+        ],
+    },
+    StaticAsset {
+        path: "static/install.ps1",
+        content_type: "text/plain; charset=utf-8",
+        versioned_key: "install/v{version}/install.ps1",
+        alias_keys: &["install.ps1", "install/latest/install.ps1"],
+    },
+    StaticAsset {
+        path: "static/schema.json",
+        content_type: "application/schema+json",
+        versioned_key: "schema/v{version}/schema.json",
+        alias_keys: &["schema.json", "schema/latest/schema.json"],
+    },
+];
 
 #[derive(Clone, Copy)]
 struct ReleasePackage {
     name: &'static str,
     path: &'static str,
+}
+
+#[derive(Clone, Copy)]
+struct StaticAsset {
+    path: &'static str,
+    content_type: &'static str,
+    versioned_key: &'static str,
+    alias_keys: &'static [&'static str],
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum UploadPolicy {
+    Missing,
+    Force,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum AliasPolicy {
+    Never,
+    Always,
+    IfLatest,
+}
+
+struct UploadStaticOptions {
+    tag: Option<String>,
+    version: Option<String>,
+    bucket: Option<String>,
+    endpoint: Option<String>,
+    versioned_policy: UploadPolicy,
+    alias_policy: AliasPolicy,
+    check_release: bool,
+    dry_run: bool,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -177,6 +234,7 @@ fn run() -> Result<(), String> {
             let version = parse_version_arg(args.collect())?;
             verify_release(&version)
         }
+        "upload-static" => upload_static(args.collect()),
         "help" | "--help" | "-h" => {
             usage();
             Ok(())
@@ -187,7 +245,7 @@ fn run() -> Result<(), String> {
 
 fn usage() {
     eprintln!(
-        "Usage:\n  cargo run -p task -- bump\n  cargo run -p task -- revert-bump\n  cargo run -p task -- commit-release\n  cargo run -p task -- build-binaries [--target <asset>|--host|--all]\n  cargo run -p task -- set-version --version <version>\n  cargo run -p task -- verify-release --version <version>\n\nTargets: linux-x64, linux-arm64, linux-x64-musl, linux-arm64-musl, darwin-x64, darwin-arm64, windows-x64, windows-arm64, wasm"
+        "Usage:\n  cargo run -p task -- bump\n  cargo run -p task -- revert-bump\n  cargo run -p task -- commit-release\n  cargo run -p task -- build-binaries [--target <asset>|--host|--all]\n  cargo run -p task -- set-version --version <version>\n  cargo run -p task -- verify-release --version <version>\n  cargo run -p task -- upload-static (--version <version>|--tag <tag>) [--versioned-policy missing|force] [--aliases never|always|if-latest] [--check-release] [--dry-run]\n\nTargets: linux-x64, linux-arm64, linux-x64-musl, linux-arm64-musl, darwin-x64, darwin-arm64, windows-x64, windows-arm64, wasm"
     );
 }
 
@@ -954,6 +1012,216 @@ fn verify_release(version: &str) -> Result<(), String> {
     Ok(())
 }
 
+fn upload_static(args: Vec<String>) -> Result<(), String> {
+    let options = parse_upload_static_args(args)?;
+    let tag = match (&options.tag, &options.version) {
+        (Some(tag), None) => tag.clone(),
+        (None, Some(version)) => format!("v{}", normalize_version(version)),
+        (Some(_), Some(_)) => return Err("pass only one of --tag or --version".into()),
+        (None, None) => return Err("missing --tag or --version".into()),
+    };
+    if !tag.starts_with('v') {
+        return Err(format!("tag must start with v, got: {tag}"));
+    }
+    let version = tag.trim_start_matches('v').to_string();
+    if version.is_empty() {
+        return Err("version is empty".into());
+    }
+
+    if options.check_release && !options.dry_run {
+        run_command("gh", &["release", "view", &tag])?;
+    }
+
+    let bucket = options
+        .bucket
+        .or_else(|| env::var("R2_BUCKET").ok())
+        .ok_or("missing --bucket or R2_BUCKET")?;
+    let endpoint = options
+        .endpoint
+        .or_else(|| env::var("R2_ENDPOINT").ok())
+        .ok_or("missing --endpoint or R2_ENDPOINT")?;
+
+    for asset in STATIC_ASSETS {
+        if !Path::new(asset.path).is_file() {
+            return Err(format!("missing static asset `{}`", asset.path));
+        }
+
+        let key = asset.versioned_key.replace("{version}", &version);
+        upload_static_asset(
+            &bucket,
+            &endpoint,
+            &key,
+            asset,
+            options.versioned_policy,
+            options.dry_run,
+        )?;
+    }
+
+    if should_upload_aliases(options.alias_policy, &tag, options.dry_run)? {
+        for asset in STATIC_ASSETS {
+            for key in asset.alias_keys {
+                upload_static_asset(
+                    &bucket,
+                    &endpoint,
+                    key,
+                    asset,
+                    UploadPolicy::Force,
+                    options.dry_run,
+                )?;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+fn parse_upload_static_args(args: Vec<String>) -> Result<UploadStaticOptions, String> {
+    let mut options = UploadStaticOptions {
+        tag: None,
+        version: None,
+        bucket: None,
+        endpoint: None,
+        versioned_policy: UploadPolicy::Missing,
+        alias_policy: AliasPolicy::Never,
+        check_release: false,
+        dry_run: false,
+    };
+    let mut iter = args.into_iter();
+    while let Some(arg) = iter.next() {
+        match arg.as_str() {
+            "--tag" => options.tag = Some(iter.next().ok_or("--tag requires a value")?),
+            "--version" | "-v" => {
+                options.version = Some(iter.next().ok_or("--version requires a value")?)
+            }
+            "--bucket" => options.bucket = Some(iter.next().ok_or("--bucket requires a value")?),
+            "--endpoint" => {
+                options.endpoint = Some(iter.next().ok_or("--endpoint requires a value")?)
+            }
+            "--versioned-policy" => {
+                let value = iter.next().ok_or("--versioned-policy requires a value")?;
+                options.versioned_policy = match value.as_str() {
+                    "missing" => UploadPolicy::Missing,
+                    "force" => UploadPolicy::Force,
+                    _ => return Err(format!("unknown versioned policy `{value}`")),
+                };
+            }
+            "--aliases" => {
+                let value = iter.next().ok_or("--aliases requires a value")?;
+                options.alias_policy = match value.as_str() {
+                    "never" => AliasPolicy::Never,
+                    "always" => AliasPolicy::Always,
+                    "if-latest" => AliasPolicy::IfLatest,
+                    _ => return Err(format!("unknown alias policy `{value}`")),
+                };
+            }
+            "--check-release" => options.check_release = true,
+            "--dry-run" => options.dry_run = true,
+            _ => return Err(format!("unknown argument `{arg}`")),
+        }
+    }
+    Ok(options)
+}
+
+fn normalize_version(version: &str) -> String {
+    version
+        .trim_start_matches("fatima@")
+        .trim_start_matches('v')
+        .to_string()
+}
+
+fn should_upload_aliases(policy: AliasPolicy, tag: &str, dry_run: bool) -> Result<bool, String> {
+    match policy {
+        AliasPolicy::Never => Ok(false),
+        AliasPolicy::Always => Ok(true),
+        AliasPolicy::IfLatest => {
+            if dry_run {
+                println!("dry-run: assuming {tag} is latest for alias upload");
+                return Ok(true);
+            }
+            let latest = command_output(
+                "gh",
+                &[
+                    "release",
+                    "list",
+                    "--limit",
+                    "1",
+                    "--json",
+                    "tagName",
+                    "--jq",
+                    ".[0].tagName",
+                ],
+            )?;
+            if tag == latest {
+                println!("{tag} is latest release; uploading aliases");
+                Ok(true)
+            } else {
+                println!("{tag} is not latest release ({latest}); leaving aliases unchanged");
+                Ok(false)
+            }
+        }
+    }
+}
+
+fn upload_static_asset(
+    bucket: &str,
+    endpoint: &str,
+    key: &str,
+    asset: &StaticAsset,
+    policy: UploadPolicy,
+    dry_run: bool,
+) -> Result<(), String> {
+    if dry_run {
+        println!(
+            "dry-run: upload {} to {} ({})",
+            asset.path, key, asset.content_type
+        );
+        return Ok(());
+    }
+
+    if policy == UploadPolicy::Missing && s3_object_exists(bucket, endpoint, key)? {
+        println!("{key} already exists in bucket, skipping");
+        return Ok(());
+    }
+
+    println!("Uploading {} to {key}", asset.path);
+    run_dynamic_command(
+        "aws",
+        &[
+            "s3api",
+            "put-object",
+            "--bucket",
+            bucket,
+            "--key",
+            key,
+            "--body",
+            asset.path,
+            "--content-type",
+            asset.content_type,
+            "--endpoint-url",
+            endpoint,
+        ],
+    )
+}
+
+fn s3_object_exists(bucket: &str, endpoint: &str, key: &str) -> Result<bool, String> {
+    let status = Command::new("aws")
+        .args([
+            "s3api",
+            "head-object",
+            "--bucket",
+            bucket,
+            "--key",
+            key,
+            "--endpoint-url",
+            endpoint,
+        ])
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status()
+        .map_err(|error| format!("failed to run aws: {error}"))?;
+    Ok(status.success())
+}
+
 fn ensure_contains(content: &str, needle: &str, label: &str) -> Result<(), String> {
     if content.contains(needle) {
         Ok(())
@@ -1003,6 +1271,18 @@ fn ensure_lock_package_version(content: &str, package: &str, version: &str) -> R
 
 fn run_command(command: &str, args: &[&str]) -> Result<(), String> {
     run_command_in(Path::new("."), command, args)
+}
+
+fn run_dynamic_command(command: &str, args: &[&str]) -> Result<(), String> {
+    let status = Command::new(command)
+        .args(args)
+        .status()
+        .map_err(|error| format!("failed to run {command}: {error}"))?;
+    if status.success() {
+        Ok(())
+    } else {
+        Err(format!("{command} exited with {status}"))
+    }
 }
 
 fn command_exists(command: &str) -> bool {

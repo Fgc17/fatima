@@ -4,10 +4,18 @@ description: Install Fatima with the CDN install script.
 order: 1
 ---
 
-Install or update the Fatima CLI with the install script:
+Install or update the Fatima CLI with the install script.
+
+macOS/Linux:
 
 ```bash
 curl -fsSL https://cdn.fatima.dev/install | bash
+```
+
+Windows PowerShell:
+
+```powershell
+irm https://cdn.fatima.dev/install.ps1 | iex
 ```
 
 The installer provides the `fatima` binary. After installation, verify that it is available in your shell:
@@ -18,13 +26,21 @@ fatima --help
 
 ## Pinned install
 
-If you need a specific release, use the versioned install URL:
+If you need a specific release, pass the version explicitly.
+
+macOS/Linux:
 
 ```bash
-curl -fsSL https://cdn.fatima.dev/install/v1.0.0/install.sh | bash
+curl -fsSL https://cdn.fatima.dev/install | bash -s -- --version 1.0.0
 ```
 
-Replace `v1.0.0` with the version you want to pin.
+Windows PowerShell:
+
+```powershell
+& { $(irm https://cdn.fatima.dev/install.ps1) } -Version 1.0.0
+```
+
+Replace `1.0.0` with the version you want to pin.
 
 ## JavaScript package
 

@@ -1,0 +1,47 @@
+name: Upload static files
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to upload, e.g. v1.2.3"
+        required: true
+        type: string
+      source_ref:
+        description: "Commit SHA, branch, or tag containing static files"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency: ${{ github.workflow }}-${{ inputs.tag }}
+
+jobs:
+  upload-static:
+    name: Upload static files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_ref }}
+          fetch-depth: 0
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Upload static files to R2
+        run: |
+          cargo run -p task -- upload-static \
+            --tag "${{ inputs.tag }}" \
+            --versioned-policy force \
+            --aliases if-latest \
+            --check-release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.R2_REGION || 'auto' }}

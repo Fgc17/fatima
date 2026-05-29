@@ -329,34 +329,18 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Upload missing static files to S3-compatible storage
-        shell: bash
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Upload static files to S3-compatible storage
         run: |
-          VERSION="${{ needs.prepare.outputs.version }}"
-          BUCKET="${{ secrets.R2_BUCKET }}"
-          ENDPOINT="${{ secrets.R2_ENDPOINT }}"
-
-          put_if_missing() {
-            local key="$1"
-            local file="$2"
-
-            if aws s3api head-object --bucket "$BUCKET" --key "$key" --endpoint-url "$ENDPOINT" >/dev/null 2>&1; then
-              echo "$key already exists in bucket, skipping"
-            else
-              echo "$key missing in bucket, uploading"
-              aws s3api put-object --bucket "$BUCKET" --key "$key" --body "$file" --endpoint-url "$ENDPOINT"
-            fi
-          }
-
-          put_if_missing "install" static/install.sh
-          put_if_missing "install.sh" static/install.sh
-          put_if_missing "install/latest" static/install.sh
-          put_if_missing "install/latest/install.sh" static/install.sh
-          put_if_missing "install/v$VERSION/install.sh" static/install.sh
-          put_if_missing "schema.json" static/schema.json
-          put_if_missing "schema/latest/schema.json" static/schema.json
-          put_if_missing "schema/v$VERSION/schema.json" static/schema.json
+          cargo run -p task -- upload-static \
+            --version "${{ needs.prepare.outputs.version }}" \
+            --versioned-policy missing \
+            --aliases always
         env:
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.R2_REGION || 'auto' }}
