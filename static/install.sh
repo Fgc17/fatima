@@ -207,9 +207,8 @@ download_and_install() {
     fi
 
     print_message info "\n${MUTED}Installing/updating ${NC}$APP ${MUTED}version: ${NC}$version"
-    tmp_dir="${TMPDIR:-/tmp}/fatima_install_$$"
-    mkdir -p "$tmp_dir"
-    trap 'rm -rf "$tmp_dir"' EXIT
+    tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/fatima_install.XXXXXX")
+    trap "rm -rf '$tmp_dir'" EXIT
 
     curl -# -L -o "$tmp_dir/$filename" "$url"
 
