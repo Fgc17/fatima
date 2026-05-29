@@ -521,7 +521,7 @@ checksum = "9f1f227452a390804cdb637b74a86990f2a7d7ba4b7d5693aac9b4dd6defd8d6"
 
 [[package]]
 name = "fatima-cli"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "base64",
  "clap",
@@ -537,7 +537,7 @@ dependencies = [
 
 [[package]]
 name = "fatima-core"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "aes-gcm",
  "async-trait",
@@ -558,7 +558,7 @@ dependencies = [
 
 [[package]]
 name = "fatima-wasm"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "async-trait",
  "fatima-core",
