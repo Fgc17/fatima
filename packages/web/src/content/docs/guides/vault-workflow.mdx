@@ -1,0 +1,52 @@
+---
+title: Vault workflow
+description: Store local project secrets in the encrypted Vault and load them through Fatima.
+order: 3
+---
+
+Use this flow when you want to stop keeping application secrets as plaintext values in `.env`.
+
+## 1. Open the Vault
+
+```bash
+fatima vault
+```
+
+Initialize the Vault with a password. Fatima stores the encrypted Vault at `.fatima/vault.json` by default.
+
+## 2. Import an existing `.env`
+
+If you already have local variables, use the Vault UI import flow to import them into an environment such as `development`. Importing is the fastest path from a plaintext `.env` workflow to an encrypted Vault workflow.
+
+## 3. Generate a user key
+
+Create a user key scoped to the environments your app needs. Save the generated key outside the Vault, for example in a local uncommitted `.env` file:
+
+```txt title=".env"
+NODE_ENV=development
+FATIMA_USER_KEY=fatima_user_...
+```
+
+## 4. Load Vault secrets as a provider
+
+```json title="fatima.json"
+{
+  "providers": {
+    "development": [
+      { "provider": "file", "file": ".env" },
+      { "provider": "fatima-vault", "key": "{env:FATIMA_USER_KEY}" }
+    ]
+  }
+}
+```
+
+The file provider loads the user key. The Vault provider uses it to read encrypted secrets for the active environment.
+
+## 5. Generate and run
+
+```bash
+fatima generate --strict
+fatima run -- node server.js
+```
+
+Your app receives Vault secrets without storing those secret values in plaintext project files.

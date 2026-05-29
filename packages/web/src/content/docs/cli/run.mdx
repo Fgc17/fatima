@@ -1,0 +1,25 @@
+---
+title: fatima run
+description: Run a command with variables loaded by Fatima.
+order: 3
+---
+
+```bash
+fatima run [--environment <name>] [--config <path>] [--process-env] -- <command...>
+```
+
+`fatima run` loads the selected environment and starts a child process with the merged environment map.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `-e, --environment <name>` | config expression | Select the Fatima environment directly. |
+| `-c, --config <path>` | `fatima.json` | Load a different config file. |
+| `--process-env` | `false` | Skip configured providers and use only the current process environment. |
+
+Examples:
+
+```bash
+fatima run -- node server.js
+fatima run -e development -- pnpm dev
+fatima run --process-env -- npm test
+```

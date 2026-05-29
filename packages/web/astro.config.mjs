@@ -18,8 +18,8 @@ export default defineConfig({
 	markdown: {
 		shikiConfig: {
 			themes: {
-				light: "min-light",
-				dark: "github-dark",
+				light: "light-plus",
+				dark: "dark-plus",
 			},
 			transformers: [copyButtonTransformer],
 		},

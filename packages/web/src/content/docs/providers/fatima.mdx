@@ -1,0 +1,43 @@
+---
+title: Fatima
+description: Load secrets from the local Fatima Vault.
+order: 2
+---
+
+Provider names: `fatima`, `fatima-vault`.
+
+```json
+{
+  "provider": "fatima-vault",
+  "source": "e2e",
+  "key": "{env:FATIMA_USER_KEY}",
+  "environment": "development"
+}
+```
+
+## Options
+
+| Option | Meaning |
+| --- | --- |
+| `source` | `e2e`; this is the implemented local encrypted Vault source. |
+| `key` | User key. If omitted, Fatima can read `FATIMA_USER_KEY`. |
+| `environment` | Vault environment to read. Defaults to the active Fatima environment. |
+| `cwd` | Project directory containing `.fatima`. |
+| `storePath` / `store-path` | Custom Vault store path. |
+
+## Recommended chain
+
+Load the user key from an uncommitted `.env`, then load Vault secrets:
+
+```json
+{
+  "providers": {
+    "development": [
+      { "provider": "file", "file": ".env" },
+      { "provider": "fatima-vault", "key": "{env:FATIMA_USER_KEY}" }
+    ]
+  }
+}
+```
+
+The provider uses user-key authentication, not the Vault password. That keeps application runtime access scoped.

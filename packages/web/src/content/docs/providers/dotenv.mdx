@@ -1,0 +1,49 @@
+---
+title: Dotenv
+description: Load local dotenv files with the file provider.
+order: 1
+---
+
+Provider names: `file`, `local`.
+
+```json
+{ "provider": "file", "file": ".env", "format": "env" }
+```
+
+## Options
+
+| Option | Meaning |
+| --- | --- |
+| `file` | A single path or array of paths. |
+| `files` | A path or array of paths. |
+| `format` | Only `env` is supported. |
+
+If no file option is provided, Fatima reads `.env`.
+
+## Multiple files
+
+```json
+{
+  "provider": "file",
+  "files": [".env", ".env.local"]
+}
+```
+
+Files are loaded in order. Later files override earlier values with the same key.
+
+## Supported syntax
+
+The parser accepts:
+
+- `KEY=value`
+- `export KEY=value`
+- single-quoted values
+- double-quoted values
+- backtick-quoted values
+- comments and empty lines
+
+Double-quoted values decode `\n` and `\r`.
+
+<Callout type="warn" title="Only env format is implemented">
+JSON and YAML are not supported by the current file provider.
+</Callout>

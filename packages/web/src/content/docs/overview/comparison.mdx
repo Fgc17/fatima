@@ -1,0 +1,22 @@
+---
+title: Comparison
+description: How Fatima differs from common environment and secret workflows.
+order: 2
+---
+
+Fatima combines three jobs that are often handled by separate tools.
+
+| Workflow | What it gives you | What Fatima adds |
+| --- | --- | --- |
+| Plain `.env` files | Simple local variables. | Provider chains, validation, generated SDK files, and optional encrypted Vault storage. |
+| Typed env libraries | Safer application reads. | CLI workflows, SDK generation, provider loading, public/private outputs, and Vault integration. |
+| Cloud secret managers | Centralized hosted storage. | A local encrypted Vault and local development workflows without requiring a hosted dependency. |
+| Platform variables | Deployment-time injection. | The same model and SDK generation used locally and in automation. |
+
+## When Fatima is a good fit
+
+Use Fatima when you want local workflows and generated application access to stay aligned. It is especially useful when a project has multiple environments, public and private variables, or a team that wants encrypted local secrets without introducing another hosted service.
+
+## When Fatima is not enough by itself
+
+Fatima does not replace every hosted secret-management requirement. If your organization needs centralized audit logs, approval workflows, or cloud-managed rotation, use a hosted system and connect it to Fatima through a provider such as Infisical or Vercel.

@@ -1,0 +1,68 @@
+---
+title: Models and validation
+description: Define expected variable shapes and validate them before use.
+order: 3
+---
+
+The `model` object declares expected variables and their types. It is used by `fatima validate`, by strict generation, and by generated SDK files.
+
+## Model syntax
+
+Use a string for a simple model:
+
+```json
+{
+  "model": {
+    "DATABASE_URL": "url",
+    "PORT": "integer"
+  }
+}
+```
+
+Use an object when the model needs arguments:
+
+```json
+{
+  "model": {
+    "NODE_ENV": {
+      "type": "string",
+      "args": { "values": ["development", "production"] }
+    }
+  }
+}
+```
+
+The `values` argument restricts the parsed value to one of the listed values.
+
+## Built-in models
+
+| Model | Accepted value |
+| --- | --- |
+| `string` | Any present string. |
+| `nonempty` | A string with non-whitespace content. |
+| `email` | A basic email-like value. |
+| `url` | A value with `http://` or `https://`. |
+| `uuid` | A five-part hexadecimal UUID. |
+| `number` | A value parseable as a number. |
+| `integer` | A numeric value without a fractional part. |
+| `boolean` | `true`, `1`, `yes`, `on`, `y`, `enabled`, `false`, `0`, `no`, `off`, `n`, or `disabled`. |
+| `json` | Valid JSON text. |
+| `pem` | A value containing PEM begin and end markers. |
+| `sk` | A value starting with `sk-` or `sk_`. |
+| `bearer` | A value starting with `Bearer `. |
+
+## Validation behavior
+
+`fatima validate` requires a non-empty `model`. It loads the selected environment, then validates every key declared in the model. Extra loaded variables are allowed.
+
+```bash
+fatima validate --environment production
+```
+
+Generation can also validate first:
+
+```bash
+fatima generate --strict
+```
+
+Use strict generation in CI when generated files must never be produced from invalid configuration.

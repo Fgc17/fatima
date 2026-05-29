@@ -1,0 +1,29 @@
+---
+title: Matrix view
+description: Use the Vault UI matrix view to compare secret values across environments.
+order: 5
+---
+
+Matrix view is a Vault UI browsing mode that displays secret keys as rows and environments as columns. It helps you see which environments have values for the same key.
+
+## Why it matters
+
+Environment-specific secrets are easy to lose track of in a single-environment list. Matrix view makes gaps and drift visible:
+
+- a key exists in `development` but not `production`;
+- a value differs between `staging` and `production`;
+- an environment was created but not populated.
+
+## How to activate it
+
+Open the Vault UI:
+
+```bash
+fatima vault
+```
+
+Use the command palette item **Switch to matrix view** or press `v` to toggle between environment view and matrix view.
+
+## Working in matrix view
+
+The selected row is the secret key. The selected column is the environment. Editing updates the value for that key and environment. Revealing values still uses the same reveal toggle as the standard environment view.

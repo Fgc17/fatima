@@ -1,0 +1,25 @@
+---
+title: fatima generate
+description: Generate SDK files for the selected Fatima environment.
+order: 1
+---
+
+```bash
+fatima generate [--environment <name>] [--config <path>] [--strict]
+```
+
+`fatima generate` loads the selected environment, renders SDK files with the configured generator, and writes them next to `fatima.json` unless `file` points elsewhere.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `-e, --environment <name>` | config expression | Select the Fatima environment directly. |
+| `-c, --config <path>` | `fatima.json` | Load a different config file. |
+| `--strict` | `false` | Validate before writing generated files. |
+
+Examples:
+
+```bash
+fatima generate
+fatima generate --environment production --strict
+fatima generate --config apps/api/fatima.json
+```

@@ -1,25 +1,32 @@
 ---
-title: Why Fatima?
-description: In case you're wondering, the name refers to "Our Lady of Fátima".
+title: Welcome to Fatima
+description: A user guide for SDK generation and local-first secret management.
 ---
 
-## Comparison
+Fatima is a local-first environment and secrets toolkit. It loads variables from configured providers, validates them, generates SDK files for your runtime, and manages encrypted project secrets in a local Vault.
 
-|                           | Fatima | [t3-env][t3env] | [typedotenv][typedotenv] | [dotenvx][dotenvx] |
-| ------------------------- | ------ | --------------- | ------------------------ | ------------------ |
-| CommonJS support          | ✅     | ❌              | ✅                       | ✅                 |
-| Javascript support        | ✅     | ✅              | ❌                       | ✅                 |
-| No setup required         | ✅     | ❌              | ✅                       | ✅                 |
-| Type Safety               | ✅     | ✅              | ✅                       | ❌                 |
-| End-to-end type safety    | ✅     | ❌              | ❌                       | ❌                 |
-| Load from cloud to local  | ✅     | ❌              | ❌                       | ❌                 |
-| Public and server secrets | ✅     | ✅              | ❌                       | ❌                 |
-| Biome/ESLint plugins      | ✅     | ❌              | ❌                       | ❌                 |
-| Development reloading     | ✅     | ❌              | ❌                       | ❌                 |
-| Native .env support       | ✅     | ❌              | ✅                       | ✅                 |
-| Files to setup            | 1      | 1 -> 2          | 0                        | 0                  |
-| Unpacked (production)     | 0kb    | 45kb            | 0kb                      | 0kb                |
+Read this documentation in order if you are new to Fatima. Use the reference sections later when you need a specific CLI command, provider, crate, or JavaScript API.
 
-[t3env]: https://github.com/t3-oss/t3-env
-[typedotenv]: https://github.com/ssssota/typedotenv
-[dotenvx]: https://github.com/dotenvx/dotenvx
+## What Fatima solves
+
+Modern projects often spread configuration across `.env` files, shell variables, hosted platforms, secret managers, and application code. Fatima gives you one local workflow for three jobs:
+
+1. Load environment variables from configured providers.
+2. Validate and expose those variables through generated SDK files.
+3. Store project secrets locally in an encrypted Vault when you do not want to depend on a cloud secret manager.
+
+## Main capabilities
+
+| Capability | What you use it for |
+| --- | --- |
+| SDK generation | Generate TypeScript, JavaScript, or Python files that read validated environment variables. |
+| Providers | Load variables from `.env` files, the current process, Fatima Vault, Vercel, or Infisical. |
+| Models | Validate variables as strings, numbers, URLs, booleans, JSON values, tokens, and more. |
+| CLI | Run commands with loaded variables, generate SDK files, print secrets, validate configuration, and open the Vault UI. |
+| Core library | Use Fatima directly from Rust applications. |
+| JavaScript package | Use Fatima from Node.js through the published WebAssembly-powered package. |
+| Vault | Manage local encrypted secrets with password access and scoped user keys. |
+
+## Recommended reading path
+
+Start with **Installation**, then read **Overview** and **Part 1 - Guides**. The later parts are references for concepts, Vault, CLI, providers, validation, Rust crates, and JavaScript/WASM.

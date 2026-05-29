@@ -1,0 +1,63 @@
+---
+title: Configuration (fatima.json)
+description: The fatima.json file and the fields that control loading, validation, and generation.
+order: 1
+---
+
+`fatima.json` is the project configuration file. It is loaded from the path passed with `--config` or from `fatima.json` in the current project by default.
+
+## Complete field reference
+
+| Field | Type | Default | Purpose |
+| --- | --- | --- | --- |
+| `generator` | string | `typescript` | Selects `typescript`, `javascript`, or `python`. |
+| `file` | string | based on generator | Output file path relative to the config file. |
+| `formatter` | string | none | Present in the schema; not applied by the current generator implementation. |
+| `environment` | string | `'development'` | Expression that resolves the active Fatima environment. |
+| `providers` | object | `{}` | Provider chains grouped by Fatima environment name. |
+| `model` | object | `{}` | Validation and generated type model keyed by variable name. |
+| `publicPrefix` | string | `PUBLIC_` | Prefix used for generated public JavaScript and TypeScript output. |
+| `public-prefix` | string | `PUBLIC_` | Alias for `publicPrefix`. |
+| `plugins` | string[] | `[]` | Present in the schema; no public plugin runtime is documented in the current implementation. |
+
+## Environment expressions
+
+The `environment` field is evaluated against environment variables already available to the process. The most common expression is:
+
+```json
+{
+  "environment": "{env:NODE_ENV} ?? 'development'"
+}
+```
+
+Expression rules:
+
+- `{env:NAME}` reads `NAME` from the environment map.
+- quoted strings such as `'development'` are literal fallbacks.
+- `??` returns the first non-empty value.
+- a final unquoted string can contain interpolation tokens.
+
+If the expression resolves to an empty value, Fatima fails instead of guessing.
+
+## Interpolation in provider options
+
+Provider option values can reference variables loaded earlier in the same chain:
+
+```json
+{
+  "providers": {
+    "development": [
+      { "provider": "file", "file": ".env" },
+      { "provider": "fatima-vault", "key": "{env:FATIMA_USER_KEY}" }
+    ]
+  }
+}
+```
+
+This works because provider chains are evaluated in order. The file provider loads `FATIMA_USER_KEY` before the Vault provider option is interpolated.
+
+## Relative paths
+
+When a configuration file is loaded from disk, relative provider files and generated output paths are resolved from the folder that contains `fatima.json`.
+
+Use this to keep consistent behavior when commands are run from a parent directory with `--config path/to/fatima.json`.

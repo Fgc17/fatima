@@ -1,0 +1,56 @@
+---
+title: Core crate
+description: Use fatima-core from Rust.
+order: 1
+---
+
+`fatima-core` implements configuration loading, providers, validation, SDK generation, the JSON API, and Vault operations.
+
+## Load and validate
+
+```rust
+use fatima_core::{Fatima, FatimaConfig};
+
+let config = FatimaConfig::load("fatima.json")?;
+let fatima = Fatima::from_config(config);
+
+let loaded = fatima.load_environment(Some("development"), false)?;
+fatima.validate(&loaded.environment)?;
+```
+
+## Generate SDK files
+
+```rust
+use fatima_core::{generate, FatimaConfig};
+
+let config = FatimaConfig::load("fatima.json")?;
+let output = generate(config, Some("development"), true)?;
+
+println!("{}", output.output_path);
+```
+
+## Vault
+
+```rust
+use fatima_core::vault::{FatimaVault, VaultOptions};
+
+let options = VaultOptions { cwd: Some(".".into()), store_path: None };
+let mut vault = FatimaVault::initialize("password", Some(options.clone()))?;
+
+vault.set_secret("development", "DATABASE_URL", "https://database.example.com", None)?;
+vault.save()?;
+```
+
+## JSON API
+
+```rust
+use fatima_core::{handle_api_request, ApiRequest};
+use serde_json::json;
+
+let response = handle_api_request(ApiRequest {
+    method: "secrets".to_string(),
+    params: json!({ "config": "fatima.json", "environment": "development" }),
+});
+```
+
+Use the Core crate when you want Fatima behavior inside a Rust application or tool.

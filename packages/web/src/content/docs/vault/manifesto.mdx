@@ -1,0 +1,43 @@
+---
+title: Manifesto
+description: Why the local Vault exists, how it protects data, and when to version it.
+order: 1
+---
+
+The Fatima Vault exists for projects that want encrypted local secret storage without adopting a complex cloud secret manager.
+
+It is not separate from Fatima's SDK workflow. The Vault is one provider-backed source of secrets. You store secrets locally, load them with the `fatima-vault` provider, validate them with your model, and generate the same type-safe SDKs your application already uses.
+
+## Why use a local Vault
+
+Cloud secret managers are useful, but they are not always necessary. For local development, small teams, prototypes, internal tools, and self-contained projects, a cloud control plane can add more setup than value.
+
+The Vault gives you a middle ground:
+
+- secrets are not stored as plaintext `.env` values;
+- the encrypted store lives with the project;
+- access can be scoped with user keys;
+- applications still consume secrets through Fatima providers and generated SDKs.
+
+## How encryption works at a high level
+
+The Vault password unlocks the store and is used to derive encryption material. Secret keys and values are stored as encrypted blobs with an IV, tag, and ciphertext.
+
+Each environment has its own wrapped secret material. User keys receive wrapped access only to the environments selected when the key is created. That is why a key for `development` cannot read `production`.
+
+## Why commit the Vault file
+
+If the Vault is your shared project secret store, commit `.fatima/vault.json`.
+
+The file is meant to be portable encrypted project state. Committing it lets encrypted secrets travel with the codebase while keeping plaintext secrets out of git.
+
+Do not commit:
+
+- the Vault password;
+- user keys;
+- exported plaintext secrets;
+- local `.env` files containing credentials.
+
+## What the Vault is not
+
+The Vault is not a hosted secret manager. It does not provide centralized audit logs, organization policy, or cloud-managed rotation. It is for safe local encrypted storage that works naturally with Fatima's generated SDK workflow.

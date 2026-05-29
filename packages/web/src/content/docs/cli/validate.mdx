@@ -1,0 +1,24 @@
+---
+title: fatima validate
+description: Validate loaded variables against the configured model.
+order: 2
+---
+
+```bash
+fatima validate [--environment <name>] [--config <path>]
+```
+
+Validation loads the selected environment and checks every key declared in `model`.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `-e, --environment <name>` | config expression | Select the Fatima environment directly. |
+| `-c, --config <path>` | `fatima.json` | Load a different config file. |
+
+Example:
+
+```bash
+fatima validate --environment production
+```
+
+Validation fails when `model` is empty, when a modeled key is missing, or when a value does not match its model.

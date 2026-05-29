@@ -1,0 +1,48 @@
+---
+title: Installation
+description: Install Fatima with the CDN install script.
+order: 1
+---
+
+Install or update the Fatima CLI with the install script:
+
+```bash
+curl -fsSL https://cdn.fatima.dev/install | bash
+```
+
+The installer provides the `fatima` binary. After installation, verify that it is available in your shell:
+
+```bash
+fatima --help
+```
+
+## Pinned install
+
+If you need a specific release, use the versioned install URL:
+
+```bash
+curl -fsSL https://cdn.fatima.dev/install/v1.0.0/install.sh | bash
+```
+
+Replace `v1.0.0` with the version you want to pin.
+
+## JavaScript package
+
+Install the JavaScript bindings only when you want to call Fatima from Node.js code:
+
+```bash
+pnpm add @fatima.dev/js
+```
+
+The JavaScript package is ESM-only and targets Node.js 18 or newer.
+
+## Rust crates
+
+Use the Rust crates when Fatima is part of a Rust application or tool:
+
+```toml
+[dependencies]
+fatima-core = "0.0.1"
+```
+
+Most projects only need the CLI.

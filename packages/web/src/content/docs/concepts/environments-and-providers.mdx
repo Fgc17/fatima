@@ -1,0 +1,56 @@
+---
+title: Environments and providers
+description: How Fatima chooses an environment and loads variables from provider chains.
+order: 2
+---
+
+A Fatima environment is a named configuration context such as `development`, `staging`, or `production`. Each environment has its own provider chain under `providers`.
+
+## Provider chains
+
+A provider chain is an ordered list. Each provider returns variables. Fatima merges them into the current environment map, so later providers can override earlier values.
+
+```json
+{
+  "providers": {
+    "development": [
+      { "provider": "file", "file": ".env" },
+      { "provider": "file", "file": ".env.local" }
+    ]
+  }
+}
+```
+
+In this example, values from `.env.local` override values with the same key from `.env`.
+
+## Loaded environment result
+
+The runtime returns two maps:
+
+| Map | Meaning |
+| --- | --- |
+| `env` | The complete environment after merging process variables and provider output. |
+| `loadedEnv` / `loaded_env` | Only the variables loaded from configured providers. |
+
+Commands such as `fatima run` pass the complete `env` map to the child process. Commands such as `fatima secrets` print the provider-loaded values.
+
+## Built-in providers
+
+| Provider | Aliases | Purpose |
+| --- | --- | --- |
+| `file` | `local` | Load dotenv-style files. |
+| `process-env` | none | Load the current process environment from the host. |
+| `env` | none | Return the current merged map. |
+| `fatima` | `fatima-vault` | Load from the local Fatima Vault using a user key. |
+| `infisical` | none | Load secrets through the Infisical HTTP API. |
+| `vercel` | none | Pull variables through the Vercel CLI. |
+
+Provider-specific options are documented in the Integrations chapter.
+
+## Missing provider chain
+
+If the active environment has no provider chain, Fatima returns the current process environment and reports zero providers used. This is useful for deployments where the platform already injects variables.
+
+## Process-only mode
+
+The CLI command `fatima run --process-env` skips configured providers and uses only the current process environment. Use it when you want Fatima to preserve command behavior but avoid file, network, or Vault loading.

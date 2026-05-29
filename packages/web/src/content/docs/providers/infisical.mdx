@@ -1,50 +1,31 @@
 ---
-title: infisical
-description: '"All-in-one platform to securely manage application configuration and secrets..."'
+title: Infisical
+description: Load secrets from Infisical Universal Auth.
 order: 3
 ---
 
-## Dependencies
-
-<CodeTabs groupId="package-manager">
-  <CodeTab label="npm">
-
-```bash
-npm install @infisical/sdk
-```
-
-  </CodeTab>
-  <CodeTab label="pnpm">
-
-```bash
-pnpm add @infisical/sdk
-```
-
-  </CodeTab>
-  <CodeTab label="yarn">
-
-```bash
-yarn add @infisical/sdk
-```
-
-  </CodeTab>
-</CodeTabs>
-
-## Configuring the provider
+Provider name: `infisical`.
 
 ```json
 {
-  "providers": {
-    "development": [
-      { "provider": "local", "file": ".env" },
-      {
-        "provider": "infisical",
-        "clientId": "{env:INFISICAL_CLIENT_ID}",
-        "clientSecret": "{env:INFISICAL_CLIENT_SECRET}",
-        "projectId": "{env:INFISICAL_PROJECT_ID}",
-        "environment": "development"
-      }
-    ]
-  }
+  "provider": "infisical",
+  "client-id": "{env:INFISICAL_CLIENT_ID}",
+  "client-secret": "{env:INFISICAL_CLIENT_SECRET}",
+  "project-id": "{env:INFISICAL_PROJECT_ID}",
+  "environment": "dev"
 }
 ```
+
+## Options
+
+| Option | Fallback | Default |
+| --- | --- | --- |
+| `client-id` | `INFISICAL_CLIENT_ID` | required |
+| `client-secret` | `INFISICAL_CLIENT_SECRET` | required |
+| `project-id` | `INFISICAL_PROJECT_ID` | required |
+| `site-url` | `INFISICAL_SITE_URL` | `https://app.infisical.com` |
+| `environment` | `INFISICAL_ENVIRONMENT` | `dev` |
+
+The provider authenticates through `/api/v1/auth/universal-auth/login`, then reads raw secrets from `/api/v3/secrets/raw` with `secretPath=/`.
+
+Use a file provider earlier in the chain if you want to load Infisical credentials from `.env`.

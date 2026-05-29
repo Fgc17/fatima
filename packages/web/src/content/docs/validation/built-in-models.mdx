@@ -1,0 +1,51 @@
+---
+title: Built-in models
+description: The validation models supported by Fatima.
+order: 1
+---
+
+Models are declared in `fatima.json` under `model` and keyed by environment variable name.
+
+```json
+{
+  "model": {
+    "PORT": "integer",
+    "DATABASE_URL": "url",
+    "NODE_ENV": { "type": "string", "args": { "values": ["development", "production"] } }
+  }
+}
+```
+
+## Models
+
+| Model | Accepted value |
+| --- | --- |
+| `string` | Any present string. |
+| `nonempty` | A string with non-whitespace content. |
+| `email` | A basic email-like value. |
+| `url` | A value with `http://` or `https://`. |
+| `uuid` | A five-part hexadecimal UUID. |
+| `number` | A value parseable as a number. |
+| `integer` | A numeric value without a fractional part. |
+| `boolean` | `true`, `1`, `yes`, `on`, `y`, `enabled`, `false`, `0`, `no`, `off`, `n`, or `disabled`. |
+| `json` | Valid JSON text. |
+| `pem` | A value containing PEM begin and end markers. |
+| `sk` | A value starting with `sk-` or `sk_`. |
+| `bearer` | A value starting with `Bearer `. |
+
+## Allowed values
+
+Use `args.values` to restrict a parsed value:
+
+```json
+{
+  "model": {
+    "NODE_ENV": {
+      "type": "string",
+      "args": { "values": ["development", "staging", "production"] }
+    }
+  }
+}
+```
+
+The allowed-value check runs after the model parses the value.

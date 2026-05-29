@@ -1,69 +1,35 @@
 ---
-title: vercel
-description: '"Your complete platform for the web..."'
+title: Vercel
+description: Pull variables with the Vercel CLI.
 order: 4
 ---
 
-## Dependencies
-
-<CodeTabs groupId="package-manager">
-  <CodeTab label="npm">
-
-```bash
-npm install -g vercel
-```
-
-  </CodeTab>
-  <CodeTab label="pnpm">
-
-```bash
-pnpm i -g vercel
-```
-
-  </CodeTab>
-  <CodeTab label="yarn">
-
-```bash
-yarn global add vercel
-```
-
-  </CodeTab>
-</CodeTabs>
-
-## Authenticating
-
-First, log in:
-
-```bash
-vercel login
-```
-
-Then, link your project:
-
-```bash
-vercel link
-```
-
-### Token Authenticating
-
-Fatima also supports token-based authentication, which can be useful for people running containers.
-
-Just grab your `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` from your Vercel account and set them as environment variables, or pass down as loader options.
-
-## Configuring the provider
+Provider name: `vercel`.
 
 ```json
 {
-  "providers": {
-    "production": [
-      {
-        "provider": "vercel",
-        "environment": "production",
-        "vercelToken": "{env:VERCEL_TOKEN}",
-        "vercelProjectId": "{env:VERCEL_PROJECT_ID}",
-        "vercelOrgId": "{env:VERCEL_ORG_ID}"
-      }
-    ]
-  }
+  "provider": "vercel",
+  "environment": "development",
+  "vercel-token": "{env:VERCEL_TOKEN}",
+  "vercel-org-id": "{env:VERCEL_ORG_ID}",
+  "vercel-project-id": "{env:VERCEL_PROJECT_ID}"
 }
 ```
+
+## Requirements
+
+The `vercel` command must be available in the environment where Fatima runs.
+
+If the project has a `.vercel` directory, Vercel project metadata is already available. If not, provide:
+
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+- `VERCEL_TOKEN`
+
+These values can come from provider options, earlier providers, or process environment variables.
+
+## Behavior
+
+The provider runs `vercel env pull` into a temporary dotenv file, parses that file, then removes it.
+
+The default Vercel environment is `development` unless you set `environment` or `VERCEL_ENVIRONMENT`.

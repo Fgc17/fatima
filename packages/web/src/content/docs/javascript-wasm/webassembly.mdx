@@ -1,0 +1,44 @@
+---
+title: WebAssembly
+description: Use Fatima through the WebAssembly JSON API and a JavaScript host.
+order: 2
+---
+
+The WebAssembly crate exposes Core through one async JSON function:
+
+```ts
+handle_api_request_json(input: string, host: unknown): Promise<string>
+```
+
+Most users should call `@fatima.dev/js` instead of using this function directly.
+
+## Host functions
+
+The host object supplies everything WebAssembly cannot access by itself:
+
+| Function | Purpose |
+| --- | --- |
+| `envVars()` | Return all environment variables. |
+| `envVar(key)` | Return one environment variable or `null`. |
+| `currentDir()` | Return the working directory. |
+| `exists(path)` | Check path existence. |
+| `readText(path)` | Read a UTF-8 file. |
+| `writeText(path, content)` | Write a UTF-8 file. |
+| `createDirAll(path)` | Create directories recursively. |
+| `removeFile(path)` | Remove a file. |
+| `processId()` | Return a process id. |
+| `runCommand(request)` | Run an external command. |
+| `httpJson(request)` | Perform an HTTP request and return JSON. |
+
+## Direct request
+
+```ts
+const response = JSON.parse(await handle_api_request_json(JSON.stringify({
+  method: "secrets",
+  params: { config: "fatima.json", environment: "development" },
+}), host));
+
+if (!response.ok) throw new Error(response.error);
+```
+
+Providers such as Vercel and Infisical require host support for commands or HTTP requests.

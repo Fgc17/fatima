@@ -1,0 +1,21 @@
+---
+title: Manifesto
+description: Why Fatima exists and what it optimizes for.
+order: 1
+---
+
+Fatima exists to make secrets type-safe no matter where they are stored.
+
+A project may keep secrets in `.env` files, process variables, Vercel, Infisical, Fatima Vault, or a mix of providers. Fatima does not force one storage backend. It gives you one way to load those secrets, validate them, and generate SDK files that application code can import safely.
+
+## The main idea
+
+Secrets should not be accessed as untyped strings scattered across an application. They should have a model, be validated before use, and be exposed through generated code.
+
+Fatima turns configured secret sources into generated SDKs for TypeScript, JavaScript, and Python. Your application imports the generated SDK instead of reading raw environment variables directly.
+
+## Why Fatima also includes a Vault
+
+Not every project needs or wants a cloud secret manager. For local development, small teams, self-contained projects, and environments where external infrastructure is unnecessary, Fatima provides an encrypted local Vault.
+
+The Vault lets you store project secrets safely on disk, load them through the same provider system, and still generate the same type-safe SDKs.

@@ -1,0 +1,42 @@
+---
+title: JS Library
+description: Use @fatima.dev/js from Node.js.
+order: 1
+---
+
+`@fatima.dev/js` is an ESM Node.js package backed by Fatima WebAssembly.
+
+```bash
+pnpm add @fatima.dev/js
+```
+
+## Runtime API
+
+```ts
+import { Fatima } from "@fatima.dev/js";
+
+const fatima = new Fatima({ config: "fatima.json", cwd: process.cwd() });
+
+const loaded = await fatima.loadEnvironment("development");
+await fatima.validate("development");
+await fatima.generate({ environment: "development", strict: true });
+```
+
+`Fatima` also supports object configuration through `addProvider`, `setModel`, and `setPublicPrefix`.
+
+## Vault API
+
+```ts
+import { FatimaVault } from "@fatima.dev/js";
+
+const vault = await FatimaVault.initialize("password", { cwd: process.cwd() });
+await vault.setSecret("development", "DATABASE_URL", "https://database.example.com");
+
+console.log(await vault.secrets("development"));
+```
+
+Use `unlockWithPassword` for administrative operations and `authenticateWithKey` for scoped user-key reads.
+
+<Callout type="warn" title="User-key generation binding">
+The JavaScript source exposes `generateAccessKey`, while the Core JSON API currently handles `vault.generateUserKey`. Use the Vault UI or JSON API for user-key generation until those names are aligned.
+</Callout>

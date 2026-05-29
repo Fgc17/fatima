@@ -1,0 +1,27 @@
+---
+title: Vault
+description: The core Vault concepts used by the rest of the documentation.
+order: 5
+---
+
+The Fatima Vault is a local encrypted store for project secrets. By default, it lives at `.fatima/vault.json`.
+
+## Store
+
+The store contains encrypted secret keys, encrypted secret values, environment metadata, and user-key records. The file is JSON, but the sensitive fields are encrypted blobs.
+
+## Environments
+
+Vault environments are named groups of values, such as `development`, `staging`, and `production`. A single secret key can have different values in different environments.
+
+## Password
+
+The password unlocks the Vault for administrative operations. Password authentication can create and edit project secrets, manage environments, generate user keys, change the password, import dotenv files, and read snapshots.
+
+## User keys
+
+A user key is scoped to one or more Vault environments. It can read secrets for those environments and write per-user secrets, but it cannot perform administrative mutations.
+
+## Provider usage
+
+The Vault becomes part of an application workflow through the `fatima-vault` provider. Applications should usually use scoped user keys instead of the Vault password.

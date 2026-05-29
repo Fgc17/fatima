@@ -1,0 +1,24 @@
+---
+title: CLI crate
+description: Understand the Rust crate that provides the fatima binary.
+order: 2
+---
+
+The CLI crate is `fatima-cli`. It builds the `fatima` binary and uses `fatima-core` for runtime behavior.
+
+The public binary commands are documented in Part 4:
+
+- `fatima generate`
+- `fatima validate`
+- `fatima run`
+- `fatima secrets`
+- `fatima vault`
+- `fatima api` for machine-readable integrations
+
+Most users should install the CLI through the CDN install script:
+
+```bash
+curl -fsSL https://cdn.fatima.dev/install | bash
+```
+
+Use the crate directly only when embedding or packaging the CLI in a Rust distribution.

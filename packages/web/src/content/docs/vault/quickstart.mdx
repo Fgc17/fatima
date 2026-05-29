@@ -1,0 +1,46 @@
+---
+title: Quickstart
+description: Start using the Vault from a new project or from an existing .env file.
+order: 2
+---
+
+Open the Vault UI:
+
+```bash
+fatima vault
+```
+
+## If you are starting fresh
+
+1. Initialize the Vault with a password.
+2. Add secrets to the `development` environment.
+3. Generate a user key scoped to `development`.
+4. Store the user key outside the Vault file.
+5. Load it through the `fatima-vault` provider.
+
+```json title="fatima.json"
+{
+  "providers": {
+    "development": [
+      { "provider": "file", "file": ".env" },
+      { "provider": "fatima-vault", "key": "{env:FATIMA_USER_KEY}" }
+    ]
+  }
+}
+```
+
+## If you are coming from `.env`
+
+Use the Vault UI import command to import an existing `.env` file into the selected environment. In the command palette, choose **Import .env file** or press `i`.
+
+After import, generate a user key and update your Fatima provider chain as shown above. The `.env` file can then keep only non-secret runtime selectors such as `NODE_ENV` and `FATIMA_USER_KEY`.
+
+## Default location
+
+The default Vault file is:
+
+```txt
+.fatima/vault.json
+```
+
+Use `storePath` or `store-path` in provider/API options only when your project needs a custom location.

@@ -1,0 +1,58 @@
+---
+title: Generated SDKs
+description: Understand the files Fatima writes for TypeScript, JavaScript, and Python.
+order: 4
+---
+
+SDK generation converts loaded environment variables into a runtime file that your application can import.
+
+## Supported generators
+
+| Generator | Default file | Output |
+| --- | --- | --- |
+| `typescript` | `env.ts` | Private `env.ts` plus public `env.public.ts`. |
+| `javascript` | `env.js` | Private `env.js` plus public `env.public.js`. |
+| `python` | `env.py` | One Python file. |
+
+Set the generator and output file in `fatima.json`:
+
+```json
+{
+  "generator": "typescript",
+  "file": "src/env.ts"
+}
+```
+
+## Private and public output
+
+JavaScript and TypeScript generation separates variables by prefix. The default public prefix is `PUBLIC_`.
+
+- Variables that start with the prefix are available in the public output.
+- Variables without the prefix stay in the private output.
+- The TypeScript private output prevents client-side reads of private variables through a runtime guard.
+
+Change the prefix with either spelling:
+
+```json
+{
+  "publicPrefix": "NEXT_PUBLIC_"
+}
+```
+
+## Runtime helpers in generated JavaScript and TypeScript
+
+The private TypeScript and JavaScript files include:
+
+| Export | Purpose |
+| --- | --- |
+| `env` | Lazy access to validated environment values. |
+| `register` | Synchronously load dotenv files into `process.env`. |
+| `registerAsync` | Populate `process.env` from an async source. |
+
+The public output exports `publicEnv`.
+
+## What gets generated
+
+Fatima generates keys from the variables actually loaded by providers. The model changes generated types and validation expressions, but it does not create variables that were not loaded.
+
+For example, if `PORT=3000` is loaded and `PORT` is modeled as `integer`, the generated TypeScript type for `env.PORT` is `number`.

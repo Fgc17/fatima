@@ -56,43 +56,43 @@
 
 .dark {
 	color-scheme: dark;
-	--background: oklch(0.145 0.004 20);
-	--foreground: oklch(0.68 0.004 20);
-	--foreground-strong: oklch(0.94 0.004 20);
-	--foreground-inverted: oklch(0.145 0.004 20);
-	--muted: oklch(0.19 0.004 20);
-	--muted-hover: oklch(0.24 0.004 20);
-	--code-background: oklch(0.18 0.004 20);
+	--background: oklch(0.145 0 0);
+	--foreground: oklch(0.72 0 0);
+	--foreground-strong: oklch(0.96 0 0);
+	--foreground-inverted: oklch(0.145 0 0);
+	--muted: oklch(0.205 0 0);
+	--muted-hover: oklch(0.255 0 0);
+	--code-background: oklch(0.18 0 0);
 	--code-foreground: oklch(0.9 0.004 20);
-	--code-border: oklch(0.32 0.004 20 / 0.95);
-	--code-tab-background: oklch(0.22 0.004 20);
-	--inline-code-background: oklch(0.26 0.004 20);
+	--code-border: oklch(0.32 0 0 / 0.95);
+	--code-tab-background: oklch(0.235 0 0);
+	--inline-code-background: oklch(0.26 0 0);
 	--inline-code-foreground: oklch(0.92 0.004 20);
-	--primary: oklch(0.94 0.004 20);
-	--primary-hover: oklch(0.985 0.004 20);
-	--border: oklch(0.28 0.004 20 / 0.95);
-	--ring: oklch(0.56 0.004 20);
+	--primary: oklch(0.96 0 0);
+	--primary-hover: oklch(0.985 0 0);
+	--border: oklch(0.29 0 0 / 0.95);
+	--ring: oklch(0.56 0 0);
 }
 
 @media (prefers-color-scheme: dark) {
 	:root:not(.light) {
 		color-scheme: dark;
-		--background: oklch(0.145 0.004 20);
-		--foreground: oklch(0.68 0.004 20);
-		--foreground-strong: oklch(0.94 0.004 20);
-		--foreground-inverted: oklch(0.145 0.004 20);
-		--muted: oklch(0.19 0.004 20);
-		--muted-hover: oklch(0.24 0.004 20);
-		--code-background: oklch(0.18 0.004 20);
+		--background: oklch(0.145 0 0);
+		--foreground: oklch(0.72 0 0);
+		--foreground-strong: oklch(0.96 0 0);
+		--foreground-inverted: oklch(0.145 0 0);
+		--muted: oklch(0.205 0 0);
+		--muted-hover: oklch(0.255 0 0);
+		--code-background: oklch(0.18 0 0);
 		--code-foreground: oklch(0.9 0.004 20);
-		--code-border: oklch(0.32 0.004 20 / 0.95);
-		--code-tab-background: oklch(0.22 0.004 20);
-		--inline-code-background: oklch(0.26 0.004 20);
+		--code-border: oklch(0.32 0 0 / 0.95);
+		--code-tab-background: oklch(0.235 0 0);
+		--inline-code-background: oklch(0.26 0 0);
 		--inline-code-foreground: oklch(0.92 0.004 20);
-		--primary: oklch(0.94 0.004 20);
-		--primary-hover: oklch(0.985 0.004 20);
-		--border: oklch(0.28 0.004 20 / 0.95);
-		--ring: oklch(0.56 0.004 20);
+		--primary: oklch(0.96 0 0);
+		--primary-hover: oklch(0.985 0 0);
+		--border: oklch(0.29 0 0 / 0.95);
+		--ring: oklch(0.56 0 0);
 	}
 }
 
@@ -254,16 +254,16 @@ html {
 	font-size: 13px;
 }
 
-.dark .astro-code {
-	color: var(--shiki-dark, var(--code-foreground));
-	background-color: var(--code-background);
+.dark .astro-code-themes {
+	color: var(--shiki-dark, var(--code-foreground)) !important;
+	background-color: var(--code-background) !important;
 	font-style: var(--shiki-dark-font-style);
 	font-weight: var(--shiki-dark-font-weight);
 	text-decoration: var(--shiki-dark-text-decoration);
 }
 
-.dark .astro-code span {
-	color: var(--shiki-dark, var(--code-foreground));
+.dark .astro-code-themes span {
+	color: var(--shiki-dark, var(--code-foreground)) !important;
 	background-color: transparent;
 	font-style: var(--shiki-dark-font-style);
 	font-weight: var(--shiki-dark-font-weight);
@@ -326,6 +326,20 @@ html {
 
 .docs-content .copy-btn:hover {
 	background: var(--muted-hover);
+}
+
+.landing-code .astro-code {
+	margin: 0;
+	padding: 20px;
+	border-radius: 0;
+	background: var(--code-background) !important;
+	font-family: var(--font-mono);
+	font-size: 13px;
+	line-height: 1.7;
+}
+
+.landing-code .astro-code code {
+	font-family: var(--font-mono);
 }
 
 .table-wrapper {

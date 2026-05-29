@@ -1,0 +1,66 @@
+---
+title: First Project
+description: Build the first complete Fatima project from configuration to generated code.
+order: 1
+---
+
+This guide creates one project configuration, one provider chain, one validation model, and one generated SDK.
+
+## 1. Create local variables
+
+```txt title=".env"
+NODE_ENV=development
+PORT=3000
+DATABASE_URL=https://database.example.com
+PUBLIC_BASE_URL=http://localhost:3000
+FEATURE_ENABLED=true
+```
+
+## 2. Configure Fatima
+
+```json title="fatima.json"
+{
+  "$schema": "https://cdn.fatima.dev/schema.json",
+  "generator": "typescript",
+  "environment": "{env:NODE_ENV} ?? 'development'",
+  "public-prefix": "PUBLIC_",
+  "providers": {
+    "development": [{ "provider": "file", "file": ".env" }]
+  },
+  "model": {
+    "NODE_ENV": { "type": "string", "args": { "values": ["development"] } },
+    "PORT": "integer",
+    "DATABASE_URL": "url",
+    "PUBLIC_BASE_URL": "url",
+    "FEATURE_ENABLED": "boolean"
+  }
+}
+```
+
+## 3. Validate
+
+```bash
+fatima validate
+```
+
+Validation proves that every key declared in `model` is present and parseable.
+
+## 4. Generate
+
+```bash
+fatima generate --strict
+```
+
+For TypeScript, Fatima writes `env.ts` and `env.public.ts` unless `file` points somewhere else.
+
+## 5. Import the SDK
+
+```ts
+import { env } from "./env";
+
+export function start() {
+  console.log(`Listening on ${env.PORT}`);
+}
+```
+
+`env.PORT` is a number because the model uses `integer`.

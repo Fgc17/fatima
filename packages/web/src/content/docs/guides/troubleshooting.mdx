@@ -1,0 +1,41 @@
+---
+title: Troubleshooting
+description: Fix common setup, provider, validation, and Vault errors.
+order: 4
+---
+
+## `fatima.json` is missing
+
+Create `fatima.json` in the project root or pass a path with `--config`.
+
+## The active environment is empty
+
+Add a fallback to the `environment` expression:
+
+```json
+{ "environment": "{env:NODE_ENV} ?? 'development'" }
+```
+
+## A provider option cannot resolve `{env:NAME}`
+
+Interpolation can only read variables that already exist at that point in the provider chain. Load the value earlier or export it before running Fatima.
+
+## JSON or YAML files fail in the file provider
+
+The file provider currently supports dotenv-style `env` files only.
+
+## Validation says no model is defined
+
+`fatima validate` requires at least one key in `model`.
+
+## Vercel provider fails
+
+Make sure the `vercel` CLI is available. If the project does not contain `.vercel`, provide `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, and `VERCEL_TOKEN`.
+
+## Vault mutation requires password authentication
+
+You are authenticated with a user key. Use password authentication for project secret edits, environment changes, imports, snapshots, password changes, and user-key management.
+
+## A user key cannot read an environment
+
+User keys are scoped. Create a key that includes the target environment or use password authentication.

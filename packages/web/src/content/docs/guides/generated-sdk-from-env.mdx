@@ -1,0 +1,55 @@
+---
+title: Generated SDK from .env
+description: Generate private and public SDK files from dotenv input.
+order: 2
+---
+
+Use this flow when `.env` remains the source of local development variables but application code should import a generated SDK.
+
+## Configure file output
+
+```json title="fatima.json"
+{
+  "generator": "typescript",
+  "file": "src/env.ts",
+  "environment": "{env:NODE_ENV} ?? 'development'",
+  "publicPrefix": "PUBLIC_",
+  "providers": {
+    "development": [{ "provider": "file", "file": ".env" }]
+  },
+  "model": {
+    "PORT": "integer",
+    "DATABASE_URL": "url",
+    "PUBLIC_BASE_URL": "url"
+  }
+}
+```
+
+Generate the files:
+
+```bash
+fatima generate --strict
+```
+
+Fatima writes:
+
+- `src/env.ts`, containing private runtime access;
+- `src/env.public.ts`, containing only keys that start with `PUBLIC_`.
+
+## Server-side import
+
+```ts
+import { env } from "./env";
+
+console.log(env.DATABASE_URL);
+```
+
+## Client-safe import
+
+```ts
+import { publicEnv } from "./env.public";
+
+console.log(publicEnv.PUBLIC_BASE_URL);
+```
+
+Do not import the private SDK into browser code. Use the generated public file for public values.

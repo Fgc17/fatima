@@ -1,0 +1,62 @@
+---
+title: Quickstart
+description: Create a config, load .env values, generate an SDK, and run a command.
+order: 3
+---
+
+Install Fatima first:
+
+```bash
+curl -fsSL https://cdn.fatima.dev/install | bash
+```
+
+Create a local `.env` file:
+
+```txt title=".env"
+NODE_ENV=development
+PORT=3000
+DATABASE_URL=https://database.example.com
+PUBLIC_BASE_URL=http://localhost:3000
+```
+
+Create `fatima.json`:
+
+```json title="fatima.json"
+{
+  "$schema": "https://cdn.fatima.dev/schema.json",
+  "generator": "typescript",
+  "environment": "{env:NODE_ENV} ?? 'development'",
+  "public-prefix": "PUBLIC_",
+  "providers": {
+    "development": [{ "provider": "file", "file": ".env" }]
+  },
+  "model": {
+    "NODE_ENV": { "type": "string", "args": { "values": ["development"] } },
+    "PORT": "integer",
+    "DATABASE_URL": "url",
+    "PUBLIC_BASE_URL": "url"
+  }
+}
+```
+
+Validate and generate:
+
+```bash
+fatima validate
+fatima generate --strict
+```
+
+Use the generated SDK:
+
+```ts
+import { env } from "./env";
+
+console.log(env.PORT);
+console.log(env.DATABASE_URL);
+```
+
+Run an application with the loaded variables:
+
+```bash
+fatima run -- node server.js
+```
