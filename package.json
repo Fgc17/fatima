@@ -12,6 +12,7 @@
 		"check:rust": "cargo check --workspace",
 		"test:rust": "cargo test --workspace",
 		"bump": "cargo run -p task -- bump",
+		"revert-bump": "cargo run -p task -- revert-bump",
 		"commit-tags": "cargo run -p task -- commit-tags",
 		"version": "cargo run -p task -- set-version",
 		"verify:release": "cargo run -p task -- verify-release",
