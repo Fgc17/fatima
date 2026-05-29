@@ -99,7 +99,14 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Publish fatima-core
-        run: cargo publish -p fatima-core --token "$CARGO_REGISTRY_TOKEN"
+        shell: bash
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          if cargo search fatima-core --limit 1 | grep -q "^fatima-core = \"$VERSION\""; then
+            echo "fatima-core $VERSION already published, skipping"
+          else
+            cargo publish -p fatima-core
+          fi
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
@@ -107,7 +114,14 @@ jobs:
         run: sleep 60
 
       - name: Publish fatima-cli
-        run: cargo publish -p fatima-cli --token "$CARGO_REGISTRY_TOKEN"
+        shell: bash
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          if cargo search fatima-cli --limit 1 | grep -q "^fatima-cli = \"$VERSION\""; then
+            echo "fatima-cli $VERSION already published, skipping"
+          else
+            cargo publish -p fatima-cli
+          fi
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
@@ -254,7 +268,14 @@ jobs:
           path: .release/raw
 
       - name: Publish @fatima.dev/js
-        run: pnpm run publish:npm
+        shell: bash
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          if npm view "@fatima.dev/js@$VERSION" version >/dev/null 2>&1; then
+            echo "@fatima.dev/js $VERSION already published, skipping"
+          else
+            pnpm run publish:npm
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
