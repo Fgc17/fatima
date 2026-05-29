@@ -171,6 +171,7 @@ fn run() -> Result<(), String> {
             set_version(&version)
         }
         "bump" => bump(),
+        "revert-bump" => revert_bump(),
         "commit-tags" => commit_tags(),
         "verify-release" => {
             let version = parse_version_arg(args.collect())?;
@@ -186,7 +187,7 @@ fn run() -> Result<(), String> {
 
 fn usage() {
     eprintln!(
-        "Usage:\n  cargo run -p task -- bump\n  cargo run -p task -- commit-tags\n  cargo run -p task -- build-binaries [--target <asset>|--host|--all]\n  cargo run -p task -- set-version --version <version>\n  cargo run -p task -- verify-release --version <version>\n\nTargets: linux-x64, linux-arm64, linux-x64-musl, linux-arm64-musl, darwin-x64, darwin-arm64, windows-x64, windows-arm64, wasm"
+        "Usage:\n  cargo run -p task -- bump\n  cargo run -p task -- revert-bump\n  cargo run -p task -- commit-tags\n  cargo run -p task -- build-binaries [--target <asset>|--host|--all]\n  cargo run -p task -- set-version --version <version>\n  cargo run -p task -- verify-release --version <version>\n\nTargets: linux-x64, linux-arm64, linux-x64-musl, linux-arm64-musl, darwin-x64, darwin-arm64, windows-x64, windows-arm64, wasm"
     );
 }
 
@@ -528,7 +529,7 @@ fn set_version(version: &str) -> Result<(), String> {
                 if line.trim_start().starts_with("version = ") {
                     format!("version = \"{version}\"")
                 } else if line.trim_start().starts_with("fatima-core = ") {
-                    format!("fatima-core = {{ path = \"crates/core\", version = \"{version}\" }}")
+                    format!("fatima-core = {{ path = \"crates/core\", version = \"{version}\", default-features = false }}")
                 } else {
                     line.to_string()
                 }
@@ -577,17 +578,23 @@ fn bump() -> Result<(), String> {
         "Select version bump",
         vec![BumpKind::Patch, BumpKind::Minor, BumpKind::Major],
     )
+    .with_help_message("↑↓ to move, enter to select")
+    .without_filtering()
     .prompt()
     .map_err(|error| error.to_string())?;
 
     let current = current_version()?;
-    let next = bump_version(&current, kind)?;
+    let latest = latest_release_tag()?;
+    let base = latest
+        .as_deref()
+        .and_then(|tag| tag.strip_prefix('v'))
+        .unwrap_or("0.0.0");
+    let next = bump_version(base, kind)?;
     let tag = format!("v{next}");
     if git_tag_exists(&tag)? {
         return Err(format!("tag `{tag}` already exists"));
     }
 
-    let latest = latest_release_tag()?;
     let changed = match latest.as_deref() {
         Some(previous) => changed_release_packages(previous)?,
         None => Vec::new(),
@@ -605,9 +612,6 @@ fn bump() -> Result<(), String> {
     run_command("git", &["tag", &tag])?;
     println!("bumped {current} -> {next}");
     println!("created local tag {tag}");
-    if latest.is_none() {
-        println!("no previous release tag found; skipped changelog for v0.0.0 baseline");
-    }
     Ok(())
 }
 
@@ -665,6 +669,11 @@ fn latest_release_tag() -> Result<Option<String>, String> {
     Ok(output.lines().next().map(str::to_string))
 }
 
+fn release_tags() -> Result<Vec<String>, String> {
+    let output = command_output("git", &["tag", "--list", "v[0-9]*", "--sort=-v:refname"])?;
+    Ok(output.lines().map(str::to_string).collect())
+}
+
 fn git_tag_exists(tag: &str) -> Result<bool, String> {
     let output = command_output("git", &["tag", "--list", tag])?;
     Ok(output.lines().any(|line| line == tag))
@@ -711,6 +720,45 @@ fn update_changelog(version: &str, packages: &[ReleasePackage]) -> Result<(), St
     fs::write(path, next).map_err(|error| error.to_string())
 }
 
+fn remove_changelog_entry(version: &str) -> Result<(), String> {
+    let path = Path::new("CHANGELOG.md");
+    let Ok(existing) = fs::read_to_string(path) else {
+        return Ok(());
+    };
+
+    let heading = format!("## v{version}");
+    let Some(start) = existing.find(&heading) else {
+        return Ok(());
+    };
+    let end = existing[start + heading.len()..]
+        .find("\n## ")
+        .map(|offset| start + heading.len() + offset + 1)
+        .unwrap_or(existing.len());
+
+    let mut next = format!("{}{}", &existing[..start], &existing[end..]);
+    while next.contains("\n\n\n") {
+        next = next.replace("\n\n\n", "\n\n");
+    }
+    if next.trim() == "# Changelog" {
+        if !git_file_tracked("CHANGELOG.md") {
+            return fs::remove_file(path).map_err(|error| error.to_string());
+        }
+        next = "# Changelog\n".to_string();
+    }
+
+    fs::write(path, next).map_err(|error| error.to_string())
+}
+
+fn git_file_tracked(path: &str) -> bool {
+    Command::new("git")
+        .args(["ls-files", "--error-unmatch", path])
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status()
+        .map(|status| status.success())
+        .unwrap_or(false)
+}
+
 fn today() -> String {
     let date = OffsetDateTime::now_utc().date();
     format!(
@@ -740,6 +788,29 @@ fn ensure_clean_release_files() -> Result<(), String> {
             dirty.join(", ")
         ))
     }
+}
+
+fn revert_bump() -> Result<(), String> {
+    let current = current_version()?;
+    let tag = format!("v{current}");
+    let tags = release_tags()?;
+    let Some(index) = tags.iter().position(|candidate| candidate == &tag) else {
+        return Err(format!("missing local bump tag `{tag}`"));
+    };
+    let previous = tags
+        .get(index + 1)
+        .and_then(|tag| tag.strip_prefix('v'))
+        .unwrap_or("0.0.0")
+        .to_string();
+
+    run_command("git", &["tag", "-d", &tag])?;
+    set_version(&previous)?;
+    refresh_cargo_lock()?;
+    remove_changelog_entry(&current)?;
+
+    println!("deleted local tag {tag}");
+    println!("reverted {current} -> {previous}");
+    Ok(())
 }
 
 fn commit_tags() -> Result<(), String> {
@@ -786,12 +857,16 @@ fn verify_release(version: &str) -> Result<(), String> {
     )?;
     ensure_contains(
         &cargo,
-        &format!("fatima-core = {{ path = \"crates/core\", version = \"{version}\" }}"),
+        &format!(
+            "fatima-core = {{ path = \"crates/core\", version = \"{version}\", default-features = false }}"
+        ),
         "fatima-core workspace dependency version",
     )?;
 
     for file in VERSION_FILES {
         let content = fs::read_to_string(file).map_err(|error| error.to_string())?;
+        ensure_contains(&content, "\"name\": \"@fatima.dev/js\"", file)?;
+        ensure_contains(&content, "\"license\": \"MIT\"", file)?;
         ensure_contains(
             &content,
             &format!("\"version\": \"{version}\""),
@@ -799,19 +874,67 @@ fn verify_release(version: &str) -> Result<(), String> {
         )?;
     }
 
-    for (file, needle) in [
-        ("crates/core/Cargo.toml", "description.workspace = true"),
-        ("crates/cli/Cargo.toml", "description.workspace = true"),
-        ("crates/wasm/Cargo.toml", "version.workspace = true"),
-        ("crates/task/Cargo.toml", "version = \"0.0.0\""),
+    for file in [
+        "crates/core/Cargo.toml",
+        "crates/cli/Cargo.toml",
+        "crates/wasm/Cargo.toml",
     ] {
         let content = fs::read_to_string(file).map_err(|error| error.to_string())?;
-        ensure_contains(&content, needle, file)?;
+        for needle in [
+            "version.workspace = true",
+            "edition.workspace = true",
+            "license.workspace = true",
+            "repository.workspace = true",
+            "description.workspace = true",
+        ] {
+            ensure_contains(&content, needle, file)?;
+        }
     }
 
+    let wasm = fs::read_to_string("crates/wasm/Cargo.toml").map_err(|error| error.to_string())?;
+    ensure_contains(
+        &wasm,
+        "fatima-core = { workspace = true, features = [\"wasm\"] }",
+        "crates/wasm fatima-core dependency",
+    )?;
+
+    let cli = fs::read_to_string("crates/cli/Cargo.toml").map_err(|error| error.to_string())?;
+    ensure_contains(
+        &cli,
+        "fatima-core = { workspace = true, features = [\"native\"] }",
+        "crates/cli fatima-core dependency",
+    )?;
+
+    let task = fs::read_to_string("crates/task/Cargo.toml").map_err(|error| error.to_string())?;
+    for needle in [
+        "edition.workspace = true",
+        "license.workspace = true",
+        "repository.workspace = true",
+        "publish = false",
+    ] {
+        ensure_contains(&task, needle, "crates/task/Cargo.toml")?;
+    }
+    ensure_package_key_absent(&task, "version", "crates/task/Cargo.toml")?;
+    ensure_package_key_absent(&task, "description", "crates/task/Cargo.toml")?;
+
     let web = fs::read_to_string("packages/web/package.json").map_err(|error| error.to_string())?;
-    ensure_contains(&web, "\"version\": \"0.0.0\"", "packages/web version")?;
+    ensure_contains(&web, "\"name\": \"@fatimajs/web\"", "packages/web name")?;
     ensure_contains(&web, "\"private\": true", "packages/web private flag")?;
+    ensure_not_contains(&web, "\"version\"", "packages/web version")?;
+
+    let root_package = fs::read_to_string("package.json").map_err(|error| error.to_string())?;
+    ensure_contains(
+        &root_package,
+        "\"private\": true",
+        "root package private flag",
+    )?;
+    ensure_not_contains(&root_package, "\n\t\"version\":", "root package version")?;
+
+    let lock = fs::read_to_string("Cargo.lock").map_err(|error| error.to_string())?;
+    for package in ["fatima-core", "fatima-cli", "fatima-wasm"] {
+        ensure_lock_package_version(&lock, package, version)?;
+    }
+    ensure_lock_package_version(&lock, "task", "0.0.0")?;
 
     Ok(())
 }
@@ -822,6 +945,45 @@ fn ensure_contains(content: &str, needle: &str, label: &str) -> Result<(), Strin
     } else {
         Err(format!("{label} is not synchronized; missing `{needle}`"))
     }
+}
+
+fn ensure_not_contains(content: &str, needle: &str, label: &str) -> Result<(), String> {
+    if content.contains(needle) {
+        Err(format!("{label} should not contain `{needle}`"))
+    } else {
+        Ok(())
+    }
+}
+
+fn ensure_package_key_absent(content: &str, key: &str, label: &str) -> Result<(), String> {
+    let mut in_package = false;
+    for line in content.lines() {
+        let trimmed = line.trim_start();
+        if trimmed.starts_with('[') {
+            in_package = trimmed == "[package]";
+            continue;
+        }
+        if in_package
+            && (trimmed.starts_with(&format!("{key} = "))
+                || trimmed.starts_with(&format!("{key}.workspace = ")))
+        {
+            return Err(format!("{label} package section should not define `{key}`"));
+        }
+    }
+    Ok(())
+}
+
+fn ensure_lock_package_version(content: &str, package: &str, version: &str) -> Result<(), String> {
+    let expected_name = format!("name = \"{package}\"");
+    let expected_version = format!("version = \"{version}\"");
+
+    for block in content.split("\n[[package]]\n") {
+        if block.contains(&expected_name) {
+            return ensure_contains(block, &expected_version, &format!("Cargo.lock {package}"));
+        }
+    }
+
+    Err(format!("Cargo.lock is missing package `{package}`"))
 }
 
 fn run_command(command: &str, args: &[&str]) -> Result<(), String> {
