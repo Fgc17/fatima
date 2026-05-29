@@ -329,32 +329,23 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.3.0
-
-      - name: Upload missing static files to Cloudflare CDN
+      - name: Upload missing static files to S3-compatible storage
         shell: bash
         run: |
           VERSION="${{ needs.prepare.outputs.version }}"
-          BUCKET="${{ secrets.CLOUDFLARE_R2_BUCKET }}"
+          BUCKET="${{ secrets.R2_BUCKET }}"
+          ENDPOINT="${{ secrets.R2_ENDPOINT }}"
 
           put_if_missing() {
             local key="$1"
             local file="$2"
-            local object="$BUCKET/$key"
-            local check_file
-            check_file="$(mktemp)"
 
-            if pnpm dlx wrangler@latest r2 object get "$object" --remote --file "$check_file" >/dev/null 2>&1; then
+            if aws s3api head-object --bucket "$BUCKET" --key "$key" --endpoint-url "$ENDPOINT" >/dev/null 2>&1; then
               echo "$key already exists in bucket, skipping"
             else
               echo "$key missing in bucket, uploading"
-              pnpm dlx wrangler@latest r2 object put "$object" --remote --file "$file"
+              aws s3api put-object --bucket "$BUCKET" --key "$key" --body "$file" --endpoint-url "$ENDPOINT"
             fi
-
-            rm -f "$check_file"
           }
 
           put_if_missing "install" static/install.sh
@@ -366,5 +357,6 @@ jobs:
           put_if_missing "schema/latest/schema.json" static/schema.json
           put_if_missing "schema/v$VERSION/schema.json" static/schema.json
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.R2_REGION || 'auto' }}
