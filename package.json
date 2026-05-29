@@ -11,9 +11,11 @@
 		"checktypes": "turbo run checktypes",
 		"check:rust": "cargo check --workspace",
 		"test:rust": "cargo test --workspace",
+		"bump": "cargo run -p task -- bump",
+		"commit-tags": "cargo run -p task -- commit-tags",
 		"version": "cargo run -p task -- set-version",
 		"verify:release": "cargo run -p task -- verify-release",
-		"publish:npm": "turbo run build --filter=@fatima.dev/js && npm publish packages/js --access public --provenance",
+		"publish:npm": "turbo run build:prebuilt --filter=@fatima.dev/js && npm publish packages/js --access public --provenance",
 		"publish:crates": "cargo publish -p fatima-core && cargo publish -p fatima-cli"
 	},
 	"devDependencies": {

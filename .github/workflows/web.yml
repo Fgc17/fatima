@@ -1,0 +1,51 @@
+name: Web
+
+on:
+  push:
+    paths:
+      - "packages/web/**"
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  deploy-web:
+    name: Build and deploy web
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-web-${{ hashFiles('pnpm-lock.yaml', 'turbo.json', 'package.json', 'packages/web/package.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-web-${{ hashFiles('pnpm-lock.yaml', 'turbo.json', 'package.json', 'packages/web/package.json') }}-
+            ${{ runner.os }}-turbo-web-
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web
+        run: pnpm turbo run build --filter=@fatimajs/web
+
+      - name: Deploy web to Vercel
+        run: pnpm dlx vercel@latest deploy packages/web/dist --prod --yes --archive=tgz --token "$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

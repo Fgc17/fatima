@@ -1,4 +1,7 @@
 use std::{env, fs, io, path::Path, process::Command};
+
+use inquire::Select;
+use time::OffsetDateTime;
 use zip::{write::FileOptions, CompressionMethod, ZipWriter};
 
 const WASM_ASSET: &str = "wasm";
@@ -7,6 +10,53 @@ const RAW_DIR: &str = ".release/raw";
 const DOCKER_CACHE_DIR: &str = "target/fatima-build-cache";
 
 const VERSION_FILES: &[&str] = &["packages/js/package.json"];
+const COMMIT_TAG_FILES: &[&str] = &[
+    "Cargo.toml",
+    "Cargo.lock",
+    "packages/js/package.json",
+    "CHANGELOG.md",
+];
+const RELEASE_PACKAGES: &[ReleasePackage] = &[
+    ReleasePackage {
+        name: "fatima-core",
+        path: "crates/core",
+    },
+    ReleasePackage {
+        name: "fatima-wasm",
+        path: "crates/wasm",
+    },
+    ReleasePackage {
+        name: "fatima-cli",
+        path: "crates/cli",
+    },
+    ReleasePackage {
+        name: "@fatima.dev/js",
+        path: "packages/js",
+    },
+];
+
+#[derive(Clone, Copy)]
+struct ReleasePackage {
+    name: &'static str,
+    path: &'static str,
+}
+
+#[derive(Clone, Copy, Debug)]
+enum BumpKind {
+    Patch,
+    Minor,
+    Major,
+}
+
+impl std::fmt::Display for BumpKind {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str(match self {
+            BumpKind::Patch => "patch",
+            BumpKind::Minor => "minor",
+            BumpKind::Major => "major",
+        })
+    }
+}
 
 #[derive(Clone, Copy)]
 struct Target {
@@ -120,6 +170,8 @@ fn run() -> Result<(), String> {
             let version = parse_version_arg(args.collect())?;
             set_version(&version)
         }
+        "bump" => bump(),
+        "commit-tags" => commit_tags(),
         "verify-release" => {
             let version = parse_version_arg(args.collect())?;
             verify_release(&version)
@@ -134,7 +186,7 @@ fn run() -> Result<(), String> {
 
 fn usage() {
     eprintln!(
-        "Usage:\n  cargo run -p task -- build-binaries [--target <asset>|--host|--all]\n  cargo run -p task -- set-version --version <version>\n  cargo run -p task -- verify-release --version <version>\n\nTargets: linux-x64, linux-arm64, linux-x64-musl, linux-arm64-musl, darwin-x64, darwin-arm64, windows-x64, windows-arm64, wasm"
+        "Usage:\n  cargo run -p task -- bump\n  cargo run -p task -- commit-tags\n  cargo run -p task -- build-binaries [--target <asset>|--host|--all]\n  cargo run -p task -- set-version --version <version>\n  cargo run -p task -- verify-release --version <version>\n\nTargets: linux-x64, linux-arm64, linux-x64-musl, linux-arm64-musl, darwin-x64, darwin-arm64, windows-x64, windows-arm64, wasm"
     );
 }
 
@@ -518,6 +570,213 @@ fn replace_in_file(path: &str, replace: impl FnOnce(String) -> String) -> Result
     fs::write(path, next).map_err(|error| format!("failed to write {path}: {error}"))
 }
 
+fn bump() -> Result<(), String> {
+    ensure_clean_release_files()?;
+
+    let kind = Select::new(
+        "Select version bump",
+        vec![BumpKind::Patch, BumpKind::Minor, BumpKind::Major],
+    )
+    .prompt()
+    .map_err(|error| error.to_string())?;
+
+    let current = current_version()?;
+    let next = bump_version(&current, kind)?;
+    let tag = format!("v{next}");
+    if git_tag_exists(&tag)? {
+        return Err(format!("tag `{tag}` already exists"));
+    }
+
+    let latest = latest_release_tag()?;
+    let changed = match latest.as_deref() {
+        Some(previous) => changed_release_packages(previous)?,
+        None => Vec::new(),
+    };
+    if latest.is_some() && changed.is_empty() {
+        return Err("no versioned package changes found since the last release".into());
+    }
+
+    set_version(&next)?;
+    refresh_cargo_lock()?;
+    if latest.is_some() {
+        update_changelog(&next, &changed)?;
+    }
+
+    run_command("git", &["tag", &tag])?;
+    println!("bumped {current} -> {next}");
+    println!("created local tag {tag}");
+    if latest.is_none() {
+        println!("no previous release tag found; skipped changelog for v0.0.0 baseline");
+    }
+    Ok(())
+}
+
+fn current_version() -> Result<String, String> {
+    let cargo = fs::read_to_string("Cargo.toml").map_err(|error| error.to_string())?;
+    let mut in_workspace_package = false;
+    for line in cargo.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with('[') {
+            in_workspace_package = trimmed == "[workspace.package]";
+            continue;
+        }
+        if in_workspace_package && trimmed.starts_with("version = ") {
+            return trimmed
+                .split_once('"')
+                .and_then(|(_, rest)| rest.split_once('"'))
+                .map(|(version, _)| version.to_string())
+                .ok_or_else(|| "failed to parse workspace version".to_string());
+        }
+    }
+    Err("missing workspace package version".into())
+}
+
+fn bump_version(current: &str, kind: BumpKind) -> Result<String, String> {
+    let mut parts = current.split('.');
+    let major = parts
+        .next()
+        .ok_or("missing major version")?
+        .parse::<u64>()
+        .map_err(|_| format!("invalid major version in `{current}`"))?;
+    let minor = parts
+        .next()
+        .ok_or("missing minor version")?
+        .parse::<u64>()
+        .map_err(|_| format!("invalid minor version in `{current}`"))?;
+    let patch = parts
+        .next()
+        .ok_or("missing patch version")?
+        .parse::<u64>()
+        .map_err(|_| format!("invalid patch version in `{current}`"))?;
+    if parts.next().is_some() {
+        return Err(format!("unsupported version `{current}`"));
+    }
+
+    let (major, minor, patch) = match kind {
+        BumpKind::Patch => (major, minor, patch + 1),
+        BumpKind::Minor => (major, minor + 1, 0),
+        BumpKind::Major => (major + 1, 0, 0),
+    };
+    Ok(format!("{major}.{minor}.{patch}"))
+}
+
+fn latest_release_tag() -> Result<Option<String>, String> {
+    let output = command_output("git", &["tag", "--list", "v[0-9]*", "--sort=-v:refname"])?;
+    Ok(output.lines().next().map(str::to_string))
+}
+
+fn git_tag_exists(tag: &str) -> Result<bool, String> {
+    let output = command_output("git", &["tag", "--list", tag])?;
+    Ok(output.lines().any(|line| line == tag))
+}
+
+fn changed_release_packages(tag: &str) -> Result<Vec<ReleasePackage>, String> {
+    let mut changed = Vec::new();
+    for package in RELEASE_PACKAGES {
+        let output = command_output(
+            "git",
+            &["diff", "--name-only", tag, "HEAD", "--", package.path],
+        )?;
+        if !output.trim().is_empty() {
+            changed.push(*package);
+        }
+    }
+    Ok(changed)
+}
+
+fn refresh_cargo_lock() -> Result<(), String> {
+    command_output("cargo", &["metadata", "--format-version", "1", "--no-deps"]).map(|_| ())
+}
+
+fn update_changelog(version: &str, packages: &[ReleasePackage]) -> Result<(), String> {
+    let path = Path::new("CHANGELOG.md");
+    let existing = match fs::read_to_string(path) {
+        Ok(content) => content,
+        Err(error) if error.kind() == io::ErrorKind::NotFound => "# Changelog\n".to_string(),
+        Err(error) => return Err(error.to_string()),
+    };
+    let date = today();
+    let package_lines = packages
+        .iter()
+        .map(|package| format!("- {}", package.name))
+        .collect::<Vec<_>>()
+        .join("\n");
+    let entry = format!("## v{version} - {date}\n\n### Changed packages\n\n{package_lines}\n");
+
+    let next = if let Some(rest) = existing.strip_prefix("# Changelog\n") {
+        format!("# Changelog\n\n{entry}\n{}", rest.trim_start())
+    } else {
+        format!("# Changelog\n\n{entry}\n{}", existing.trim_start())
+    };
+    fs::write(path, next).map_err(|error| error.to_string())
+}
+
+fn today() -> String {
+    let date = OffsetDateTime::now_utc().date();
+    format!(
+        "{:04}-{:02}-{:02}",
+        date.year(),
+        u8::from(date.month()),
+        date.day()
+    )
+}
+
+fn ensure_clean_release_files() -> Result<(), String> {
+    let mut dirty = Vec::new();
+    for file in COMMIT_TAG_FILES {
+        if !Path::new(file).exists() {
+            continue;
+        }
+        let output = command_output("git", &["status", "--porcelain", "--", file])?;
+        if !output.trim().is_empty() {
+            dirty.push(*file);
+        }
+    }
+    if dirty.is_empty() {
+        Ok(())
+    } else {
+        Err(format!(
+            "release files have uncommitted changes; commit or stash before bumping: {}",
+            dirty.join(", ")
+        ))
+    }
+}
+
+fn commit_tags() -> Result<(), String> {
+    let version = current_version()?;
+    let tag = format!("v{version}");
+    verify_release(&version)?;
+    if !git_tag_exists(&tag)? {
+        return Err(format!(
+            "missing local tag `{tag}`; run `cargo run -p task -- bump` first"
+        ));
+    }
+
+    let existing_files = COMMIT_TAG_FILES
+        .iter()
+        .copied()
+        .filter(|file| Path::new(file).exists())
+        .collect::<Vec<_>>();
+    let has_changes = existing_files.iter().try_fold(false, |has_changes, file| {
+        let output = command_output("git", &["status", "--porcelain", "--", file])?;
+        Ok::<_, String>(has_changes || !output.trim().is_empty())
+    })?;
+
+    if has_changes {
+        let mut add_args = vec!["add"];
+        add_args.extend(existing_files.iter().copied());
+        run_command("git", &add_args)?;
+        run_command("git", &["commit", "-m", &format!("chore: release {tag}")])?;
+    } else {
+        println!("no release file changes to commit");
+    }
+
+    run_command("git", &["tag", "-f", &tag])?;
+    run_command("git", &["push"])?;
+    run_command("git", &["push", "origin", &tag])?;
+    Ok(())
+}
+
 fn verify_release(version: &str) -> Result<(), String> {
     let cargo = fs::read_to_string("Cargo.toml").map_err(|error| error.to_string())?;
     ensure_contains(
@@ -543,10 +802,16 @@ fn verify_release(version: &str) -> Result<(), String> {
     for (file, needle) in [
         ("crates/core/Cargo.toml", "description.workspace = true"),
         ("crates/cli/Cargo.toml", "description.workspace = true"),
+        ("crates/wasm/Cargo.toml", "version.workspace = true"),
+        ("crates/task/Cargo.toml", "version = \"0.0.0\""),
     ] {
         let content = fs::read_to_string(file).map_err(|error| error.to_string())?;
         ensure_contains(&content, needle, file)?;
     }
+
+    let web = fs::read_to_string("packages/web/package.json").map_err(|error| error.to_string())?;
+    ensure_contains(&web, "\"version\": \"0.0.0\"", "packages/web version")?;
+    ensure_contains(&web, "\"private\": true", "packages/web private flag")?;
 
     Ok(())
 }

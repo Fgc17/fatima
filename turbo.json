@@ -16,6 +16,16 @@
 			],
 			"outputs": ["dist/**"]
 		},
+		"@fatima.dev/js#build:prebuilt": {
+			"dependsOn": ["^build"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"$TURBO_ROOT$/.release/raw/wasm-pack/fatima_wasm.js",
+				"$TURBO_ROOT$/.release/raw/wasm-pack/fatima_wasm.d.ts",
+				"$TURBO_ROOT$/.release/raw/wasm/fatima_wasm_bg.wasm"
+			],
+			"outputs": ["dist/**"]
+		},
 		"checktypes": {
 			"dependsOn": ["^checktypes"],
 			"outputs": []
