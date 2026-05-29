@@ -2,6 +2,8 @@ name: Web
 
 on:
   push:
+    branches:
+      - fatima
     paths:
       - "packages/web/**"
 
