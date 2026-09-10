@@ -1,0 +1,26 @@
+{
+	"typescript-oxlint": {
+		"args": [
+			"${CLAUDE_PROJECT_DIR}/packages/lsp/src/proxy.ts",
+			"--project",
+			"${CLAUDE_PROJECT_DIR}"
+		],
+		"command": "bun",
+		"extensionToLanguage": {
+			".cjs": "javascript",
+			".cts": "typescript",
+			".js": "javascript",
+			".jsx": "javascriptreact",
+			".mjs": "javascript",
+			".mts": "typescript",
+			".ts": "typescript",
+			".tsx": "typescriptreact"
+		},
+		"restartOnCrash": true,
+		"servers": [
+			{ "args": ["--lsp", "--stdio"], "bin": "tsc", "name": "typescript" },
+			{ "args": ["--lsp"], "bin": "oxlint", "name": "oxlint" },
+			{ "args": ["--lsp"], "bin": "oxfmt", "name": "oxfmt" }
+		]
+	}
+}

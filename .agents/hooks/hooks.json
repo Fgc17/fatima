@@ -1,0 +1,28 @@
+{
+	"hooks": {
+		"PostToolUse": [
+			{
+				"matcher": "Edit|Write|NotebookEdit",
+				"hooks": [
+					{
+						"command": "bun \"${CLAUDE_PROJECT_DIR}/scripts/dev/analyze.ts\"",
+						"timeout": 10,
+						"type": "command"
+					}
+				]
+			}
+		],
+		"Stop": [
+			{
+				"hooks": [
+					{
+						"command": "bun \"${CLAUDE_PROJECT_DIR}/scripts/dev/analyze.ts\"",
+						"statusMessage": "Running cargo, knip and static analysis...",
+						"timeout": 300,
+						"type": "command"
+					}
+				]
+			}
+		]
+	}
+}

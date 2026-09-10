@@ -1,0 +1,16 @@
+{
+	"enabledPlugins": {
+		"fatima@fatima-marketplace": true,
+		"frontend-design@claude-plugins-official": true,
+		"superpowers@claude-plugins-official": true,
+		"typescript-lsp@claude-plugins-official": false
+	},
+	"extraKnownMarketplaces": {
+		"fatima-marketplace": {
+			"source": {
+				"source": "directory",
+				"path": "./.agents"
+			}
+		}
+	}
+}

@@ -1,6 +1,12 @@
 # ai
 opencode.json
 .opencode
+.claude/*
+!.claude/settings.json
+.gitnexus/
+.superpowers/
+/superpowers
+.worktrees/
 
 # editor
 .vscode

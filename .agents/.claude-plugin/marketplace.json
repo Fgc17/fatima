@@ -1,0 +1,5 @@
+{
+	"name": "fatima-marketplace",
+	"owner": { "name": "Fatima" },
+	"plugins": [{ "name": "fatima", "source": "./" }]
+}
