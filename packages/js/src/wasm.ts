@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+
 import { createWasmHost, type WasmHostOptions } from "./host.js";
 import init, { handle_api_request_json } from "./wasm/fatima_wasm.js";
 

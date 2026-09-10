@@ -1,6 +1,6 @@
-import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "astro/config";
 
 const copyButtonTransformer = {
 	name: "copy-button",

@@ -149,7 +149,7 @@
 	}
 
 	body {
-		@apply bg-background text-foreground font-sans;
+		@apply bg-background font-sans text-foreground;
 		margin: 0;
 		line-height: 1.7;
 	}
