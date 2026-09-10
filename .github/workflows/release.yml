@@ -59,17 +59,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 11.3.0
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          bun-version: 1.4.0
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -83,19 +76,19 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-${{ hashFiles('pnpm-lock.yaml', 'turbo.json', 'package.json', 'packages/*/package.json') }}-prepare-${{ github.sha }}
+          key: ${{ runner.os }}-turbo-${{ hashFiles('bun.lock', 'turbo.json', 'package.json', 'packages/*/package.json') }}-prepare-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-turbo-${{ hashFiles('pnpm-lock.yaml', 'turbo.json', 'package.json', 'packages/*/package.json') }}-
+            ${{ runner.os }}-turbo-${{ hashFiles('bun.lock', 'turbo.json', 'package.json', 'packages/*/package.json') }}-
             ${{ runner.os }}-turbo-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Verify release versions
-        run: pnpm run verify:release --version ${{ steps.version.outputs.version }}
+        run: bun run verify:release --version ${{ steps.version.outputs.version }}
 
       - name: Check TypeScript
-        run: pnpm run checktypes
+        run: bun run checktypes
 
       - name: Test Rust workspace
         run: cargo test --workspace
@@ -247,30 +240,28 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 11.3.0
+          bun-version: 1.4.0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
 
       - name: Cache Turbo
         uses: actions/cache@v4
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-${{ hashFiles('pnpm-lock.yaml', 'turbo.json', 'package.json', 'packages/*/package.json') }}-publish-npm-${{ github.sha }}
+          key: ${{ runner.os }}-turbo-${{ hashFiles('bun.lock', 'turbo.json', 'package.json', 'packages/*/package.json') }}-publish-npm-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-turbo-${{ hashFiles('pnpm-lock.yaml', 'turbo.json', 'package.json', 'packages/*/package.json') }}-
+            ${{ runner.os }}-turbo-${{ hashFiles('bun.lock', 'turbo.json', 'package.json', 'packages/*/package.json') }}-
             ${{ runner.os }}-turbo-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Download WASM build artifact
         uses: actions/download-artifact@v4
@@ -285,7 +276,7 @@ jobs:
           if npm view "@fatima.dev/js@$VERSION" version >/dev/null 2>&1; then
             echo "@fatima.dev/js $VERSION already published, skipping"
           else
-            pnpm run publish:npm
+            bun run publish:npm
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
