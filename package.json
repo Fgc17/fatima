@@ -1,9 +1,18 @@
 {
 	"name": "repo",
 	"private": true,
+	"workspaces": [
+		"packages/*"
+	],
+	"type": "module",
 	"scripts": {
-		"lint": "biome check",
-		"format": "biome format",
+		"analyze": "bun run knip && bun run dupes",
+		"dupes": "jscpd .",
+		"knip": "knip --include files,dependencies,unlisted,binaries",
+		"knip:all": "knip",
+		"gitnexus": "bun scripts/dev/gitnexus.ts",
+		"lint": "oxlint && oxfmt --check .",
+		"format": "oxfmt . && oxlint --fix",
 		"dev": "turbo run dev --parallel",
 		"build": "turbo run build",
 		"build:rust": "cargo build --release -p fatima-cli --bin fatima",
@@ -20,12 +29,19 @@
 		"publish:crates": "cargo publish -p fatima-core && cargo publish -p fatima-cli"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.15",
+		"jscpd": "^5.0.16",
+		"knip": "^6.32.2",
+		"oxfmt": "^0.64.0",
+		"oxlint": "^1.79.0",
 		"turbo": "^2.6.1",
 		"typescript": "6.0.3"
 	},
-	"packageManager": "pnpm@11.3.0",
 	"engines": {
-		"node": ">=18"
-	}
+		"bun": ">=1.4.0"
+	},
+	"packageManager": "bun@1.4.0",
+	"trustedDependencies": [
+		"esbuild",
+		"sharp"
+	]
 }

@@ -1,0 +1,20 @@
+{
+	"minLines": 10,
+	"minTokens": 60,
+	"threshold": 1,
+	"mode": "weak",
+	"reporters": ["console"],
+	"format": ["typescript", "tsx"],
+	"ignore": [
+		"**/node_modules/**",
+		"**/dist/**",
+		"**/target/**",
+		"**/.release/**",
+		"**/*.gen.ts",
+		"**/.agents/skills/**",
+		"**/packages/js/src/wasm/**",
+		"**/playground/**",
+		"**/static/**",
+		"**/.agents/docs/**"
+	]
+}

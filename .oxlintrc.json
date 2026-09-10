@@ -1,0 +1,86 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": ["import", "node", "oxc", "promise", "typescript", "unicorn"],
+	"categories": {
+		"correctness": "error"
+	},
+	"rules": {
+		"complexity": [
+			"error",
+			{
+				"max": 10
+			}
+		],
+		"max-depth": [
+			"error",
+			{
+				"max": 4
+			}
+		],
+		"max-lines": [
+			"error",
+			{
+				"max": 300,
+				"skipBlankLines": true,
+				"skipComments": true
+			}
+		],
+		"max-lines-per-function": [
+			"error",
+			{
+				"max": 80,
+				"skipBlankLines": true,
+				"skipComments": true
+			}
+		],
+		"max-nested-callbacks": [
+			"error",
+			{
+				"max": 4
+			}
+		],
+		"max-params": [
+			"error",
+			{
+				"max": 4
+			}
+		],
+		"no-else-return": "error",
+		"no-unused-vars": [
+			"error",
+			{
+				"argsIgnorePattern": "^_",
+				"caughtErrorsIgnorePattern": "^_",
+				"ignoreRestSiblings": true,
+				"varsIgnorePattern": "^_"
+			}
+		],
+		"oxc/no-barrel-file": [
+			"error",
+			{
+				"threshold": 1
+			}
+		]
+	},
+	"ignorePatterns": [
+		"**/*.gen.ts",
+		"**/*.jsonc",
+		"**/*.toml",
+		".agents/skills",
+		".astro",
+		".claude",
+		".release",
+		".source",
+		".tmp",
+		".turbo",
+		"crates",
+		"dist",
+		"node_modules",
+		"packages/js/src/wasm",
+		"packages/web/public",
+		"packages/web/src/content",
+		"playground",
+		"static",
+		"target"
+	]
+}

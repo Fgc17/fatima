@@ -1,0 +1,46 @@
+{
+	"useTabs": true,
+	"tabWidth": 2,
+	"printWidth": 80,
+	"singleQuote": false,
+	"jsxSingleQuote": false,
+	"quoteProps": "as-needed",
+	"trailingComma": "all",
+	"semi": true,
+	"arrowParens": "always",
+	"bracketSameLine": false,
+	"bracketSpacing": true,
+	"sortImports": {
+		"groups": [
+			["value-builtin", "value-external"],
+			["value-internal", "value-parent", "value-sibling", "value-index"],
+			"type-import",
+			"unknown"
+		]
+	},
+	"sortTailwindcss": {
+		"stylesheet": "./packages/web/src/styles/global.css",
+		"functions": ["cn", "cva", "clsx"]
+	},
+	"ignorePatterns": [
+		"**/*.gen.ts",
+		"**/*.jsonc",
+		"**/*.toml",
+		".agents/skills",
+		".astro",
+		".claude",
+		".release",
+		".source",
+		".tmp",
+		".turbo",
+		"crates",
+		"dist",
+		"node_modules",
+		"packages/js/src/wasm",
+		"packages/web/public",
+		"packages/web/src/content",
+		"playground",
+		"static",
+		"target"
+	]
+}
