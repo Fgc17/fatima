@@ -12,23 +12,49 @@ const { groupId } = Astro.props;
 <script>
 	const storagePrefix = 'fatima-code-tabs:'
 
-	const syncTabs = (groupId: string, label: string) => {
+	const applySelection = (root: HTMLElement, label: string) => {
+		root.querySelectorAll<HTMLElement>('[data-code-tab-panel]').forEach((panel) => {
+			panel.hidden = panel.dataset.label !== label
+		})
+
+		root.querySelectorAll<HTMLButtonElement>('.code-tabs-tab').forEach((button) => {
+			const selected = button.dataset.label === label
+			button.setAttribute('aria-selected', selected ? 'true' : 'false')
+			button.tabIndex = selected ? 0 : -1
+		})
+	}
+
+	const select = (root: HTMLElement, groupId: string | undefined, label: string) => {
+		if (!groupId) return applySelection(root, label)
+
 		document
 			.querySelectorAll<HTMLElement>(`[data-code-tabs][data-code-tabs-group="${groupId}"]`)
-			.forEach((root) => {
-				const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-code-tab-panel]'))
-				const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('.code-tabs-tab'))
+			.forEach((grouped) => applySelection(grouped, label))
+	}
 
-				panels.forEach((panel) => {
-					panel.hidden = panel.dataset.label !== label
-				})
+	const initialLabel = (panels: HTMLElement[], storageKey: string | undefined) => {
+		const stored = storageKey ? localStorage.getItem(storageKey) : null
+		const known = panels.some((panel) => panel.dataset.label === stored)
+		return (stored && known ? stored : panels[0]?.dataset.label) || ''
+	}
 
-				buttons.forEach((button) => {
-					const selected = button.dataset.label === label
-					button.setAttribute('aria-selected', selected ? 'true' : 'false')
-					button.tabIndex = selected ? 0 : -1
-				})
-			})
+	const createTab = (
+		root: HTMLElement,
+		panel: HTMLElement,
+		storageKey: string | undefined,
+	) => {
+		const label = panel.dataset.label || 'Tab'
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = 'code-tabs-tab whitespace-nowrap rounded px-2.5 py-1.5 font-mono text-[13px] text-foreground transition-colors'
+		button.dataset.label = label
+		button.setAttribute('role', 'tab')
+		button.textContent = label
+		button.addEventListener('click', () => {
+			if (storageKey) localStorage.setItem(storageKey, label)
+			select(root, root.dataset.codeTabsGroup, label)
+		})
+		return button
 	}
 
 	document.querySelectorAll<HTMLElement>('[data-code-tabs]').forEach((root) => {
@@ -37,51 +63,15 @@ const { groupId } = Astro.props;
 
 		const tabList = root.querySelector<HTMLElement>('.code-tabs-list')
 		const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-code-tab-panel]'))
-		const groupId = root.dataset.codeTabsGroup
-		const storageKey = groupId ? `${storagePrefix}${groupId}` : undefined
-		const storedLabel = storageKey ? localStorage.getItem(storageKey) : null
-		const initialLabel =
-			(storedLabel && panels.some((panel) => panel.dataset.label === storedLabel)
-				? storedLabel
-				: panels[0]?.dataset.label) || ''
-
 		if (!tabList || panels.length === 0) return
 
+		const groupId = root.dataset.codeTabsGroup
+		const storageKey = groupId ? `${storagePrefix}${groupId}` : undefined
+
 		panels.forEach((panel) => {
-			const label = panel.dataset.label || 'Tab'
-			const button = document.createElement('button')
-			button.type = 'button'
-			button.className = 'code-tabs-tab whitespace-nowrap rounded px-2.5 py-1.5 font-mono text-[13px] text-foreground transition-colors'
-			button.dataset.label = label
-			button.setAttribute('role', 'tab')
-			button.textContent = label
-			button.addEventListener('click', () => {
-				if (storageKey) localStorage.setItem(storageKey, label)
-				if (groupId) syncTabs(groupId, label)
-				else {
-					panels.forEach((currentPanel) => {
-						currentPanel.hidden = currentPanel.dataset.label !== label
-					})
-					root.querySelectorAll<HTMLButtonElement>('.code-tabs-tab').forEach((currentButton) => {
-						const selected = currentButton.dataset.label === label
-						currentButton.setAttribute('aria-selected', selected ? 'true' : 'false')
-						currentButton.tabIndex = selected ? 0 : -1
-					})
-				}
-			})
-			tabList.appendChild(button)
+			tabList.appendChild(createTab(root, panel, storageKey))
 		})
 
-		if (groupId) syncTabs(groupId, initialLabel)
-		else {
-			panels.forEach((panel) => {
-				panel.hidden = panel.dataset.label !== initialLabel
-			})
-			root.querySelectorAll<HTMLButtonElement>('.code-tabs-tab').forEach((button) => {
-				const selected = button.dataset.label === initialLabel
-				button.setAttribute('aria-selected', selected ? 'true' : 'false')
-				button.tabIndex = selected ? 0 : -1
-			})
-		}
+		select(root, groupId, initialLabel(panels, storageKey))
 	})
 </script>
